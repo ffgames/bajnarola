@@ -1,2 +1,2 @@
 # bajnarola
-Distributed remake of the "Carcassonne" board game.
+Distributed remake of the "Carcassonne" board game
