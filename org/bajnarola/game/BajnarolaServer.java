@@ -30,7 +30,7 @@ public class BajnarolaServer {
 			
 			Naming.rebind("rmi://localhost/Board1", b1);
 			
-			b1.points = 24;
+			b1.points = 42;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
