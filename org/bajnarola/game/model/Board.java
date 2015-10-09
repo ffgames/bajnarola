@@ -30,10 +30,17 @@ import org.bajnarola.game.controller.BoardController;
 public class Board extends UnicastRemoteObject implements BoardController {
 	private static final long serialVersionUID = -6564070861147997471L;
 
-
-	Integer points;
-	ArrayList<Tile> scenario;
 	int turn;
+	ArrayList<Tile> scenario;
+	ArrayList<Player> players;
+	ArrayList<Tile> deck;
+	
+	public Board() throws RemoteException {
+		this.turn = 0;
+		this.scenario = new ArrayList<Tile>();
+		this.deck = new ArrayList<Tile>();
+		this.players = new ArrayList<Player>();
+	}
 	
 	public int getTurn() {
 		return turn;
@@ -46,19 +53,13 @@ public class Board extends UnicastRemoteObject implements BoardController {
 	public ArrayList<Tile> getScenario() {
 		return scenario;
 	}
-
-	public Board() throws RemoteException {
-		this.points = 0;
-		this.turn = 0;
-		this.scenario = new ArrayList<Tile>();
-	}
-
-	public Integer getPoints() {
-		return this.points;
-	}
 	
-	public void setPoints(Integer points) {
-		this.points = points;
+	public ArrayList<Tile> getDeck() {
+		return deck;
+	}
+
+	public ArrayList<Player> getPlayers() {
+		return players;
 	}
 	
 	/* Check if the given tile can be placed at position x y of the board */
