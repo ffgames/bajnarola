@@ -21,17 +21,18 @@
 /*****************************************************************************/
 
 package org.bajnarola.game;
-import java.rmi.Naming;
 
-import org.bajnarola.game.controller.BoardController;
+//import org.bajnarola.game.controller.BoardController;
 
 public class BajnarolaClient {
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		try {
 			BoardController b = (BoardController) Naming.lookup("rmi://localhost/Board1");
 			System.out.println(b.getPoints());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}*/
+	public BajnarolaClient() {
 	}
 }
