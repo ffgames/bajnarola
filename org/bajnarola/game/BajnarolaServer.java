@@ -22,19 +22,39 @@
 
 package org.bajnarola.game;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+import org.bajnarola.game.model.Board;
+import org.bajnarola.utils.RandomString;
+
 //import org.bajnarola.game.model.Board;
 
 public class BajnarolaServer {
-	public BajnarolaServer() {
-/*		try {
-			Board b1 = new Board(10);
-			
-			Naming.rebind("rmi://localhost/Board1", b1);
-			
-			b1.setPoints(42);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+	String basepath;
+	
+	private void Build(String s, Board myBoard) {
+		this.setRebind(s, myBoard);
+	}
+	
+	public BajnarolaServer(String server, String basepath, Board myBoard) {
+		this.Build(server + "/" + basepath, myBoard);
+	}
+	public BajnarolaServer(String server, Board myBoard) {
+		String s = RandomString.generateAsciiString();
+		this.Build(server + "/" + s, myBoard);
+	}
+	
+	private void setRebind(String path, Remote o) {
+		String npath = path + "/" + o.getClass().getName();
+		try {
+			Naming.rebind(npath, o);
+		} catch (RemoteException | MalformedURLException e) {
+			e.printStackTrace();
 		}
-*/
+		
+		System.out.print("Listening on '" + npath + "' ...");
 	}
 }
