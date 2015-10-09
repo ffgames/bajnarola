@@ -23,6 +23,8 @@
 package org.bajnarola.game;
 import java.rmi.Naming;
 
+import org.bajnarola.game.controller.BoardController;
+
 public class BajnarolaClient {
 	public static void main(String[] args) {
 		try {

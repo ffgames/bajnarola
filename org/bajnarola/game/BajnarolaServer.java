@@ -23,6 +23,8 @@
 package org.bajnarola.game;
 import java.rmi.Naming;
 
+import org.bajnarola.game.model.Board;
+
 public class BajnarolaServer {
 	public static void main(String[] argv) {
 		try {
@@ -30,7 +32,7 @@ public class BajnarolaServer {
 			
 			Naming.rebind("rmi://localhost/Board1", b1);
 			
-			b1.points = 42;
+			b1.setPoints(42);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

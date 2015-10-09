@@ -20,7 +20,7 @@
 /* USA.                                                                      */
 /*****************************************************************************/
 
-package org.bajnarola.game;
+package org.bajnarola.game.controller;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

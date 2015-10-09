@@ -20,9 +20,11 @@
 /* USA.                                                                      */
 /*****************************************************************************/
 
-package org.bajnarola.game;
+package org.bajnarola.game.model;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import org.bajnarola.game.controller.BoardController;
 
 public class Board extends UnicastRemoteObject implements BoardController {
 	private static final long serialVersionUID = -6564070861147997471L;
@@ -36,5 +38,9 @@ public class Board extends UnicastRemoteObject implements BoardController {
 
 	public Integer getPoints() {
 		return this.points;
+	}
+	
+	public void setPoints(Integer points) {
+		this.points = points;
 	}
 }
