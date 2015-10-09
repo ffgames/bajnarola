@@ -26,7 +26,7 @@ import java.rmi.Naming;
 public class BajnarolaServer {
 	public static void main(String[] argv) {
 		try {
-			BoardImpl b1 = new BoardImpl(10);
+			Board b1 = new Board(10);
 			
 			Naming.rebind("rmi://localhost/Board1", b1);
 			

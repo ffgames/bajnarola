@@ -1,5 +1,5 @@
 /*****************************************************************************/
-/* Local board implementation class                                          */
+/* Board implementation interface                                            */
 /*                                                                           */
 /* Copyright (C) 2015                                                        */
 /* Marco Melletti, Davide Berardi, Matteo Martelli                           */
@@ -21,20 +21,10 @@
 /*****************************************************************************/
 
 package org.bajnarola.game;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-public class BoardImpl extends UnicastRemoteObject implements Board {
-	private static final long serialVersionUID = -6564070861147997471L;
-
-
-	int points;
-	
-	public BoardImpl(int points) throws RemoteException {
-		this.points = points;
-	}
-
-	public Integer getPoints() {
-		return this.points;
-	}
+public interface BoardController extends Remote {
+	public Integer getPoints() throws RemoteException;
 }
+

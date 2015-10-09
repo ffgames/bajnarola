@@ -26,7 +26,7 @@ import java.rmi.Naming;
 public class BajnarolaClient {
 	public static void main(String[] args) {
 		try {
-			Board b = (Board) Naming.lookup("rmi://localhost/Board1");
+			BoardController b = (BoardController) Naming.lookup("rmi://localhost/Board1");
 			System.out.println(b.getPoints());
 		} catch (Exception ex) {
 			ex.printStackTrace();
