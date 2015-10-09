@@ -21,13 +21,12 @@
 /*****************************************************************************/
 
 package org.bajnarola.game;
-import java.rmi.Naming;
 
-import org.bajnarola.game.model.Board;
+//import org.bajnarola.game.model.Board;
 
 public class BajnarolaServer {
-	public static void main(String[] argv) {
-		try {
+	public BajnarolaServer() {
+/*		try {
 			Board b1 = new Board(10);
 			
 			Naming.rebind("rmi://localhost/Board1", b1);
@@ -36,5 +35,6 @@ public class BajnarolaServer {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+*/
 	}
 }

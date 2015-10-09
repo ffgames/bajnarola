@@ -23,6 +23,7 @@
 package org.bajnarola.game.model;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 import org.bajnarola.game.controller.BoardController;
 
@@ -30,10 +31,26 @@ public class Board extends UnicastRemoteObject implements BoardController {
 	private static final long serialVersionUID = -6564070861147997471L;
 
 
-	int points;
+	Integer points;
+	ArrayList<Tile> scenario;
+	int turn;
 	
-	public Board(int points) throws RemoteException {
-		this.points = points;
+	public int getTurn() {
+		return turn;
+	}
+
+	public void setTurn(int turn) {
+		this.turn = turn;
+	}
+
+	public ArrayList<Tile> getScenario() {
+		return scenario;
+	}
+
+	public Board() throws RemoteException {
+		this.points = 0;
+		this.turn = 0;
+		this.scenario = new ArrayList<Tile>();
 	}
 
 	public Integer getPoints() {
@@ -43,4 +60,25 @@ public class Board extends UnicastRemoteObject implements BoardController {
 	public void setPoints(Integer points) {
 		this.points = points;
 	}
+	
+	/* Check if the given tile can be placed at position x y of the board */
+	public Boolean probe(int x, int y, int tile) {
+		/* TODO implement */
+		return false;
+	}
+	
+	/* Check if the given meeple can be placed at position x y of the board */
+	public Boolean probeMeeple(int x, int y, int tile, Meeple meeple) {
+		/* TODO: implement */
+		return false;
+	}
+	
+	/* Place a tile and a meeple (optional) to the position x y of the board.
+	 * A null meeple must be passed to place the tile only. */
+	public Boolean place(int x, int y, int tile, Meeple meeple) {
+		/* TODO implement */
+		return false;
+	}
+	
 }
+
