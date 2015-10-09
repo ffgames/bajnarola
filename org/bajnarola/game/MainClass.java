@@ -1,5 +1,7 @@
 package org.bajnarola.game;
 
+import java.rmi.RemoteException;
+
 import org.bajnarola.game.model.Board;
 
 public class MainClass {
@@ -11,5 +13,10 @@ public class MainClass {
 		/* TODO: Graphics               */
 		/* TODO: new Gui();             */
 		
-		Board gBoard = new Board();
+		try {
+			Board gBoard = new Board();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
 }
