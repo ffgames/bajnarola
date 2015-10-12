@@ -1,5 +1,5 @@
 package org.bajnarola.game.model;
 
-public class City implements LandScapeElement {
+public class City extends LandScapeElement {
 
 }

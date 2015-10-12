@@ -1,5 +1,8 @@
 package org.bajnarola.game.model;
 
-public interface LandScapeElement {
+import java.util.Hashtable;
 
+public abstract class LandScapeElement {
+	Boolean complete, visited;
+	Hashtable<Player, Integer> owners;
 }
