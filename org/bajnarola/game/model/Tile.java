@@ -5,7 +5,7 @@ public class Tile {
 	public static final short ELEMENT_TYPE_GRASS = 0;
 	public static final short ELEMENT_TYPE_CITY = 1;
 	public static final short ELEMENT_TYPE_STREET = 2;
-	public static final short ELEMENT_TYPE_SANCTUARY = 3;
+	public static final short ELEMENT_TYPE_CLOISTER = 3;
 	
 	public static final short ELEMENT_POS_TOP = 0;
 	public static final short ELEMENT_POS_RIGHT = 1;
@@ -17,12 +17,14 @@ public class Tile {
 	
 	/* Internal elements of a tile, represented as an array. */
 	short elements[];
+	short x, y;
 	int direction;
+	Meeple meeple;
+	Boolean pennant;
 	/* TODO: 
-	 * - char flags?
-	 * - Meeple meeple */
-	
-	public Tile(short center, short top, short right, short bottom, short left) {
+	 * - char flags? */
+
+	public Tile(short center, short top, short right, short bottom, short left, Boolean pennant) {
 		this.elements = new short[5];
 		this.elements[ELEMENT_POS_CENTER] = center;
 		this.elements[ELEMENT_POS_TOP] = top;
@@ -30,6 +32,22 @@ public class Tile {
 		this.elements[ELEMENT_POS_BOTTOM] = bottom;
 		this.elements[ELEMENT_POS_LEFT] = left;
 		this.direction = 0;
+		this.meeple = null;
+		this.pennant = pennant;
+		x = y = -1;
+	}
+	
+	public Meeple getMeeple() {
+		return meeple;
+	}
+
+	public void setMeeple(Meeple meeple) {
+		this.meeple = meeple;
+	}
+	
+	public void removeMeeple() {
+		meeple.getOwner().getHand().add(meeple);
+		meeple = null;
 	}
 	
 	public void rotate(Boolean clockwise) {
@@ -40,6 +58,7 @@ public class Tile {
 		}
 	}
 	
+	/* Return the interal elements of a tile, rotated according to the direction */
 	public short[] getElements() {
 		short rotatedElements[] = new short[5];
 		
@@ -52,6 +71,7 @@ public class Tile {
 		return elements;
 	}
 	
+	/* Check if this Tile can be attached to the passed tile on the relativePos position */
 	public Boolean compatible(Tile tile, short relativePos) {
 		if (this.elements[relativePos] == tile.getElements()[(relativePos + 2) % 4])
 			return true;
@@ -61,6 +81,5 @@ public class Tile {
 	
 	/* TODO: 
 	 * 	- getFlags()?
-	 *  - getMeeple()
 	*/
 }

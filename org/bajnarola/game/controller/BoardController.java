@@ -24,6 +24,7 @@ package org.bajnarola.game.controller;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
@@ -32,12 +33,13 @@ import org.bajnarola.game.model.Tile;
 public interface BoardController extends Remote {
 	public int getTurn() throws RemoteException;
 	public void setTurn(int turn) throws RemoteException;
-	public ArrayList<Tile> getScenario() throws RemoteException;
+	public Hashtable<Integer, Tile> getScenario() throws RemoteException;
 	public ArrayList<Tile> getDeck() throws RemoteException;
 	public ArrayList<Player> getPlayers() throws RemoteException;
 	
-	public Boolean probe(int x, int y, int tile) throws RemoteException;
-	public Boolean probeMeeple(int x, int y, int tile, Meeple meeple) throws RemoteException;
-	public Boolean place(int x, int y, int tile, Meeple meeple) throws RemoteException;
+	public Boolean probe(short x, short y, Tile tile) throws RemoteException;
+	public Boolean probeMeeple(short x, short y, Tile tile, Meeple meeple) throws RemoteException;
+	public void place(short x, short y, Tile tile, Meeple meeple) throws RemoteException;
+	public void updateLandascape(short x, short y) throws RemoteException;
 }
 
