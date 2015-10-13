@@ -97,14 +97,19 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	public static void main(String[] args) {
 		Integer players = 2;
 		Integer timeout = 10;
+		String server = "";
 		
 		if (args.length > 0)
 			players = Integer.decode(args[0]);
 		if (args.length > 1)
 			timeout = Integer.decode(args[1]);
+		if (args.length > 2)
+			server = args[2];
+		else
+			server = SERVER;
 		
 		try {
-			new LobbyServer(SERVER, players, timeout);
+			new LobbyServer(server, players, timeout);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

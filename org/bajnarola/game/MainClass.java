@@ -19,10 +19,22 @@ public class MainClass {
 		LobbyClient iLobby = null;
 		BajnarolaServer iServer = null;
 		String username = "";
+		String server = "";
+		String lobbyserver;
 		
-		if (argv.length > 0) {
+		/* TODO getopt */
+		if (argv.length > 0)
 			username = argv[0];
-		}
+		
+		if (argv.length > 1)
+			lobbyserver = argv[1];
+		else
+			lobbyserver = LOBBY_SERVER;
+		
+		if (argv.length > 2)
+			server = argv[2];
+		else
+			server = SERVER;
 		
 		try {
 			System.out.println("Bajnarola starting up.");
@@ -33,13 +45,13 @@ public class MainClass {
 
 			System.out.print("Server start up:");
 			if (!username.isEmpty())
-				iServer = new BajnarolaServer(SERVICE + "://" + SERVER, username, gBoard);
+				iServer = new BajnarolaServer(SERVICE + "://" + server, username, gBoard);
 			else
-				iServer = new BajnarolaServer(SERVICE + "://" + SERVER, gBoard);
+				iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
 			System.out.println("OK!");
 			
 			System.out.print("Registering to lobby... ");
-			iLobby = new LobbyClient(LOBBY_SERVER);
+			iLobby = new LobbyClient(lobbyserver);
 			System.out.println("OK!");
 			
 			/* TODO: differentiate more room and real lobby dispatching */
