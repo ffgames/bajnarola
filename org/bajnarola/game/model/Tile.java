@@ -1,5 +1,8 @@
 package org.bajnarola.game.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tile {
 	
 	public static final short ELEMENT_TYPE_GRASS = 0;
@@ -21,6 +24,7 @@ public class Tile {
 	int direction;
 	Meeple meeple;
 	Boolean pennant;
+	List<LandscapeElement> landscapes;
 	/* TODO: 
 	 * - char flags? */
 
@@ -34,7 +38,12 @@ public class Tile {
 		this.direction = 0;
 		this.meeple = null;
 		this.pennant = pennant;
+		this.landscapes = new ArrayList<LandscapeElement>();
 		x = y = -1;
+	}
+	
+	public List<LandscapeElement> getLandscape() {
+		return landscapes;
 	}
 	
 	public Meeple getMeeple() {
@@ -69,6 +78,17 @@ public class Tile {
 		rotatedElements[ELEMENT_POS_CENTER] = this.elements[ELEMENT_POS_CENTER];
 
 		return elements;
+	}
+	
+	public short countElement(short elType) {
+		short n = 0;
+		
+		for (int i = 0; i < elements.length ; i++) {
+			if (elements[i] == elType)
+				n++;
+		}
+		
+		return n;
 	}
 	
 	/* Check if this Tile can be attached to the passed tile on the relativePos position */

@@ -122,6 +122,12 @@ public class Board extends UnicastRemoteObject implements BoardController {
 
 	public void updateLandascape(short x, short y) {
 		/* TODO Landscape elements */
+		
+		/* Per ogni elemento della tile
+		 *  -  Controlla se creare un landscape element 
+		 *    o aggiungere la tile ad un landscape già esistente
+		 * -  Se è stata aggiunta controllare se fare merge del landscape a cui è stata collegata
+		 *    con altri landscape adiacenti dello stesso tipo */
 	}
 	
 	private static final Integer getKey(short x, short y) {	
