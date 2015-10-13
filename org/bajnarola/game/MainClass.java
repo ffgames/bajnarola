@@ -55,9 +55,8 @@ public class MainClass {
 			System.out.println("OK!");
 			
 			/* TODO: differentiate more room and real lobby dispatching */
-			System.out.print("Joining the default room...");
+			System.out.println("Joining the default room...");
 			iLobby.join(iServer.getPlayer());
-			System.out.println("OK!");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

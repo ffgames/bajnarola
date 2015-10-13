@@ -25,6 +25,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	public LobbyServer(String server, int playersNo, int timeout) throws RemoteException {
 		this.done = new Boolean(false);
 		this.maxPlayers = playersNo;
+		int i;
 
 		try{
 			this.lpath = SERVICE + "://" + server + "/" + this.getClass().getName();
@@ -32,10 +33,14 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 			Naming.rebind(lpath, this);
 			System.out.println("OK!");
 			
-			while (!this.done) {
-				Thread.sleep(1000 * timeout);
-				this.fireTimeout();
+			i = 0;
+			while (!this.done && i < timeout) {
+				Thread.sleep(1000);
+				i++;
 			}
+
+			if (!this.done)
+				this.fireTimeout();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -91,7 +96,13 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 				e.printStackTrace();
 			}
 		}
-		/* XXX Lobby Shutdown */
+		/* Lobby Shutdown */
+		try {
+			Naming.unbind(this.lpath);
+			UnicastRemoteObject.unexportObject(this, true);
+		} catch (RemoteException | MalformedURLException | NotBoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
