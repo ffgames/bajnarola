@@ -22,9 +22,8 @@
 
 package org.bajnarola.lobby;
 
-import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.bajnarola.lobby.LobbyController;
 import org.bajnarola.lobby.LobbyServer;
@@ -32,7 +31,6 @@ import org.bajnarola.networking.NetPlayer;
 
 public class LobbyClient {
 	private final String SERVICE = "rmi";
-	private final String DEFAULT_PATH = "Lobby";
 	
 	private LobbyController lobbyCallback = null;
 
@@ -48,15 +46,18 @@ public class LobbyClient {
 		}
 	}
 	
-	public void join(NetPlayer p, String room) {
+	public Map<String,NetPlayer> join(NetPlayer p, String room) {
+		Map<String,NetPlayer> omap = null;
 		try {
-			this.lobbyCallback.join(p, room);
+			omap = this.lobbyCallback.join(p, room);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return omap;
 	}
 
-	public void join(NetPlayer p) {
-		this.join(p, "");
+	public Map<String,NetPlayer> join(NetPlayer p) {
+		return this.join(p, "");
 	}
 }
