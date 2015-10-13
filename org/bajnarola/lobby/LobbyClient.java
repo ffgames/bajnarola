@@ -22,9 +22,7 @@
 
 package org.bajnarola.lobby;
 
-import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.RemoteException;
 
 import org.bajnarola.lobby.LobbyController;
 import org.bajnarola.lobby.LobbyServer;
@@ -32,7 +30,6 @@ import org.bajnarola.networking.NetPlayer;
 
 public class LobbyClient {
 	private final String SERVICE = "rmi";
-	private final String DEFAULT_PATH = "Lobby";
 	
 	private LobbyController lobbyCallback = null;
 

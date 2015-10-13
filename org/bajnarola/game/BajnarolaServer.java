@@ -26,7 +26,6 @@ import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
 
 import org.bajnarola.game.model.Board;
 import org.bajnarola.lobby.NetPlayerAggregator;
@@ -36,8 +35,12 @@ import org.bajnarola.utils.RandomString;
 //import org.bajnarola.game.model.Board;
 
 public class BajnarolaServer extends UnicastRemoteObject implements BajnarolaController {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private NetPlayer player = null;
-	private Map<String, NetPlayer> players = null;
 	
 	public NetPlayerAggregator networkRegistryCallback;
 	

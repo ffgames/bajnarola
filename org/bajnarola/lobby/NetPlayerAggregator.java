@@ -8,6 +8,10 @@ import java.util.Map;
 import org.bajnarola.networking.NetPlayer;
 
 public class NetPlayerAggregator extends UnicastRemoteObject implements NetPlayerAggregatorController {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Map<String, NetPlayer> players;
 
 	public NetPlayerAggregator() throws RemoteException {

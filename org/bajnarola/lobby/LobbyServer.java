@@ -9,10 +9,13 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.bajnarola.game.BajnarolaController;
-import org.bajnarola.game.BajnarolaServer;
 import org.bajnarola.networking.NetPlayer;
 
 public class LobbyServer extends UnicastRemoteObject implements LobbyController {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String SERVER = "localhost";
 	private static final String SERVICE = "rmi";
 	
