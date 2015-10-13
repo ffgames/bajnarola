@@ -8,8 +8,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.bajnarola.game.BajnarolaController;
 import org.bajnarola.networking.NetPlayer;
+
+import sun.misc.Lock;
 
 public class LobbyServer extends UnicastRemoteObject implements LobbyController {
 	/**
@@ -19,15 +20,23 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	private static final String SERVER = "localhost";
 	private static final String SERVICE = "rmi";
 	
-	private Map<String,NetPlayer> players = new Hashtable<String,NetPlayer>();
-	private Integer maxPlayers = 0;
-	private String lpath;
+	Map<String,NetPlayer> players = new Hashtable<String,NetPlayer>();
+	Integer maxPlayers = 0;
+	String lpath;
+	Lock plock;
 	
 	private Boolean done;
 	
 	public LobbyServer(String server, int playersNo, int timeout) throws RemoteException {
 		this.done = new Boolean(false);
 		this.maxPlayers = playersNo;
+		this.plock = new Lock();
+		
+		try {
+			this.plock.lock();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		int i;
 
 		try{
@@ -49,12 +58,12 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		}
 	}
 
-	public void join(NetPlayer p) throws RemoteException {
-		this.join(p, "");
+	public Map<String,NetPlayer> join(NetPlayer p) throws RemoteException {
+		return this.join(p, "");
 	}
 	
 	@Override
-	public void join(NetPlayer p, String room) throws RemoteException {
+	public Map<String,NetPlayer> join(NetPlayer p, String room) throws RemoteException {
 		if (this.players.containsKey(p.username))
 			throw new RemoteException("User Already Present");
 		if (this.done)
@@ -63,42 +72,33 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		this.players.put(p.username, p);
 		System.out.println("Got a new player: " + p.username + " (" +p.rmiUriBoard+"," + p.rmiUriLobby + ")");
 		
-		if (this.players.size() >= this.maxPlayers) {
-			this.startGame();
+		if (this.players.size() < this.maxPlayers) {
+			try {
+				this.plock.lock();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+		this.startGame();
+		this.plock.unlock();
+		
+		return players;
 	}
 	
-	/* XXX maybe we need an atomical transaction on done? */
 	private void fireTimeout() {
 		if (!this.done && this.players.size() >= 2) {
+			this.plock.unlock();
 			this.startGame();
 		}
 	}
 	
 	private void startGame() {
 		/* TODO: Implementation */
+		if (this.done)
+			return;
+		
 		this.done = true;
 		System.out.println("Get ready to play!");
-		/* Signal all the players to all players. */
-		for (String u: players.keySet()) {
-			NetPlayer p = players.get(u);
-			BajnarolaController b;
-			NetPlayerAggregatorController na;
-			try {
-				na = (NetPlayerAggregatorController) Naming.lookup(p.rmiUriLobby);
-				na.addPlayers(players);
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				b = (BajnarolaController) Naming.lookup(p.rmiUriMain);
-				b.startGame();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 		/* Lobby Shutdown */
 		try {
 			Naming.unbind(this.lpath);

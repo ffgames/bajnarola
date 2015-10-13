@@ -25,24 +25,18 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
 
 import org.bajnarola.game.model.Board;
-import org.bajnarola.lobby.NetPlayerAggregator;
 import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.RandomString;
 
-//import org.bajnarola.game.model.Board;
+import java.util.Hashtable;
 
-public class BajnarolaServer extends UnicastRemoteObject implements BajnarolaController {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class BajnarolaServer {
 
-	private NetPlayer player = null;
-	
-	public NetPlayerAggregator networkRegistryCallback;
+	NetPlayer player = null;
+	Map<String,NetPlayer> players;
 	
 	public NetPlayer getPlayer() {
 		return this.player;
@@ -62,29 +56,16 @@ public class BajnarolaServer extends UnicastRemoteObject implements BajnarolaCon
 	private void CommonConstruct(String server, String basepath, Board myBoard) {
 		String path = server + "/" + basepath;
 		this.player = new NetPlayer(basepath, path);
-
-		try {
-			networkRegistryCallback = new NetPlayerAggregator();
-		    this.setRebind(path, networkRegistryCallback);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		this.players = new Hashtable<String,NetPlayer>();
+				
 		this.setRebind(path, myBoard);
-		
-		this.setRebind(path, this);
 	}
 
-	public BajnarolaServer(String server, String basepath, Board myBoard) throws RemoteException {
+	public BajnarolaServer(String server, String basepath, Board myBoard) {
 		this.CommonConstruct(server, basepath, myBoard);
 	}
-	public BajnarolaServer(String server, Board myBoard) throws RemoteException {
+	public BajnarolaServer(String server, Board myBoard) {
 		String s = RandomString.generateAsciiString();
 		this.CommonConstruct(server, s, myBoard);
-	}
-
-	@Override
-	public void startGame() throws RemoteException {
-		System.out.println("Starting Game.");
 	}
 }
