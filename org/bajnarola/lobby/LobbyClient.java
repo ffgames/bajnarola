@@ -1,5 +1,5 @@
 /*****************************************************************************/
-/* Server package for Bajnarola distributed game                             */
+/* Client package for Bajnarola distributed game                             */
 /*                                                                           */
 /* Copyright (C) 2015                                                        */
 /* Marco Melletti, Davide Berardi, Matteo Martelli                           */
@@ -20,69 +20,43 @@
 /* USA.                                                                      */
 /*****************************************************************************/
 
-package org.bajnarola.game;
+package org.bajnarola.lobby;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
 
-import org.bajnarola.game.model.Board;
-import org.bajnarola.lobby.NetPlayerAggregator;
+import org.bajnarola.lobby.LobbyController;
+import org.bajnarola.lobby.LobbyServer;
 import org.bajnarola.networking.NetPlayer;
-import org.bajnarola.utils.RandomString;
 
-//import org.bajnarola.game.model.Board;
+public class LobbyClient {
+	private final String SERVICE = "rmi";
+	private final String DEFAULT_PATH = "Lobby";
+	
+	private LobbyController lobbyCallback = null;
 
-public class BajnarolaServer extends UnicastRemoteObject implements BajnarolaController {
-	private NetPlayer player = null;
-	private Map<String, NetPlayer> players = null;
 	
-	public NetPlayerAggregator networkRegistryCallback;
-	
-	public NetPlayer getPlayer() {
-		return this.player;
-	}
-	
-	private void setRebind(String path, Remote o) {
-		String npath = path + "/" + o.getClass().getName();
+	public LobbyClient(String server) {
 		try {
-			Naming.rebind(npath, o);
-		} catch (RemoteException | MalformedURLException e) {
-			e.printStackTrace();
+			String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
+					
+			System.out.print("\n\tLookup on: " + lookupString + " ...");
+			this.lobbyCallback = (LobbyController) Naming.lookup(lookupString);
+		} catch(Exception ex) {
+			ex.printStackTrace();
 		}
-		
-		System.out.print("\n\tListening on '" + npath + "' ...");
 	}
 	
-	private void CommonConstruct(String server, String basepath, Board myBoard) {
-		String path = server + "/" + basepath;
-		this.player = new NetPlayer(basepath, path);
-
+	public void join(NetPlayer p, String room) {
 		try {
-			networkRegistryCallback = new NetPlayerAggregator();
-		    this.setRebind(path, networkRegistryCallback);
+			this.lobbyCallback.join(p, room);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		this.setRebind(path, myBoard);
-		
-		this.setRebind(path, this);
 	}
 
-	public BajnarolaServer(String server, String basepath, Board myBoard) throws RemoteException {
-		this.CommonConstruct(server, basepath, myBoard);
-	}
-	public BajnarolaServer(String server, Board myBoard) throws RemoteException {
-		String s = RandomString.generateAsciiString();
-		this.CommonConstruct(server, s, myBoard);
-	}
-
-	@Override
-	public void startGame() throws RemoteException {
-		System.out.println("Starting Game.");
+	public void join(NetPlayer p) {
+		this.join(p, "");
 	}
 }

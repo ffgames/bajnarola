@@ -3,6 +3,7 @@ package org.bajnarola.game;
 import java.rmi.RemoteException;
 
 import org.bajnarola.game.model.Board;
+import org.bajnarola.lobby.LobbyClient;
 
 public class MainClass {
 	private static final String SERVER = "localhost";
@@ -15,7 +16,13 @@ public class MainClass {
 		
 		/* TODO: Graphics               */
 		/* TODO: new Gui();             */
+		LobbyClient iLobby = null;
 		BajnarolaServer iServer = null;
+		String username = "";
+		
+		if (argv.length > 0) {
+			username = argv[0];
+		}
 		
 		try {
 			System.out.println("Bajnarola starting up.");
@@ -24,14 +31,21 @@ public class MainClass {
 			Board gBoard = new Board();
 			System.out.println("OK!");
 
-			System.out.print("Server start up:\n\t");
-			iServer = new BajnarolaServer(SERVICE + "://" + SERVER, gBoard);
+			System.out.print("Server start up:");
+			if (!username.isEmpty())
+				iServer = new BajnarolaServer(SERVICE + "://" + SERVER, username, gBoard);
+			else
+				iServer = new BajnarolaServer(SERVICE + "://" + SERVER, gBoard);
 			System.out.println("OK!");
 			
-			System.out.print("Deciding first player...");
-			System.out.println("TODO");
+			System.out.print("Registering to lobby... ");
+			iLobby = new LobbyClient(LOBBY_SERVER);
+			System.out.println("OK!");
 			
-			System.out.println();
+			/* TODO: differentiate more room and real lobby dispatching */
+			System.out.print("Joining the default room...");
+			iLobby.join(iServer.getPlayer());
+			System.out.println("OK!");
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
