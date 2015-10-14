@@ -1,7 +1,9 @@
 package org.bajnarola.game.model;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class Tile {
 	
@@ -10,6 +12,7 @@ public class Tile {
 	public static final short ELTYPE_STREET = 2;
 	public static final short ELTYPE_CLOISTER = 3;
 	
+	public static final short SIDE_COUNT = 5;
 	public static final short SIDE_TOP = 0;
 	public static final short SIDE_RIGHT = 1;
 	public static final short SIDE_BOTTOM = 2;
@@ -24,13 +27,13 @@ public class Tile {
 	int direction;
 	Meeple meeple;
 	boolean pennant;
-	List<LandscapeElement> landscapes;
+	Map<Integer, LandscapeElement> landscapes;
 	/* TODO: 
 	 * - char flags? */
 
 	public Tile(short center, short top, short right, 
 	            short bottom, short left, boolean pennant) {
-		this.elements = new short[5];
+		this.elements = new short[SIDE_COUNT];
 		
 		/* XXX: CENTER MUST BE SET FOR CITY AND CLOISTER ONLY */
 		this.elements[SIDE_CENTER] = center;
@@ -41,11 +44,11 @@ public class Tile {
 		this.direction = 0;
 		this.meeple = null;
 		this.pennant = pennant;
-		this.landscapes = new ArrayList<LandscapeElement>();
+		this.landscapes = new Hashtable<Integer, LandscapeElement>();
 		x = y = -1;
 	}
 	
-	public List<LandscapeElement> getLandscapes() {
+	public Map<Integer,LandscapeElement> getLandscapes() {
 		return landscapes;
 	}
 	

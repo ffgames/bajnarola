@@ -2,22 +2,22 @@ package org.bajnarola.game.model;
 
 public class Meeple {
 
-	short tilePos;
+	short tileSide;
 	Tile tile;
 	Player owner;
 	
 	public Meeple(Player owner) {
 		this.owner = owner;
 		this.tile = null;
-		this.tilePos = -1;
+		this.tileSide = -1;
 	}
 
-	public short getTilePos() {
-		return tilePos;
+	public short getTileSide() {
+		return tileSide;
 	}
 
-	public void setTilePos(short tilePos) {
-		this.tilePos = tilePos;
+	public void setTileSide(short tilePos) {
+		this.tileSide = tilePos;
 	}
 
 	public Tile getTile() {

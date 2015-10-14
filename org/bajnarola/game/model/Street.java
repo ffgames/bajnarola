@@ -4,8 +4,8 @@ public class Street extends LandscapeElement {
 
 	int streetEnds;
 	
-	public Street(Tile elementRoot) {
-		super(elementRoot);
+	public Street(Tile elementRoot, short tileSide) {
+		super(elementRoot, tileSide);
 		
 		if (elementRoot.countElement(Tile.ELTYPE_STREET) != 2)
 			streetEnds = 1;
@@ -36,21 +36,19 @@ public class Street extends LandscapeElement {
 	}
 
 	@Override
-	public void addTile(Tile t) {
+	public void addTile(Tile t, short tileSide) {
 		tiles.add(t);
 		if (t.getMeeple() != null)
 			owners.put(t.getMeeple().getOwner(), 1);
 		
-		t.getLandscapes().add(this);
+		/* The new tile points to the current landscape */
+		t.getLandscapes().put((int)tileSide, this);
 		
 		if (t.countElement(Tile.ELTYPE_STREET) != 2)
 			streetEnds++;
 		
 		if (streetEnds >= 2)
 			this.complete();
-		
-		/* The new tail points to the current landscape */
-		t.getLandscapes().add(this);
 		
 		updateValue((short)1);
 	}

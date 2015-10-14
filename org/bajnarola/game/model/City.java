@@ -4,8 +4,8 @@ public class City extends LandscapeElement {
 
 	short openSides;
 	
-	public City(Tile elementRoot) {
-		super(elementRoot);
+	public City(Tile elementRoot, short tileSide) {
+		super(elementRoot, tileSide);
 		
 		updateValue((short)2);
 		if (elementRoot.hasPennant())
@@ -45,12 +45,12 @@ public class City extends LandscapeElement {
 	}
 
 	@Override
-	public void addTile(Tile t) {
+	public void addTile(Tile t, short tileSide) {
 		tiles.add(t);
 		if (t.getMeeple() != null)
 			owners.put(t.getMeeple().getOwner(), 1);
 		
-		t.getLandscapes().add(this);
+		t.getLandscapes().put((int)tileSide, this);
 		short tileOpenSides = calcOpenSides(t);
 		
 		openSides += tileOpenSides - 2;
@@ -58,7 +58,6 @@ public class City extends LandscapeElement {
 		updateValue((short)2);
 		if (t.hasPennant())
 			updateValue((short)2);
-		
 		
 		
 		if (openSides <= 0)

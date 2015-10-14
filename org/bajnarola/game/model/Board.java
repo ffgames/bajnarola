@@ -28,9 +28,8 @@ import java.util.Hashtable;
 
 import org.bajnarola.game.controller.BoardController;
 
-public class Board extends UnicastRemoteObject implements BoardController {
-	private static final long serialVersionUID = -6564070861147997471L;
-
+public class Board {
+	
 	int turn;
 	Hashtable<Integer, Tile> scenario;
 	ArrayList<Player> players;
@@ -107,7 +106,31 @@ public class Board extends UnicastRemoteObject implements BoardController {
 	
 	/* Check if the given meeple can be placed on the Tile tile (x,y of the board) at the position tilePos */
 	public Boolean probeMeeple(short x, short y, Tile tile, Meeple meeple) {
-		/* TODO: implement */
+		/* Can't place a meeple on the grass */
+		if (tile.getElements()[meeple.getTileSide()] == Tile.ELTYPE_GRASS)
+			return false;
+		
+		short tx, ty;
+		tx = x;
+		ty = y;
+		
+		switch(meeple.getTileSide()) {
+			case Tile.SIDE_TOP:
+				ty += 1;
+				break;
+			case Tile.SIDE_RIGHT:
+				tx += 1;
+				break;
+			case Tile.SIDE_BOTTOM:
+				ty -= 1;
+				break;
+			case Tile.SIDE_LEFT:
+				tx -= 1;
+				break;
+			case Tile.SIDE_CENTER: 
+		
+		}
+		
 		
 		return false;
 	}

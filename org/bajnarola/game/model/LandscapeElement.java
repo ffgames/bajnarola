@@ -13,7 +13,7 @@ public abstract class LandscapeElement {
 	Tile elementRoot;
 	short value;
 	
-	public LandscapeElement(Tile elementRoot) {
+	public LandscapeElement(Tile elementRoot, short tileSide) {
 		visited = completed = false;
 		this.owners = new Hashtable<Player, Integer>();
 		this.elementRoot = elementRoot;
@@ -21,13 +21,13 @@ public abstract class LandscapeElement {
 		this.tiles = new ArrayList<Tile>();
 		
 		/* Link this landscape to the elementRoot */
-		this.elementRoot.getLandscapes().add(this);
+		this.elementRoot.getLandscapes().put((int)tileSide, this);
 		
 		addTileInList(elementRoot);
 	}
 	
 	public abstract void merge(LandscapeElement el);
-	public abstract void addTile(Tile t);
+	public abstract void addTile(Tile t, short tileSide);
 	
 	public Map<Player, Integer> getOwners() {
 		return owners;
@@ -81,9 +81,16 @@ public abstract class LandscapeElement {
 		Tile tileTmp;
 		
 		while (!elTiles.isEmpty()) {
-			tileTmp = elTiles.remove(0);
-			tileTmp.getLandscapes().remove(el);
-			tileTmp.getLandscapes().add(this);
+			tileTmp = elTiles.remove(0);	
+
+			for (int i = 0; i < Tile.SIDE_COUNT; i++) {
+				if (tileTmp.getLandscapes().get(i).equals(el)) {
+					tileTmp.getLandscapes().remove(i);
+					tileTmp.getLandscapes().put(i, this);
+				}
+				
+			}
+		
 			addTileInList(tileTmp);
 		}
 	}
