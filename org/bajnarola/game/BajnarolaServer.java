@@ -27,6 +27,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+import org.bajnarola.game.controller.GameBoard;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.RandomString;
@@ -36,7 +37,6 @@ import java.util.Hashtable;
 public class BajnarolaServer {
 
 	NetPlayer player = null;
-	Map<String,NetPlayer> players;
 	
 	public NetPlayer getPlayer() {
 		return this.player;
@@ -53,18 +53,17 @@ public class BajnarolaServer {
 		System.out.print("\n\tListening on '" + npath + "' ...");
 	}
 	
-	private void CommonConstruct(String server, String basepath, Board myBoard) {
+	private void CommonConstruct(String server, String basepath, GameBoard myBoard) {
 		String path = server + "/" + basepath;
 		this.player = new NetPlayer(basepath, path);
-		this.players = new Hashtable<String,NetPlayer>();
 				
 		this.setRebind(path, myBoard);
 	}
 
-	public BajnarolaServer(String server, String basepath, Board myBoard) {
+	public BajnarolaServer(String server, String basepath, GameBoard myBoard) {
 		this.CommonConstruct(server, basepath, myBoard);
 	}
-	public BajnarolaServer(String server, Board myBoard) {
+	public BajnarolaServer(String server, GameBoard myBoard) {
 		String s = RandomString.generateAsciiString();
 		this.CommonConstruct(server, s, myBoard);
 	}

@@ -1,7 +1,10 @@
 package org.bajnarola.game;
 
 import java.rmi.RemoteException;
+import java.util.Map;
 
+import org.bajnarola.game.controller.BoardController;
+import org.bajnarola.game.controller.GameBoard;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.lobby.LobbyClient;
 
@@ -16,10 +19,12 @@ public class MainClass {
 		
 		/* TODO: Graphics               */
 		/* TODO: new Gui();             */
-		LobbyClient iLobby = null;
+		LobbyClient     iLobby  = null;
 		BajnarolaServer iServer = null;
+		BajnarolaClient iClient = null;
+		
 		String username = "";
-		String server = "";
+		String server   = "";
 		String lobbyserver;
 		
 		/* TODO getopt */
@@ -40,7 +45,7 @@ public class MainClass {
 			System.out.println("Bajnarola starting up.");
 			
 			System.out.print("Personal board set up...");
-			Board gBoard = new Board();
+			GameBoard gBoard = new GameBoard();
 			System.out.println("OK!");
 
 			System.out.print("Server start up:");
@@ -50,17 +55,35 @@ public class MainClass {
 				iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
 			System.out.println("OK!");
 			
+			System.out.print("Client module initilization:");
+			iClient = new BajnarolaClient();
+			System.out.println("OK!");
+			
 			System.out.print("Registering to lobby... ");
 			iLobby = new LobbyClient(lobbyserver);
 			System.out.println("OK!");
 			
 			/* TODO: differentiate more room and real lobby dispatching */
 			System.out.print("Joining the default room...");
-			iServer.players = iLobby.join(iServer.getPlayer());
+			/* Join the lobby and set neighbors list */
+			iClient.getPlayers(iLobby.join(iServer.getPlayer()));
 			
 			System.out.println("OK!");
-			System.out.println("Beginning game with " + iServer.players.size() + " players.");
-		} catch (RemoteException e) {
+			System.out.println("Beginning game with " + iClient.players.size() + " players.");
+			
+			/* Get others dice throws */
+			Map<String,Integer> dices;
+			
+			dices = iClient.multicastInvoke(BoardController.class.getMethod("getDiceValue"));
+			/* Sorting players based on dice throws */
+			iClient.sortPlayerOnDiceThrow(dices);
+			
+			System.out.println("Got players:");
+			for (String k : iClient.players.keySet()) {
+				System.out.println("\t" + k + " with dice throw: " + dices.get(k));
+			}
+			
+		} catch (RemoteException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
 	}
