@@ -47,8 +47,6 @@ public class City extends LandscapeElement {
 	@Override
 	public void addTile(Tile t, short tileSide) {
 		tiles.add(t);
-		if (t.getMeeple() != null)
-			owners.put(t.getMeeple().getOwner(), 1);
 		
 		t.getLandscapes().put((int)tileSide, this);
 		short tileOpenSides = calcOpenSides(t);

@@ -1,8 +1,6 @@
 package org.bajnarola.game.model;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 public class Tile {
@@ -58,6 +56,7 @@ public class Tile {
 
 	
 	public void setMeeple(Meeple meeple) {
+		this.landscapes.get(meeple.getTileSide()).addMeeple(meeple);
 		this.meeple = meeple;
 	}
 
