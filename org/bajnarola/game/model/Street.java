@@ -38,8 +38,6 @@ public class Street extends LandscapeElement {
 	@Override
 	public void addTile(Tile t, short tileSide) {
 		tiles.add(t);
-		if (t.getMeeple() != null)
-			owners.put(t.getMeeple().getOwner(), 1);
 		
 		/* The new tile points to the current landscape */
 		t.getLandscapes().put((int)tileSide, this);

@@ -17,7 +17,7 @@ public class Cloister extends LandscapeElement {
 	@Override
 	public void addTile(Tile t, short tileSide) {
 		tiles.add(t);
-		t.getLandscapes().put((int)tileSide, this);
+		
 		updateValue((short)1);
 		
 		if (tiles.size() >= 9)

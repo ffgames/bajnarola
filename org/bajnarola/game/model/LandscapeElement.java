@@ -22,8 +22,7 @@ public abstract class LandscapeElement {
 		
 		/* Link this landscape to the elementRoot */
 		this.elementRoot.getLandscapes().put((int)tileSide, this);
-		
-		addTileInList(elementRoot);
+		tiles.add(elementRoot);
 	}
 	
 	public abstract void merge(LandscapeElement el);
@@ -90,25 +89,19 @@ public abstract class LandscapeElement {
 				}
 				
 			}
+			
+			tiles.add(tileTmp);
 		
-			addTileInList(tileTmp);
+			
 		}
 	}
 	
-	protected void addTileInList(Tile t) {
-		if (t.getMeeple() != null) {
-			Player meepleOwner = t.getMeeple().getOwner();
-			Integer meeples = owners.remove(meepleOwner);
-			
-			
-			if (meeples != null)
-				owners.put(meepleOwner, meeples + 1);
-			else
-				owners.put(meepleOwner, 1);
-		}
+	public void addMeeple(Meeple meeple) {
 		
-		tiles.add(t);
+		int value = 1;
+		if (owners.get(meeple.getOwner()) != null) {
+			value = owners.remove(meeple.getOwner()) + 1;
+		}
+		owners.put(meeple.getOwner(), value);
 	}
-
-	
 }
