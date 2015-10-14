@@ -77,29 +77,29 @@ public class Board extends UnicastRemoteObject implements BoardController {
 		//LEFT TILE
 		t = scenario.get(getKey((short)(x - 1), y));
 		if (t != null && 
-				tile.getElements()[Tile.ELEMENT_POS_LEFT] != 
-				t.getElements()[Tile.ELEMENT_POS_RIGHT])
+				tile.getElements()[Tile.SIDE_LEFT] != 
+				t.getElements()[Tile.SIDE_RIGHT])
 			return false;
 	
 		//RIGHT TILE
 		t = scenario.get(getKey((short)(x + 1), y));
 		if (t != null && 
-				tile.getElements()[Tile.ELEMENT_POS_RIGHT] != 
-				t.getElements()[Tile.ELEMENT_POS_LEFT])
+				tile.getElements()[Tile.SIDE_RIGHT] != 
+				t.getElements()[Tile.SIDE_LEFT])
 			return false;
 
 		//BOTTOM
 		t = scenario.get(getKey(x, (short)(y - 1)));
 		if (t != null && 
-				tile.getElements()[Tile.ELEMENT_POS_BOTTOM] != 
-				t.getElements()[Tile.ELEMENT_POS_TOP])
+				tile.getElements()[Tile.SIDE_BOTTOM] != 
+				t.getElements()[Tile.SIDE_TOP])
 			return false;
 	
 		//TOP
 		t = scenario.get(getKey(x, (short)(y + 1)));
 		if (t != null && 
-				tile.getElements()[Tile.ELEMENT_POS_TOP] != 
-				t.getElements()[Tile.ELEMENT_POS_BOTTOM])
+				tile.getElements()[Tile.SIDE_TOP] != 
+				t.getElements()[Tile.SIDE_BOTTOM])
 			return false;
 			
 		return true;
@@ -120,14 +120,18 @@ public class Board extends UnicastRemoteObject implements BoardController {
 		scenario.put(getKey(x,y), tile);
 	}
 
-	public void updateLandascape(short x, short y) {
+	public void updateLandscape(short x, short y) {
 		/* TODO Landscape elements */
 		
 		/* Per ogni elemento della tile
-		 *  -  Controlla se creare un landscape element 
+		 *  -  Controlla se creare un landscape element (se cloister aggiungergli le tile adiacenti)
 		 *    o aggiungere la tile ad un landscape già esistente
 		 * -  Se è stata aggiunta controllare se fare merge del landscape a cui è stata collegata
 		 *    con altri landscape adiacenti dello stesso tipo */
+		
+		/* Per tutte le 8 tile adiacenti a x y:
+		 * - controllare se c'è un monastero e in caso aggiungerla al relativo landscape 
+		 */
 	}
 	
 	private static final Integer getKey(short x, short y) {	

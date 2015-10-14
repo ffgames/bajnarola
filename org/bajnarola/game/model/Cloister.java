@@ -1,29 +1,27 @@
 package org.bajnarola.game.model;
 
-public class Cloister extends LandscapeElement {
 
+public class Cloister extends LandscapeElement {
+	
 	public Cloister(Tile elementRoot) {
 		super(elementRoot);
-		// TODO Auto-generated constructor stub
+		updateValue((short)1);
+		
 	}
 
 	@Override
 	public void merge(LandscapeElement el) {
-		// TODO Auto-generated method stub
-		
+		/* NOP */
 	}
 
 	@Override
 	public void addTile(Tile t) {
-		// TODO Auto-generated method stub
+		tiles.add(t);
+		t.getLandscapes().add(this);
+		updateValue((short)1);
 		
+		if (tiles.size() >= 9)
+			complete();
 	}
-
-	@Override
-	public void updateScores() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	
 }

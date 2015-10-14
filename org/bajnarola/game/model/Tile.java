@@ -5,16 +5,16 @@ import java.util.List;
 
 public class Tile {
 	
-	public static final short ELEMENT_TYPE_GRASS = 0;
-	public static final short ELEMENT_TYPE_CITY = 1;
-	public static final short ELEMENT_TYPE_STREET = 2;
-	public static final short ELEMENT_TYPE_CLOISTER = 3;
+	public static final short ELTYPE_GRASS = 0;
+	public static final short ELTYPE_CITY = 1;
+	public static final short ELTYPE_STREET = 2;
+	public static final short ELTYPE_CLOISTER = 3;
 	
-	public static final short ELEMENT_POS_TOP = 0;
-	public static final short ELEMENT_POS_RIGHT = 1;
-	public static final short ELEMENT_POS_BOTTOM = 2;
-	public static final short ELEMENT_POS_LEFT = 3;
-	public static final short ELEMENT_POS_CENTER = 4;
+	public static final short SIDE_TOP = 0;
+	public static final short SIDE_RIGHT = 1;
+	public static final short SIDE_BOTTOM = 2;
+	public static final short SIDE_LEFT = 3;
+	public static final short SIDE_CENTER = 4;
 
 
 	
@@ -23,18 +23,21 @@ public class Tile {
 	short x, y;
 	int direction;
 	Meeple meeple;
-	Boolean pennant;
+	boolean pennant;
 	List<LandscapeElement> landscapes;
 	/* TODO: 
 	 * - char flags? */
 
-	public Tile(short center, short top, short right, short bottom, short left, Boolean pennant) {
+	public Tile(short center, short top, short right, 
+	            short bottom, short left, boolean pennant) {
 		this.elements = new short[5];
-		this.elements[ELEMENT_POS_CENTER] = center;
-		this.elements[ELEMENT_POS_TOP] = top;
-		this.elements[ELEMENT_POS_RIGHT] = right;
-		this.elements[ELEMENT_POS_BOTTOM] = bottom;
-		this.elements[ELEMENT_POS_LEFT] = left;
+		
+		/* XXX: CENTER MUST BE SET FOR CITY AND CLOISTER ONLY */
+		this.elements[SIDE_CENTER] = center;
+		this.elements[SIDE_TOP] = top;
+		this.elements[SIDE_RIGHT] = right;
+		this.elements[SIDE_BOTTOM] = bottom;
+		this.elements[SIDE_LEFT] = left;
 		this.direction = 0;
 		this.meeple = null;
 		this.pennant = pennant;
@@ -42,7 +45,7 @@ public class Tile {
 		x = y = -1;
 	}
 	
-	public List<LandscapeElement> getLandscape() {
+	public List<LandscapeElement> getLandscapes() {
 		return landscapes;
 	}
 	
@@ -50,8 +53,13 @@ public class Tile {
 		return meeple;
 	}
 
+	
 	public void setMeeple(Meeple meeple) {
 		this.meeple = meeple;
+	}
+
+	public boolean hasPennant() {
+		return this.pennant;
 	}
 	
 	public void removeMeeple() {
@@ -67,19 +75,22 @@ public class Tile {
 		}
 	}
 	
-	/* Return the interal elements of a tile, rotated according to the direction */
+	/* Return the internal elements of a tile, 
+	 * rotated according to the direction */
 	public short[] getElements() {
-		short rotatedElements[] = new short[5];
+		short rotated[] = new short[5];
 		
-		rotatedElements[ELEMENT_POS_TOP] = this.elements[(ELEMENT_POS_TOP + direction) % 4];
-		rotatedElements[ELEMENT_POS_RIGHT] = this.elements[(ELEMENT_POS_RIGHT + direction) % 4];
-		rotatedElements[ELEMENT_POS_BOTTOM] = this.elements[(ELEMENT_POS_BOTTOM + direction) % 4];
-		rotatedElements[ELEMENT_POS_LEFT] = this.elements[(ELEMENT_POS_LEFT + direction) % 4];
-		rotatedElements[ELEMENT_POS_CENTER] = this.elements[ELEMENT_POS_CENTER];
+		rotated[SIDE_TOP] = elements[(SIDE_TOP + direction) % 4];
+		rotated[SIDE_RIGHT] = elements[(SIDE_RIGHT + direction) % 4];
+		rotated[SIDE_BOTTOM] = elements[(SIDE_BOTTOM + direction) % 4];
+		rotated[SIDE_LEFT] = elements[(SIDE_LEFT + direction) % 4];
+		rotated[SIDE_CENTER] = elements[SIDE_CENTER];
 
-		return elements;
+		return rotated;
 	}
 	
+	/* Return the number of elements of type elType
+	 * that are on this tile. */
 	public short countElement(short elType) {
 		short n = 0;
 		
@@ -91,9 +102,10 @@ public class Tile {
 		return n;
 	}
 	
-	/* Check if this Tile can be attached to the passed tile on the relativePos position */
-	public Boolean compatible(Tile tile, short relativePos) {
-		if (this.elements[relativePos] == tile.getElements()[(relativePos + 2) % 4])
+	/* Check if this Tile can be attached
+	 * to the passed tile on the given side */
+	public Boolean compatible(Tile tile, short side) {
+		if (elements[side] == tile.getElements()[(side + 2) % 4])
 			return true;
 		
 		return false;

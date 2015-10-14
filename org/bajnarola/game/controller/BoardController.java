@@ -40,6 +40,6 @@ public interface BoardController extends Remote {
 	public Boolean probe(short x, short y, Tile tile) throws RemoteException;
 	public Boolean probeMeeple(short x, short y, Tile tile, Meeple meeple) throws RemoteException;
 	public void place(short x, short y, Tile tile, Meeple meeple) throws RemoteException;
-	public void updateLandascape(short x, short y) throws RemoteException;
+	public void updateLandscape(short x, short y) throws RemoteException;
 }
 
