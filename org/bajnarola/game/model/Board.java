@@ -23,6 +23,9 @@
 package org.bajnarola.game.model;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+
+import org.bajnarola.game.view.GraphicalTile;
 
 public class Board {
 	
@@ -31,15 +34,31 @@ public class Board {
 	ArrayList<Player> players;
 	ArrayList<Tile> deck;
 	
-	public Board() {
+	public Board(List<String> playerNames) {
 		this.turn = 0;
 		this.scenario = new Hashtable<Integer, Tile>();
 		this.deck = new ArrayList<Tile>();
 		this.players = new ArrayList<Player>();
-		/* TODO (init): 
-		 * - init the deck (create the tiles and add to it)
-		 * - add initial tile (standard) 
-		 * - init players */
+		
+		initBoard();
+		
+		for(String pl : playerNames){
+			players.add(new Player(pl));
+		}
+	}
+	
+	private void initBoard() {
+		/* - init the deck (create the tiles and add to it)
+		 * - add initial tile (standard) */
+		
+		initDeck();
+		
+		scenario.put(getKey((short)0, (short)0), initTile(Tile.ELTYPE_CITY,
+				Tile.ELTYPE_STREET, 
+				Tile.ELTYPE_GRASS, 
+				Tile.ELTYPE_STREET, 
+				Tile.ELTYPE_GRASS, 
+				false));
 	}
 	
 	public int getTurn() {
@@ -115,7 +134,6 @@ public class Board {
 	}
 
 	private void updateLandscape(short x, short y, Tile tile) {
-		/* TODO Landscape elements */
 		
 		short citiesCount, streetsCount;
 		citiesCount = tile.countElement(Tile.ELTYPE_CITY);
@@ -226,7 +244,7 @@ public class Board {
 						break;					
 				}
 			} 
-			/* TODO check if the landscape is complete and distribute scores */
+			checkScores(tile.getLandscapes().get(i));
 		}
 		
 		
@@ -237,9 +255,11 @@ public class Board {
 			for (short k = -1; k <= 1; k++) {
 				if (j != k || j != 0) {
 					tmpTile = scenario.get(getKey((short)(x + j), (short)(y + k)));
-					if (tmpTile != null && tmpTile.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER)
+					if (tmpTile != null && tmpTile.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
 						tmpTile.getLandscapes().get(Tile.SIDE_CENTER).addTile(tile, (short)-1);
-						/* TODO check if the landscape is complete and distribute scores */
+						checkScores(tmpTile.getLandscapes().get(Tile.SIDE_CENTER));
+					}
+					
 				}
 			}
 		}
@@ -279,5 +299,268 @@ public class Board {
 		return direction;
 	}
 	
+	private static final void checkScores(LandscapeElement scoreEl) {
+		if (scoreEl != null && !scoreEl.isScoreSet() && scoreEl.isCompleted()){
+			List<Player> owners = scoreEl.getScoreOwners();
+			for(Player o : owners){
+				o.setScore((short)(o.getScore()+scoreEl.getValue()));
+			}
+			scoreEl.clear();
+			scoreEl.setScore();
+		}
+	}
+	
+	private static final Tile initTile(short top, short right, short bottom, short left, short center, boolean pennant){
+		String name = "";
+		short flags[] = {top, right, bottom, left, center};
+		for(int i = 0; i < Tile.SIDE_COUNT; i++){
+			switch(flags[i]){
+				case Tile.ELTYPE_CITY:
+					name += "C";
+				case Tile.ELTYPE_GRASS:
+					name += "G";
+				case Tile.ELTYPE_STREET:
+					name += "S";
+				case Tile.ELTYPE_CLOISTER:
+					name += "M";
+			}
+		}
+		if(pennant)
+			name += "P";
+		
+		return new Tile(center, top, right, bottom, left, pennant, name);
+	}
+	
+	private void initDeck(){
+		for(int i = 0; i < 4; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CLOISTER, 
+					false));
+		}
+		
+		for(int i = 0; i < 5; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		deck.add(initTile(
+				Tile.ELTYPE_GRASS,
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_GRASS, 
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_CITY, 
+				false));
+		
+		for(int i = 0; i < 2; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_GRASS,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_CITY, 
+					true));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CITY, 
+					false));
+		}
+		
+		for(int i = 0; i < 2; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CITY, 
+					true));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 2; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_CITY, 
+					false));
+		}
+		
+		deck.add(initTile(
+				Tile.ELTYPE_CITY,
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_GRASS, 
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_CITY, 
+				true));
+			
+		deck.add(initTile(
+				Tile.ELTYPE_CITY,
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_CITY, 
+				true));
+		
+		for(int i = 0; i < 2; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_GRASS,
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_CLOISTER, 
+					false));
+		}
+		
+		deck.add(initTile(
+				Tile.ELTYPE_CITY,
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_STREET, 
+				Tile.ELTYPE_CITY, 
+				Tile.ELTYPE_CITY, 
+				false));
+		
+		for(int i = 0; i < 2; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_CITY, 
+					true));
+		}
+		
+		for(int i = 0; i < 8; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_GRASS,
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_CITY, 
+					false));
+		}
+		
+		for(int i = 0; i < 2; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_CITY, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_CITY, 
+					true));
+		}
+		
+		for(int i = 0; i < 9; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_GRASS,
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 4; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_GRASS,
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		for(int i = 0; i < 3; i++){
+			deck.add(initTile(
+					Tile.ELTYPE_CITY,
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_STREET, 
+					Tile.ELTYPE_GRASS, 
+					false));
+		}
+		
+		deck.add(initTile(
+				Tile.ELTYPE_STREET,
+				Tile.ELTYPE_STREET, 
+				Tile.ELTYPE_STREET, 
+				Tile.ELTYPE_STREET, 
+				Tile.ELTYPE_GRASS, 
+				false));
+	}
 }
 

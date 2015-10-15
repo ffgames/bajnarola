@@ -25,12 +25,13 @@ public class Tile {
 	int direction;
 	Meeple meeple;
 	boolean pennant;
+	String name;
 	Map<Integer, LandscapeElement> landscapes;
 	/* TODO: 
 	 * - char flags? */
 
 	public Tile(short center, short top, short right, 
-	            short bottom, short left, boolean pennant) {
+	            short bottom, short left, boolean pennant, String name) {
 		this.elements = new short[SIDE_COUNT];
 		
 		/* XXX: CENTER MUST BE SET FOR CITY AND CLOISTER ONLY */
@@ -43,6 +44,7 @@ public class Tile {
 		this.meeple = null;
 		this.pennant = pennant;
 		this.landscapes = new Hashtable<Integer, LandscapeElement>();
+		this.name = name;
 		x = y = -1;
 	}
 	
@@ -54,6 +56,9 @@ public class Tile {
 		return meeple;
 	}
 
+	public String getName() {
+		return name;
+	}
 	
 	public void setMeeple(Meeple meeple) {
 		this.landscapes.get(meeple.getTileSide()).addMeeple(meeple);

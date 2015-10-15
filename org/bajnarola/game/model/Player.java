@@ -4,24 +4,33 @@ import java.util.ArrayList;
 
 public class Player {
 
-	short PLAYER_N_MEEPLE = 7;
+	static final short PLAYER_N_MEEPLE = 7;
 	Meeple meepleList[];
 	ArrayList<Meeple> hand;
 	short score;
 	boolean scoreChanged;
+	String name;
 	
-	public Player() {
+	public Player(String name) {
 		meepleList = new Meeple[PLAYER_N_MEEPLE];
 		
-		for (int i = 0; i < meepleList.length ; i++) 
+		for (int i = 0; i < meepleList.length ; i++) {
+			meepleList[i] = new Meeple(this);
 			hand.add(meepleList[i]);
+		}
 		
 		score = 0;
 		scoreChanged = false;
+		
+		this.name = name;
 	}
 	
 	public short getScore() {
 		return score;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public short getUpdateScore() {

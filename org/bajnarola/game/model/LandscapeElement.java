@@ -3,18 +3,19 @@ package org.bajnarola.game.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public abstract class LandscapeElement {
-	boolean completed, visited;
+	boolean completed, visited, scoreSet;
 	Map<Player, Integer> owners;
 	List<Tile> tiles;
 	Tile elementRoot;
 	short value;
 	
 	public LandscapeElement(Tile elementRoot, short tileSide) {
-		visited = completed = false;
+		visited = completed = scoreSet = false;
 		this.owners = new Hashtable<Player, Integer>();
 		this.elementRoot = elementRoot;
 		this.value = 0;
@@ -32,7 +33,7 @@ public abstract class LandscapeElement {
 		return owners;
 	}
 	
-	public Boolean isMeepleDeployable(Player player) {
+	public boolean isMeepleDeployable(Player player) {
 		if (owners.isEmpty())
 			return true;
 		
@@ -53,6 +54,14 @@ public abstract class LandscapeElement {
 	}
 	public void visit() {
 		visited = true;
+	}
+	
+	public void setScore(){
+		scoreSet = true;
+	}
+	
+	public boolean isScoreSet(){
+		return scoreSet;
 	}
 	
 	protected void complete() {
@@ -93,6 +102,28 @@ public abstract class LandscapeElement {
 			tiles.add(tileTmp);
 		
 			
+		}
+	}
+	
+	public List<Player> getScoreOwners(){
+		List<Player> actOwners = new ArrayList<Player>();
+		
+		for (Player player : owners.keySet()) {
+			if (isMeepleDeployable(player))
+				actOwners.add(player);
+		}
+		
+		return actOwners;
+	}
+	
+	public void clear(){
+		Meeple m;
+		for (Tile t : tiles){
+			if((m = t.getMeeple()) != null){
+				t.setMeeple(null);
+				m.setTile(null);
+				m.getOwner().getHand().add(m);
+			}
 		}
 	}
 	
