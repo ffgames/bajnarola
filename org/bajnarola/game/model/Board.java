@@ -46,11 +46,10 @@ public class Board {
 	}
 	
 	private void initBoard() {
-		/* - init the deck (create the tiles and add to it)
-		 * - add initial tile (standard) */
-		
+		/* initialise the deck: create all the tiles. */
 		initDeck();
 		
+		/* add the initial tile */
 		scenario.put(getKey((short)0, (short)0), initTile(Tile.ELTYPE_CITY,
 				Tile.ELTYPE_STREET, 
 				Tile.ELTYPE_GRASS, 
@@ -85,33 +84,35 @@ public class Board {
 		return players;
 	}
 	
-	/* Check if the given tile can be placed at position x y of the board */
+	/* Check if the given tile can be placed at position x y of the board.
+	 * Each side of the tile should touch a neighbour with the same side
+	 * or a neighbour should not be present at all. */
 	public boolean probe(short x, short y, Tile tile) {
 	
 		Tile t;
 		
-		//LEFT TILE
+		/* Left side */
 		t = scenario.get(getKey((short)(x - 1), y));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_LEFT] != 
 				t.getElements()[Tile.SIDE_RIGHT])
 			return false;
 	
-		//RIGHT TILE
+		/* Right side */
 		t = scenario.get(getKey((short)(x + 1), y));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_RIGHT] != 
 				t.getElements()[Tile.SIDE_LEFT])
 			return false;
 
-		//BOTTOM
+		/* Bottom side */
 		t = scenario.get(getKey(x, (short)(y - 1)));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_BOTTOM] != 
 				t.getElements()[Tile.SIDE_TOP])
 			return false;
 	
-		//TOP
+		/* Top side */
 		t = scenario.get(getKey(x, (short)(y + 1)));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_TOP] != 
@@ -122,15 +123,34 @@ public class Board {
 	}
 	
 	/* Place a tile and a meeple (optional) to the position x y of the board.
-	 * A null meeple must be passed to place the tile only. */
+	 * A null meeple must be passed to place the tile only.
+	 * The landscape elements related to that tile are updated 
+	 * according to current status of the scenario. */
 	public void place(short x, short y, Tile tile, Meeple meeple) {
+		
 		tile.setMeeple(meeple);
-		
 		scenario.put(getKey(x,y), tile);
-		
 		updateLandscape(x, y, tile);
 	}
 
+	/* Given a tile at position x, y, return the neighbour tile that is 
+	 * touching the first one at the specified side. */
+	private Tile getNeighbourTile(short x, short y, short side) {
+		switch (side) {
+			case Tile.SIDE_TOP:
+				return scenario.get(getKey(x,(short)(y + 1)));
+			case Tile.SIDE_RIGHT:
+				return scenario.get(getKey((short)(x + 1),y));
+			case Tile.SIDE_BOTTOM:
+				return scenario.get(getKey(x,(short)(y - 1)));
+			case Tile.SIDE_LEFT:
+				return scenario.get(getKey((short)(x - 1),y));
+			case Tile.SIDE_CENTER:
+			default:
+				return null;
+		}
+	}
+	
 	private void updateLandscape(short x, short y, Tile tile) {
 		
 		short citiesCount, streetsCount;
@@ -140,29 +160,15 @@ public class Board {
 		
 		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
 			/* Per ogni elemento della tile
-			 *  -  Controlla se creare un landscape element (se cloister aggiungergli le tile adiacenti)
-			 *    o aggiungere la tile ad un landscape già esistente
 			 * -  Se è stata aggiunta controllare se fare merge del landscape a cui è stata collegata
 			 *    con altri landscape adiacenti dello stesso tipo */
-			switch (i) {
-				case Tile.SIDE_TOP:
-					tmpTile = scenario.get(getKey(x,(short)(y + 1)));
-					break;
-				case Tile.SIDE_RIGHT:
-					tmpTile = scenario.get(getKey((short)(x + 1),y));
-					break;
-				case Tile.SIDE_BOTTOM:
-					tmpTile = scenario.get(getKey(x,(short)(y - 1)));
-					break;
-				case Tile.SIDE_LEFT:
-					tmpTile = scenario.get(getKey((short)(x - 1),y));
-					break;
-				case Tile.SIDE_CENTER:
-					tmpTile = null;
-					break;
-			}
 			
-			/* Add the tile to an existent landscape */
+			/* Get the neighbour at the ith side. */
+			tmpTile = getNeighbourTile(x, y, i);
+			
+			/* If a neighbour exists at the ith side, also a related landscape 
+			 * should be present. Thus add the tile to the existent landscape.
+			 * Otherwise create a new landscape. */
 			if (tmpTile != null) {
 				switch (tile.getElements()[i]){
 					case Tile.ELTYPE_CITY:
