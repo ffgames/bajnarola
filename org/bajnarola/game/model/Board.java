@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.bajnarola.game.view.GraphicalTile;
-
 public class Board {
 	
 	int turn;
