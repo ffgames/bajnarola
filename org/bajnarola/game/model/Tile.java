@@ -27,9 +27,7 @@ public class Tile {
 	boolean pennant;
 	String name;
 	Map<Integer, LandscapeElement> landscapes;
-	/* TODO: 
-	 * - char flags? */
-
+	
 	public Tile(short center, short top, short right, 
 	            short bottom, short left, boolean pennant, String name) {
 		this.elements = new short[SIDE_COUNT];
@@ -118,7 +116,16 @@ public class Tile {
 		return false;
 	}
 	
-	/* TODO: 
-	 * 	- getFlags()?
-	*/
+	public void setCoordinates(short x, short y){
+		this.x = x;
+		this.y = y;
+	}
+
+	public short getX(){
+		return x;
+	}
+	
+	public short getY(){
+		return y;
+	}
 }

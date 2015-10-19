@@ -32,6 +32,10 @@ public class Board {
 	ArrayList<Player> players;
 	ArrayList<Tile> deck;
 	
+	/* TODO:
+	 * - negotiate random seed for deck shuffling
+	 * */
+	
 	public Board(List<String> playerNames) {
 		this.turn = 0;
 		this.scenario = new Hashtable<Integer, Tile>();
@@ -49,8 +53,10 @@ public class Board {
 		/* initialise the deck: create all the tiles. */
 		initDeck();
 		
+		// TODO: shuffle deck
+		
 		/* add the initial tile */
-		scenario.put(getKey((short)0, (short)0), initTile(Tile.ELTYPE_CITY,
+		place((short) 0, (short) 0, initTile(Tile.ELTYPE_CITY,
 				Tile.ELTYPE_STREET, 
 				Tile.ELTYPE_GRASS, 
 				Tile.ELTYPE_STREET, 
@@ -75,6 +81,9 @@ public class Board {
 		return scenario.get(getKey(x, y));
 	}
 	
+	public Tile drawTile(){
+		return deck.remove(0);
+	}
 	
 	public ArrayList<Tile> getDeck() {
 		return deck;
@@ -87,33 +96,33 @@ public class Board {
 	/* Check if the given tile can be placed at position x y of the board.
 	 * Each side of the tile should touch a neighbour with the same side
 	 * or a neighbour should not be present at all. */
-	public boolean probe(short x, short y, Tile tile) {
+	public boolean probe(int x, int y, Tile tile) {
 	
 		Tile t;
 		
 		/* Left side */
-		t = scenario.get(getKey((short)(x - 1), y));
+		t = scenario.get(getKey((short)(x - 1), (short)y));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_LEFT] != 
 				t.getElements()[Tile.SIDE_RIGHT])
 			return false;
 	
 		/* Right side */
-		t = scenario.get(getKey((short)(x + 1), y));
+		t = scenario.get(getKey((short)(x + 1), (short)y));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_RIGHT] != 
 				t.getElements()[Tile.SIDE_LEFT])
 			return false;
 
 		/* Bottom side */
-		t = scenario.get(getKey(x, (short)(y - 1)));
+		t = scenario.get(getKey((short)x, (short)(y - 1)));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_BOTTOM] != 
 				t.getElements()[Tile.SIDE_TOP])
 			return false;
 	
 		/* Top side */
-		t = scenario.get(getKey(x, (short)(y + 1)));
+		t = scenario.get(getKey((short)x, (short)(y + 1)));
 		if (t != null && 
 				tile.getElements()[Tile.SIDE_TOP] != 
 				t.getElements()[Tile.SIDE_BOTTOM])
@@ -122,14 +131,13 @@ public class Board {
 		return true;
 	}
 	
-	/* Place a tile and a meeple (optional) to the position x y of the board.
-	 * A null meeple must be passed to place the tile only.
+	/* Place a tile in the position x y of the board.
 	 * The landscape elements related to that tile are updated 
 	 * according to current status of the scenario. */
-	public void place(short x, short y, Tile tile, Meeple meeple) {
-		tile.setMeeple(meeple);
-		scenario.put(getKey(x,y), tile);
-		updateLandscape(x, y, tile);
+	public void place(int x, int y, Tile tile) {
+		scenario.put(getKey((short)x,(short)y), tile);
+		tile.setCoordinates((short)x, (short)y);
+		updateLandscape((short)x, (short)y, tile);
 	}
 
 	/* Given a tile at position x, y, return the neighbour tile that is 
@@ -281,8 +289,8 @@ public class Board {
 		
 	}
 	
-	/* Check if the given meeple can be placed on the Tile tile (x,y of the board) at the position tilePos */
-	public boolean probeMeeple(short x, short y, Tile tile, Meeple meeple) {
+	/* Check if the given meeple can be placed on the Tile */
+	public boolean probeMeeple(Tile tile, Meeple meeple) {
 		/* Can't place a meeple on the grass */
 		if (tile.getElements()[meeple.getTileSide()] == Tile.ELTYPE_GRASS)
 			return false;
@@ -291,6 +299,7 @@ public class Board {
 	}
 	
 	public void placeMeeple(Tile tile, Meeple meeple) {
+		//this updates the associated landscape as well
 		tile.setMeeple(meeple);
 	}
 	
