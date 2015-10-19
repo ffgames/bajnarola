@@ -324,22 +324,28 @@ public class Board {
 		}
 	}
 	
-	private static final Tile initTile(short top, short right, short bottom, short left, short center, boolean pennant){
+	private static final Tile initTile(short top, short right, short bottom, 
+	                                   short left, short center, boolean pennant){
 		String name = "";
 		short flags[] = {top, right, bottom, left, center};
-		for(int i = 0; i < Tile.SIDE_COUNT; i++){
-			switch(flags[i]){
+		for (int i = 0; i < Tile.SIDE_COUNT; i++) {
+			switch (flags[i]) {
 				case Tile.ELTYPE_CITY:
 					name += "C";
+					break;
 				case Tile.ELTYPE_GRASS:
 					name += "G";
+					break;
 				case Tile.ELTYPE_STREET:
 					name += "S";
+					break;
 				case Tile.ELTYPE_CLOISTER:
 					name += "M";
+					break;
 			}
 		}
-		if(pennant)
+		
+		if (pennant)
 			name += "P";
 		
 		return new Tile(center, top, right, bottom, left, pennant, name);
