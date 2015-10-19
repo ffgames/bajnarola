@@ -1,18 +1,21 @@
 package org.bajnarola.game.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Player {
 
 	static final short PLAYER_N_MEEPLE = 7;
 	Meeple meepleList[];
-	ArrayList<Meeple> hand;
+	List<Meeple> hand;
 	short score;
 	boolean scoreChanged;
 	String name;
 	
 	public Player(String name) {
 		meepleList = new Meeple[PLAYER_N_MEEPLE];
+		hand = new ArrayList<Meeple>();
+				
 		
 		for (int i = 0; i < meepleList.length ; i++) {
 			meepleList[i] = new Meeple(this);
@@ -47,7 +50,7 @@ public class Player {
 		return scoreChanged;
 	}
 
-	public ArrayList<Meeple> getHand() {
+	public List<Meeple> getHand() {
 		return hand;
 	}
 
