@@ -49,11 +49,26 @@ public class Player {
 	public boolean isScoreChanged() {
 		return scoreChanged;
 	}
-
-	public List<Meeple> getHand() {
-		return hand;
+	
+	public int getMeepleCount() {
+		return hand.size();
+	}
+	
+	public boolean hasMeeples() {
+		return (hand.size() > 0);
 	}
 
+	public Meeple getMeeple() {
+		if(hand.size() > 0)
+			return hand.remove(0);
+		else
+			return null;
+	}
+	
+	public void giveMeepleBack(Meeple meeple){
+		hand.add(meeple);
+	}
+	
 	public void removeAllMeeple() {
 		Tile t;
 		for (int i = 0; i < meepleList.length ; i++) {

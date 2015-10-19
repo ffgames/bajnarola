@@ -40,7 +40,7 @@ public class Street extends LandscapeElement {
 		tiles.add(t);
 		
 		/* The new tile points to the current landscape */
-		t.getLandscapes().put((int)tileSide, this);
+		t.putLSElement(tileSide, this);
 		
 		if (t.countElement(Tile.ELTYPE_STREET) != 2)
 			streetEnds++;

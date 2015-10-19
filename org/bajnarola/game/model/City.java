@@ -48,7 +48,7 @@ public class City extends LandscapeElement {
 	public void addTile(Tile t, short tileSide) {
 		tiles.add(t);
 		
-		t.getLandscapes().put((int)tileSide, this);
+		t.putLSElement(tileSide, this);
 		short tileOpenSides = calcOpenSides(t);
 		
 		openSides += tileOpenSides - 2;

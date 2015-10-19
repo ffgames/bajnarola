@@ -21,7 +21,7 @@ public abstract class LandscapeElement {
 		this.tiles = new ArrayList<Tile>();
 		
 		/* Link this landscape to the elementRoot */
-		this.elementRoot.getLandscapes().put((int)tileSide, this);
+		this.elementRoot.putLSElement(tileSide, this);
 		tiles.add(elementRoot);
 	}
 	
@@ -30,6 +30,10 @@ public abstract class LandscapeElement {
 	
 	public Map<Player, Integer> getOwners() {
 		return owners;
+	}
+	
+	public Tile getElementRoot() {
+		return elementRoot;
 	}
 	
 	public boolean isMeepleDeployable(Player player) {
@@ -90,10 +94,10 @@ public abstract class LandscapeElement {
 		while (!elTiles.isEmpty()) {
 			tileTmp = elTiles.remove(0);	
 
-			for (int i = 0; i < Tile.SIDE_COUNT; i++) {
-				if (tileTmp.getLandscapes().get(i).equals(el)) {
-					tileTmp.getLandscapes().remove(i);
-					tileTmp.getLandscapes().put(i, this);
+			for (short i = 0; i < Tile.SIDE_COUNT; i++) {
+				if (tileTmp.getLSElement(i).equals(el)) {
+					tileTmp.popLSElement(i);
+					tileTmp.putLSElement(i, this);
 				}
 				
 			}
@@ -118,10 +122,9 @@ public abstract class LandscapeElement {
 	public void clear(){
 		Meeple m;
 		for (Tile t : tiles){
-			if((m = t.getMeeple()) != null){
-				t.setMeeple(null);
-				m.setTile(null);
-				m.getOwner().getHand().add(m);
+			m = t.getMeeple();
+			if(m != null){
+				t.removeMeeple();
 			}
 		}
 	}

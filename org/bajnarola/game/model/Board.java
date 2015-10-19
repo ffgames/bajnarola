@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import sun.security.action.GetLongAction;
+
 public class Board {
 	
 	int turn;
@@ -34,6 +36,8 @@ public class Board {
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
+	 * - check hasmaps with short keys mapped onto Integer (short must be cast to int before access)
+	 * - probeAll to check the current scenario boundary
 	 * */
 	
 	public Board(List<String> playerNames) {
@@ -99,32 +103,33 @@ public class Board {
 	public boolean probe(int x, int y, Tile tile) {
 	
 		Tile t;
+		short tileEls[] = tile.getElements();
 		
 		/* Left side */
 		t = scenario.get(getKey((short)(x - 1), (short)y));
 		if (t != null && 
-				tile.getElements()[Tile.SIDE_LEFT] != 
+				tileEls[Tile.SIDE_LEFT] != 
 				t.getElements()[Tile.SIDE_RIGHT])
 			return false;
 	
 		/* Right side */
 		t = scenario.get(getKey((short)(x + 1), (short)y));
 		if (t != null && 
-				tile.getElements()[Tile.SIDE_RIGHT] != 
+				tileEls[Tile.SIDE_RIGHT] != 
 				t.getElements()[Tile.SIDE_LEFT])
 			return false;
 
 		/* Bottom side */
 		t = scenario.get(getKey((short)x, (short)(y - 1)));
 		if (t != null && 
-				tile.getElements()[Tile.SIDE_BOTTOM] != 
+				tileEls[Tile.SIDE_BOTTOM] != 
 				t.getElements()[Tile.SIDE_TOP])
 			return false;
 	
 		/* Top side */
 		t = scenario.get(getKey((short)x, (short)(y + 1)));
 		if (t != null && 
-				tile.getElements()[Tile.SIDE_TOP] != 
+				tileEls[Tile.SIDE_TOP] != 
 				t.getElements()[Tile.SIDE_BOTTOM])
 			return false;
 			
@@ -166,35 +171,35 @@ public class Board {
 		switch (tile.getElements()[side]){
 			case Tile.ELTYPE_CITY:
 				if (citiesCount <= 2) 
-					neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
+					neighbour.getLSElement(getInverseDirection(side)).addTile(tile, side);
 				else {
 					LandscapeElement ls1, ls2;
-					if ((ls1 = tile.getLandscapes().get(side)) != null) {
-						ls2 = neighbour.getLandscapes().get(getInverseDirection(side));
+					if ((ls1 = tile.getLSElement(side)) != null) {
+						ls2 = neighbour.getLSElement(getInverseDirection(side));
 						ls1.merge(ls2);
 					} else {
-						neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
-						ls1 = tile.getLandscapes().get(side);
-						for (int j = 0; j < Tile.SIDE_COUNT; j++)
+						neighbour.getLSElement(getInverseDirection(side)).addTile(tile, side);
+						ls1 = tile.getLSElement(side);
+						for (short j = 0; j < Tile.SIDE_COUNT; j++)
 							if (tile.getElements()[j] == Tile.ELTYPE_CITY && j != side)
-								tile.getLandscapes().put(j, ls1);
+								tile.putLSElement(j, ls1);
 					}
 				}
 				break;
 			case Tile.ELTYPE_STREET:
 				if (streetsCount != 2) {
-					neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
+					neighbour.getLSElement(getInverseDirection(side)).addTile(tile, side);
 				} else {
 					LandscapeElement ls1, ls2;
-					if ((ls1 = tile.getLandscapes().get(side)) != null) {
-						ls2 = neighbour.getLandscapes().get(getInverseDirection(side));
+					if ((ls1 = tile.getLSElement(side)) != null) {
+						ls2 = neighbour.getLSElement(getInverseDirection(side));
 						ls1.merge(ls2);
 					} else {
-						neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
-						ls1 = tile.getLandscapes().get(side);
-						for (int j = 0; j < Tile.SIDE_COUNT; j++) {
+						neighbour.getLSElement(getInverseDirection(side)).addTile(tile, side);
+						ls1 = tile.getLSElement(side);
+						for (short j = 0; j < Tile.SIDE_COUNT; j++) {
 							if (tile.getElements()[j] == Tile.ELTYPE_STREET && j != side) {
-								tile.getLandscapes().put(j, ls1);
+								tile.putLSElement(j, ls1);
 								break;
 							}
 						}
@@ -215,23 +220,23 @@ public class Board {
 			case Tile.ELTYPE_CITY:
 				if (citiesCount <= 2)
 					new City(tile, side);
-				else if (tile.getLandscapes().get(side) == null) {
+				else if (tile.getLSElement(side) == null) {
 					LandscapeElement nc = new City(tile, side);
-					for (int j = 0; j < Tile.SIDE_COUNT; j++)
+					for (short j = 0; j < Tile.SIDE_COUNT; j++)
 						if (tile.getElements()[j] == Tile.ELTYPE_CITY && j != side)
-							tile.getLandscapes().put(j, nc);
+							tile.putLSElement(j, nc);
 				}	
 				break;
 			case Tile.ELTYPE_STREET:
 				if (streetsCount != 2)
 					new Street(tile, side);
-				else if (tile.getLandscapes().get(side) == null) {
+				else if (tile.getLSElement(side) == null) {
 					/* If there is not a landscape for this side yet, 
 					 * create it and spalmate it*/
 					LandscapeElement ns = new Street(tile, side);
-					for (int j = 0; j < Tile.SIDE_COUNT; j++)
+					for (short j = 0; j < Tile.SIDE_COUNT; j++)
 						if (tile.getElements()[j] == Tile.ELTYPE_STREET && j != side)
-							tile.getLandscapes().put(j, ns);
+							tile.putLSElement(j, ns);
 				}	
 				break;
 			case Tile.ELTYPE_CLOISTER:
@@ -267,7 +272,7 @@ public class Board {
 				createTileLandscape(tile, x, y, i);
 			
 			
-			checkScores(tile.getLandscapes().get(i));
+			checkScores(tile.getLSElement(i));
 		}
 		
 		
@@ -278,8 +283,8 @@ public class Board {
 				if (j != k || j != 0) {
 					neighbour = scenario.get(getKey((short)(x + j), (short)(y + k)));
 					if (neighbour != null && neighbour.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
-						neighbour.getLandscapes().get(Tile.SIDE_CENTER).addTile(tile, (short)-1);
-						checkScores(neighbour.getLandscapes().get(Tile.SIDE_CENTER));
+						neighbour.getLSElement(Tile.SIDE_CENTER).addTile(tile, (short)-1);
+						checkScores(neighbour.getLSElement(Tile.SIDE_CENTER));
 					}
 					
 				}
@@ -295,16 +300,19 @@ public class Board {
 		if (tile.getElements()[meeple.getTileSide()] == Tile.ELTYPE_GRASS)
 			return false;
 		
-		return tile.getLandscapes().get(meeple.getTileSide()).isMeepleDeployable(meeple.getOwner());
+		/* landscape should be present if element != GRASS */
+		return tile.getLSElement(meeple.getTileSide()).isMeepleDeployable(meeple.getOwner());
 	}
 	
 	public void placeMeeple(Tile tile, Meeple meeple) {
 		//this updates the associated landscape as well
 		tile.setMeeple(meeple);
+		meeple.setTile(tile);
 	}
 	
 	private static final Integer getKey(short x, short y) {	
-		return (int) x | ((int) y << 16);
+		int key = (int) x + ((int) y << 16);
+		return key;
 	}
 	
 	private static final short getInverseDirection(short direction) {

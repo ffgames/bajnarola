@@ -16,8 +16,6 @@ public class Tile {
 	public static final short SIDE_BOTTOM = 2;
 	public static final short SIDE_LEFT = 3;
 	public static final short SIDE_CENTER = 4;
-
-
 	
 	/* Internal elements of a tile, represented as an array. */
 	short elements[];
@@ -46,8 +44,8 @@ public class Tile {
 		x = y = -1;
 	}
 	
-	public Map<Integer,LandscapeElement> getLandscapes() {
-		return landscapes;
+	public int getDirection() {
+		return direction;
 	}
 	
 	public Meeple getMeeple() {
@@ -58,8 +56,24 @@ public class Tile {
 		return name;
 	}
 	
+	public LandscapeElement getLSElement(short tileSide){
+		return landscapes.get((int)fixTileSide(tileSide, direction));
+	}
+	
+	public void putLSElement(short tileSide, LandscapeElement element){
+		landscapes.put((int)fixTileSide(tileSide, direction), element);
+	}
+	
+	public LandscapeElement popLSElement(short tileSide){
+		return landscapes.remove((int)fixTileSide(tileSide, direction));
+	}
+	
+	public int getLSCount(){
+		return landscapes.size();
+	}
+	
 	public void setMeeple(Meeple meeple) {
-		this.landscapes.get(meeple.getTileSide()).addMeeple(meeple);
+		getLSElement(meeple.getTileSide()).addMeeple(meeple);
 		this.meeple = meeple;
 	}
 
@@ -68,7 +82,8 @@ public class Tile {
 	}
 	
 	public void removeMeeple() {
-		meeple.getOwner().getHand().add(meeple);
+		meeple.getOwner().giveMeepleBack(meeple);
+		meeple.setTile(null);
 		meeple = null;
 	}
 	
@@ -76,7 +91,7 @@ public class Tile {
 		if (clockwise) {
 			direction = (direction + 1) % 4; 
 		} else {
-			direction = (direction - 1) % 4;
+			direction = (direction + 3) % 4;
 		}
 	}
 	
@@ -85,10 +100,10 @@ public class Tile {
 	public short[] getElements() {
 		short rotated[] = new short[5];
 		
-		rotated[SIDE_TOP] = elements[(SIDE_TOP + direction) % 4];
-		rotated[SIDE_RIGHT] = elements[(SIDE_RIGHT + direction) % 4];
-		rotated[SIDE_BOTTOM] = elements[(SIDE_BOTTOM + direction) % 4];
-		rotated[SIDE_LEFT] = elements[(SIDE_LEFT + direction) % 4];
+		rotated[SIDE_TOP] = elements[fixTileSide(SIDE_TOP, direction)];
+		rotated[SIDE_RIGHT] = elements[fixTileSide(SIDE_RIGHT, direction)];
+		rotated[SIDE_BOTTOM] = elements[fixTileSide(SIDE_BOTTOM, direction)];
+		rotated[SIDE_LEFT] = elements[fixTileSide(SIDE_LEFT, direction)];
 		rotated[SIDE_CENTER] = elements[SIDE_CENTER];
 
 		return rotated;
@@ -110,7 +125,7 @@ public class Tile {
 	/* Check if this Tile can be attached
 	 * to the passed tile on the given side */
 	public Boolean compatible(Tile tile, short side) {
-		if (elements[side] == tile.getElements()[(side + 2) % 4])
+		if (elements[fixTileSide(side, direction)] == tile.getElements()[(side + 2) % 4])
 			return true;
 		
 		return false;
@@ -127,5 +142,9 @@ public class Tile {
 	
 	public short getY(){
 		return y;
+	}
+	
+	private static final short fixTileSide(short tileSide, int direction){
+		return (short)((tileSide + 4 - direction) % 4);
 	}
 }
