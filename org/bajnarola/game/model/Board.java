@@ -127,7 +127,6 @@ public class Board {
 	 * The landscape elements related to that tile are updated 
 	 * according to current status of the scenario. */
 	public void place(short x, short y, Tile tile, Meeple meeple) {
-		
 		tile.setMeeple(meeple);
 		scenario.put(getKey(x,y), tile);
 		updateLandscape(x, y, tile);
@@ -151,117 +150,128 @@ public class Board {
 		}
 	}
 	
-	private void updateLandscape(short x, short y, Tile tile) {
-		
+	private void attachToNeighbour(Tile tile, Tile neighbour, short side) {
 		short citiesCount, streetsCount;
 		citiesCount = tile.countElement(Tile.ELTYPE_CITY);
 		streetsCount = tile.countElement(Tile.ELTYPE_STREET);
-		Tile tmpTile = null;
 		
-		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
-			/* Per ogni elemento della tile
-			 * -  Se è stata aggiunta controllare se fare merge del landscape a cui è stata collegata
-			 *    con altri landscape adiacenti dello stesso tipo */
-			
+		switch (tile.getElements()[side]){
+			case Tile.ELTYPE_CITY:
+				if (citiesCount <= 2) 
+					neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
+				else {
+					LandscapeElement ls1, ls2;
+					if ((ls1 = tile.getLandscapes().get(side)) != null) {
+						ls2 = neighbour.getLandscapes().get(getInverseDirection(side));
+						ls1.merge(ls2);
+					} else {
+						neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
+						ls1 = tile.getLandscapes().get(side);
+						for (int j = 0; j < Tile.SIDE_COUNT; j++)
+							if (tile.getElements()[j] == Tile.ELTYPE_CITY && j != side)
+								tile.getLandscapes().put(j, ls1);
+					}
+				}
+				break;
+			case Tile.ELTYPE_STREET:
+				if (streetsCount != 2) {
+					neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
+				} else {
+					LandscapeElement ls1, ls2;
+					if ((ls1 = tile.getLandscapes().get(side)) != null) {
+						ls2 = neighbour.getLandscapes().get(getInverseDirection(side));
+						ls1.merge(ls2);
+					} else {
+						neighbour.getLandscapes().get(getInverseDirection(side)).addTile(tile, side);
+						ls1 = tile.getLandscapes().get(side);
+						for (int j = 0; j < Tile.SIDE_COUNT; j++) {
+							if (tile.getElements()[j] == Tile.ELTYPE_STREET && j != side) {
+								tile.getLandscapes().put(j, ls1);
+								break;
+							}
+						}
+					}
+				}
+				break;	
+		}
+	}
+	
+	private void createTileLandscape(Tile tile, short x, short y, short side) {
+		short citiesCount, streetsCount;
+		citiesCount = tile.countElement(Tile.ELTYPE_CITY);
+		streetsCount = tile.countElement(Tile.ELTYPE_STREET);
+		
+		Tile tmpTile;
+		/* Create a new landscape if it does not exist yet.*/
+		switch(tile.getElements()[side]){
+			case Tile.ELTYPE_CITY:
+				if (citiesCount <= 2)
+					new City(tile, side);
+				else if (tile.getLandscapes().get(side) == null) {
+					LandscapeElement nc = new City(tile, side);
+					for (int j = 0; j < Tile.SIDE_COUNT; j++)
+						if (tile.getElements()[j] == Tile.ELTYPE_CITY && j != side)
+							tile.getLandscapes().put(j, nc);
+				}	
+				break;
+			case Tile.ELTYPE_STREET:
+				if (streetsCount != 2)
+					new Street(tile, side);
+				else if (tile.getLandscapes().get(side) == null) {
+					/* If there is not a landscape for this side yet, 
+					 * create it and spalmate it*/
+					LandscapeElement ns = new Street(tile, side);
+					for (int j = 0; j < Tile.SIDE_COUNT; j++)
+						if (tile.getElements()[j] == Tile.ELTYPE_STREET && j != side)
+							tile.getLandscapes().put(j, ns);
+				}	
+				break;
+			case Tile.ELTYPE_CLOISTER:
+				Cloister c = new Cloister(tile, side);
+				for (short j = -1; j <= 1; j++) {
+					for (short k = -1; k <= 1; k++) {
+						if (j != k || j != 0) {
+							tmpTile = scenario.get(getKey((short)(x + j), (short)(y + k)));
+							if (tmpTile != null)
+								c.addTile(tmpTile, (short)-1);
+						}
+					}
+				}
+				break;					
+		}
+	}
+	
+	private void updateLandscape(short x, short y, Tile tile) {
+		
+		
+		Tile neighbour = null;
+		
+		for (short i = 0; i < Tile.SIDE_COUNT; i++) {			
 			/* Get the neighbour at the ith side. */
-			tmpTile = getNeighbourTile(x, y, i);
+			neighbour = getNeighbourTile(x, y, i);
 			
 			/* If a neighbour exists at the ith side, also a related landscape 
 			 * should be present. Thus add the tile to the existent landscape.
 			 * Otherwise create a new landscape. */
-			if (tmpTile != null) {
-				switch (tile.getElements()[i]){
-					case Tile.ELTYPE_CITY:
-						if (citiesCount <= 2) 
-							tmpTile.getLandscapes().get(getInverseDirection(i)).addTile(tile, i);
-						else {
-							LandscapeElement ls1, ls2;
-							if ((ls1 = tile.getLandscapes().get(i)) != null) {
-								ls2 = tmpTile.getLandscapes().get(getInverseDirection(i));
-								ls1.merge(ls2);
-							} else {
-								tmpTile.getLandscapes().get(getInverseDirection(i)).addTile(tile, i);
-								ls1 = tile.getLandscapes().get(i);
-								for (int j = 0; j < Tile.SIDE_COUNT; j++)
-									if (tile.getElements()[j] == Tile.ELTYPE_CITY && j != i)
-										tile.getLandscapes().put(j, ls1);
-							}
-						}
-						break;
-					case Tile.ELTYPE_STREET:
-						if (streetsCount != 2) {
-							tmpTile.getLandscapes().get(getInverseDirection(i)).addTile(tile, i);
-						} else {
-							LandscapeElement ls1, ls2;
-							if ((ls1 = tile.getLandscapes().get(i)) != null) {
-								ls2 = tmpTile.getLandscapes().get(getInverseDirection(i));
-								ls1.merge(ls2);
-							} else {
-								tmpTile.getLandscapes().get(getInverseDirection(i)).addTile(tile, i);
-								ls1 = tile.getLandscapes().get(i);
-								for (int j = 0; j < Tile.SIDE_COUNT; j++) {
-									if (tile.getElements()[j] == Tile.ELTYPE_STREET && j != i) {
-										tile.getLandscapes().put(j, ls1);
-										break;
-									}
-								}
-							}
-						}
-						break;	
-				}
-			} else {
-				/* Create a new landscape */
-				switch(tile.getElements()[i]){
-					case Tile.ELTYPE_CITY:
-						if (citiesCount <= 2)
-							new City(tile, i);
-						else if (tile.getLandscapes().get(i) == null) {
-							LandscapeElement nc = new City(tile, i);
-							for (int j = 0; j < Tile.SIDE_COUNT; j++)
-								if (tile.getElements()[j] == Tile.ELTYPE_CITY && j != i)
-									tile.getLandscapes().put(j, nc);
-						}	
-						break;
-					case Tile.ELTYPE_STREET:
-						if (streetsCount != 2)
-							new Street(tile, i);
-						else if (tile.getLandscapes().get(i) == null) {
-							/* If there is not a landscape for this side yet, 
-							 * create it and spalmate it*/
-							LandscapeElement ns = new Street(tile, i);
-							for (int j = 0; j < Tile.SIDE_COUNT; j++)
-								if (tile.getElements()[j] == Tile.ELTYPE_STREET && j != i)
-									tile.getLandscapes().put(j, ns);
-						}	
-						break;
-					case Tile.ELTYPE_CLOISTER:
-						Cloister c = new Cloister(tile, i);
-						for (short j = -1; j <= 1; j++) {
-							for (short k = -1; k <= 1; k++) {
-								if (j != k || j != 0) {
-									tmpTile = scenario.get(getKey((short)(x + j), (short)(y + k)));
-									if (tmpTile != null)
-										c.addTile(tmpTile, (short)-1);
-								}
-							}
-						}
-						break;					
-				}
-			} 
+			if (neighbour != null)
+				attachToNeighbour(tile, neighbour, i);
+			else
+				createTileLandscape(tile, x, y, i);
+			
+			
 			checkScores(tile.getLandscapes().get(i));
 		}
 		
 		
-		/* Per tutte le 8 tile adiacenti a x y:
-		 * - controllare se c'è un monastero e in caso aggiungerla al relativo landscape 
-		 */
+		/* Check if there is any cloister on the 8 neighbour tiles of this current tile. 
+		 * Add every cloister neighbour to its landscape. */
 		for (short j = -1; j <= 1; j++) {
 			for (short k = -1; k <= 1; k++) {
 				if (j != k || j != 0) {
-					tmpTile = scenario.get(getKey((short)(x + j), (short)(y + k)));
-					if (tmpTile != null && tmpTile.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
-						tmpTile.getLandscapes().get(Tile.SIDE_CENTER).addTile(tile, (short)-1);
-						checkScores(tmpTile.getLandscapes().get(Tile.SIDE_CENTER));
+					neighbour = scenario.get(getKey((short)(x + j), (short)(y + k)));
+					if (neighbour != null && neighbour.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
+						neighbour.getLandscapes().get(Tile.SIDE_CENTER).addTile(tile, (short)-1);
+						checkScores(neighbour.getLandscapes().get(Tile.SIDE_CENTER));
 					}
 					
 				}
