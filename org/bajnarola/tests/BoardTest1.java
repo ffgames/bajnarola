@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bajnarola.game.model.Board;
+import org.bajnarola.game.model.Cloister;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
+import org.bajnarola.game.model.Street;
 import org.bajnarola.game.model.Tile;
 
 public class BoardTest1 {
@@ -27,86 +29,115 @@ public class BoardTest1 {
 		
 		// - 1
 		Tile t = board.drawTile();
-		
-		System.out.println("tile "+t.toString()+" extracted");
+		System.out.println("tile drawed");
+		Debugger.printBoardStats(board);
+		Debugger.printTileStats(t);
 		
 		boolean res = board.probe(1, 0, t);
-		
 		System.out.println("probe(1, 0, tile): "+res);
 		
 		res = board.probe(0, -1, t);
-		
 		System.out.println("probe(0, -1, tile): "+res);
 		
 		board.place(0, -1, t);
+		System.out.println("tile placed on 0, -1");
+		Debugger.printBoardStats(board);
 		
 		Player p1 = board.getPlayers().get(0);
-		
 		Meeple m = p1.getMeeple();
-		
 		m.setTileSide(Tile.SIDE_CENTER);
+		System.out.println("got meeple from player 1 and set side");
+		Debugger.printPlayerStats(p1);
+		Debugger.printMeepleStats(m);
 		
 		res = board.probeMeeple(t, m);
-		
 		System.out.println("probeMeeple(tile, meeple): "+res);
 		
 		board.placeMeeple(t, m);
-		
-		System.out.println("placed Meeple");
+		System.out.println("meeple placed");
+		Debugger.printTileStats(t);
+		Debugger.printMeepleStats(m);
+		Debugger.printCloysterStats((Cloister)t.getLSElement(Tile.SIDE_CENTER));
 		
 		// - 2
 		// GSSSG
 		t = board.getDeck().remove(62);
-
-		res = board.probe(1, 0, t);
+		System.out.println("extracted specific tile");
+		Debugger.printTileStats(t);
 		
+		res = board.probe(1, 0, t);
 		System.out.println("probe(1, 0, tile): "+res);
 		
-		Player p2 = board.getPlayers().get(1);
-		
-		m = p2.getMeeple();
-		
 		board.place(1, 0, t);
+		System.out.println("tile placed on 1, 0");
+		Debugger.printBoardStats(board);
 		
+		Player p2 = board.getPlayers().get(1);
+		m = p2.getMeeple();
 		m.setTileSide(Tile.SIDE_LEFT);
+		System.out.println("got meeple from player 2 and set side");
+		Debugger.printPlayerStats(p2);
+		Debugger.printMeepleStats(m);
 		
 		res = board.probeMeeple(t, m);
-		
 		System.out.println("probeMeeple(tile, meeple): "+res);
 
 		board.placeMeeple(t, m);
+		System.out.println("meeple placed");
+		Debugger.printTileStats(t);
+		Debugger.printMeepleStats(m);
+		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_LEFT));
 		
 		// - 3
 		m = p1.getMeeple();
+		m.setTileSide(Tile.SIDE_RIGHT);
+		System.out.println("got meeple from player 1 and set side");
+		Debugger.printPlayerStats(p1);
+		Debugger.printMeepleStats(m);
 		
 		t = board.getDeck().remove(62);
+		System.out.println("extracted specific tile");
+		Debugger.printTileStats(t);
 		
 		t.rotate(true);
+		System.out.println("tile rotated clockwise");
+		Debugger.printTileStats(t);
 		
 		res = board.probe(-1, 0, t);
-		
 		System.out.println("probe(-1, 0, tile): "+res);
 		
 		t.rotate(true);
-		
 		t.rotate(true);
+		System.out.println("tile flipped");
+		Debugger.printTileStats(t);
 		
 		res = board.probe(-1, 0, t);
-		
 		System.out.println("probe(-1, 0, tile): "+res);
 		
 		board.place(-1, 0, t);
-		
-		m.setTileSide(Tile.SIDE_RIGHT);
+		System.out.println("tile placed on -1, 0");
+		Debugger.printBoardStats(board);
 		
 		res = board.probeMeeple(t, m);
-		
 		System.out.println("probeMeeple(tile, meeple): "+res);
 		
-		if(res)
+		if(res){
 			board.placeMeeple(t, m);
-		else
+			System.out.println("meeple placed");
+			Debugger.printTileStats(t);
+			Debugger.printMeepleStats(m);
+			Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_RIGHT));
+		}
+		else{
 			m.getOwner().giveMeepleBack(m);
+			System.out.println("meeple returned to player");
+			Debugger.printPlayerStats(p1);
+			Debugger.printMeepleStats(m);
+		}
+		
+		System.out.println("player 2 should have his meeple back and score set");
+		Debugger.printPlayerStats(p2);
+		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_RIGHT));
 		
 		System.out.println("done??");
 	}

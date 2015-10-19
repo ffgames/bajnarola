@@ -12,12 +12,14 @@ import org.bajnarola.game.model.Tile;
 public class Debugger {
 
 	public static final void printBoardStats(Board board){
+		separator();
 		System.out.printf("Board:\ndeck:\n\tsize: %d\nplayers:\n\tsize: %d\nscenario:\n\tsize: %d\n", board.getDeck().size(), board.getPlayers().size(), board.getScenario().size());
-		trailer();
+		separator();
 	}
 	
 	public static final void printTileStats(Tile tile){
-		System.out.printf("Tile:\n\tname: %s\n\tcoords: %d, %d\n\tdirection: %d (%s)\n\tmeeple: %s\n\t",
+		separator();
+		System.out.printf("Tile:\n\tname: %s\n\tcoords: %d, %d\n\tdirection: %d (%s)\n\tmeeple: %s\n",
 				tile.getName(), tile.getX(), tile.getY(), tile.getDirection(), stringSide((short)tile.getDirection()),
 				(tile.getMeeple() != null ? tile.getMeeple().getOwner().getName() : "null"));
 		System.out.printf("\telements:\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\tpennant: %s\n\tlsCount: %d\n", 
@@ -27,51 +29,58 @@ public class Debugger {
 				stringElement(tile.getElements()[Tile.SIDE_LEFT]),
 				stringElement(tile.getElements()[Tile.SIDE_CENTER]),
 				stringBool(tile.hasPennant()), tile.getLSCount());
-		trailer();
+		separator();
 	}
 	
 	public static final void printMeepleStats(Meeple meeple){
-		System.out.printf("Meeple:\n\towner: %s\n\ttile: %s\n\ttileSide: %s\n", meeple.getOwner(), stringTile(meeple.getTile()), stringSide(meeple.getTileSide()));
-		trailer();
+		separator();
+		System.out.printf("Meeple:\n\towner: %s\n\ttile: %s\n\ttileSide: %s\n", meeple.getOwner().getName(), stringTile(meeple.getTile()), stringSide(meeple.getTileSide()));
+		separator();
 	}
 	
 	public static final void printLSElementStats(LandscapeElement element){
 		printLSElementStats(element, true);
 	}
 	
-	private static final void printLSElementStats(LandscapeElement element, boolean trail){
-		if(trail)
+	private static final void printLSElementStats(LandscapeElement element, boolean separe){
+		if(separe){
+			separator();
 			System.out.println("LandscapeElement:");
-		System.out.printf("\tcompleted: %s\n\tvisited: %s\n\tscoreSet: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d", 
+		}
+		System.out.printf("\tcompleted: %s\n\tvisited: %s\n\tscoreSet: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d\n", 
 				stringBool(element.isCompleted()), stringBool(element.isVisited()), stringBool(element.isScoreSet()),
 				element.getScoreOwners().size(), element.getTiles().size(), stringTile(element.getElementRoot()), element.getValue());
-		if(trail)
-			trailer();
+		if(separe)
+			separator();
 	}
 	
 	public static final void printStreetStats(Street street){
+		separator();
 		System.out.println("Street:");
 		printLSElementStats(street, false);
 		System.out.printf("\tstreetEnds: %d\n", street.getStreetEnds());
-		trailer();
+		separator();
 	}
 	
 	public static final void printCityStats(City city){
+		separator();
 		System.out.println("City:");
 		printLSElementStats(city, false);
 		System.out.printf("\topenSides: %d\n", city.getOpenSides());
-		trailer();
+		separator();
 	}
 	
 	public static final void printCloysterStats(Cloister cloyster){
+		separator();
 		System.out.println("Cloyster:");
 		printLSElementStats(cloyster, false);
-		trailer();
+		separator();
 	}
 	
 	public static final void printPlayerStats(Player player){
+		separator();
 		System.out.printf("Player: %s\n\tscore: %d\n\tmeeples: %s\n\tscoreChanged: "+(player.isScoreChanged() ? "true" : "false")+"\n", player.getName(), player.getScore(), player.getMeepleCount());
-		trailer();
+		separator();
 	}
 	
 	private static final String stringBool(boolean val){
@@ -102,7 +111,7 @@ public class Debugger {
 			case Tile.SIDE_TOP:
 				return "TOP";
 		}
-		return "";
+		return "VOID";
 	}
 	
 	private static final String stringElement(short el){
@@ -116,10 +125,10 @@ public class Debugger {
 			case Tile.ELTYPE_STREET:
 				return "STREET";
 		}
-		return "";
+		return "VOID";
 	}
 	
-	public static final void trailer(){
+	public static final void separator(){
 		System.out.println("--------------------------------------");
 	}
 }

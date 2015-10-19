@@ -83,7 +83,6 @@ public class Tile {
 	
 	public void removeMeeple() {
 		meeple.getOwner().giveMeepleBack(meeple);
-		meeple.setTile(null);
 		meeple = null;
 	}
 	

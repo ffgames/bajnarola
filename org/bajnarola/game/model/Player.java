@@ -67,6 +67,8 @@ public class Player {
 	
 	public void giveMeepleBack(Meeple meeple){
 		hand.add(meeple);
+		meeple.setTileSide((short)-1);
+		meeple.setTile(null);
 	}
 	
 	public void removeAllMeeple() {
