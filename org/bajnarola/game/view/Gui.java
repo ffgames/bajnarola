@@ -1,10 +1,6 @@
 package org.bajnarola.game.view;
 
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -106,17 +102,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public void update(GameContainer gc, int i) throws SlickException {
 		// TODO Auto-generated method stub
 
-	}
-	
-	public static void mainMethod(){
-		try{
-			AppGameContainer appgc;
-			appgc = new AppGameContainer(new Gui("Giocopene"));
-			appgc.setDisplayMode(SCREEN_WIDTH, SCREEN_HEIGHT, false);
-			appgc.start();
-		} catch(SlickException ex){
-			Logger.getLogger(Gui.class.getName()).log(Level.SEVERE, null, ex);
-		}
 	}
 
 	@Override
