@@ -25,6 +25,7 @@ package org.bajnarola.game;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -110,5 +111,52 @@ public class BajnarolaClient {
 		}
 		
 		return retMap;
+	}
+	
+	/* Game main loop */
+	public void mainLoop(String myUsername) {
+		Boolean endGame = false;
+		StateDiff dState = null;
+		
+		BoardController myBc  = this.players.get(myUsername);
+		BoardController othBc = null;
+		List<String> deadPlayers = new ArrayList<String>();
+
+		/* While the game is running and there are 2 or more players. */
+		while (!endGame) {
+			/* For Every player */
+			for (String cPlayer : this.players.keySet()) {
+				if (cPlayer.equals(myUsername)) {
+					/* It's the turn of this player */
+					System.out.println("My turn!");
+					myBc.play();
+				} else {
+					/* Call the other players and kindly ask them to play */
+					othBc = this.players.get(cPlayer);
+
+					System.out.println("Turn of " + cPlayer + " waiting for a response");
+					
+					try {
+						dState = othBc.play();
+						myBc.updateState(dState);
+					} catch(RemoteException e) {
+						/* XXX CRASH! XXX */
+						System.err.println("Node Crash! (" + cPlayer + ")");
+						deadPlayers.add(cPlayer);
+					}
+				}
+			}
+
+			/* Garbage collecting the crashed players */
+			for(String cPlayer : deadPlayers) {
+				this.players.remove(cPlayer);
+			}
+			
+			if (this.players.size() == 1) {
+				/* The player is alone he is the winner. */
+				endGame = true;
+				/* TODO: winner string */
+			}
+		}
 	}
 }

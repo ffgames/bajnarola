@@ -83,6 +83,12 @@ public class MainClass {
 				System.out.println("\t" + k + " with dice throw: " + dices.get(k));
 			}
 			
+			System.out.print("Initializing the board...");
+			//gBoard.initBoard(iClient.players.keySet());
+			System.out.println("OK");
+			
+			iClient.mainLoop(iServer.getPlayer().username);
+			
 		} catch (RemoteException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
