@@ -151,6 +151,14 @@ public class BoardTest1 {
 		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_RIGHT));
 		
 		System.out.println("## done??");
+		
+		// holes simple test
+		/*for(int i = 0; i < 25; i++){
+			board.getDeck().remove(0);
+		}
+		
+		t = board.beginTurn();
+		Debugger.printTileStats(t);*/
 	}
 
 }

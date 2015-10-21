@@ -30,10 +30,10 @@ import sun.security.action.GetLongAction;
 public class Board {
 	
 	int turn;
-	Hashtable<Integer, Tile> scenario;
+	Hashtable<String, Tile> scenario;
 	ArrayList<Player> players;
 	ArrayList<Tile> deck;
-	ArrayList<Integer> holes;
+	ArrayList<String> holes;
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
@@ -43,10 +43,10 @@ public class Board {
 	
 	public Board() {
 		this.turn = 0;
-		this.scenario = new Hashtable<Integer, Tile>();
+		this.scenario = new Hashtable<String, Tile>();
 		this.deck = new ArrayList<Tile>();
 		this.players = new ArrayList<Player>();
-		this.holes = new ArrayList<Integer>();
+		this.holes = new ArrayList<String>();
 	}
 	
 	public void initBoard(List<String> playerNames) {
@@ -56,6 +56,8 @@ public class Board {
 		
 		/* initialise the deck: create all the tiles. */
 		initDeck();
+		
+		
 		
 		// TODO: shuffle deck
 		
@@ -67,10 +69,6 @@ public class Board {
 				Tile.ELTYPE_GRASS, 
 				false));
 		
-		holes.add(getKey((short)0, (short)1));
-		holes.add(getKey((short)0, (short)-1));
-		holes.add(getKey((short)1, (short)0));
-		holes.add(getKey((short)-1, (short)0));
 	}
 	
 	public int getTurn() {
@@ -81,7 +79,7 @@ public class Board {
 		this.turn = turn;
 	}
 
-	public Hashtable<Integer, Tile> getScenario() {
+	public Hashtable<String, Tile> getScenario() {
 		return scenario;
 	}
 	
@@ -108,7 +106,7 @@ public class Board {
 				break;
 			for(int i = 0; i < 4; i++){
 				if(!ok){
-					for(Integer k : holes){
+					for(String k : holes){
 						if(probe(k, newTile)){
 							ok = true;
 							break;
@@ -167,10 +165,10 @@ public class Board {
 		return true;
 	}
 	
-	private boolean probe(int k, Tile tile){
+	private boolean probe(String k, Tile tile){
 		short x, y;
-		x = (short) (k & 0xFFFF);
-		y = (short) ((k >> 16) & 0xFFFF);
+		x = (short) Integer.parseInt(k.split(";")[0]);
+		y = (short) Integer.parseInt(k.split(";")[1]);
 		
 		return probe(x, y, tile);
 	}
@@ -189,7 +187,7 @@ public class Board {
 	
 	private void updateHoles(short x, short y){
 		holes.remove(getKey(x, y));
-		int k;
+		String k;
 		for(short i = 0; i < Tile.SIDE_COUNT-1; i++){
 			k = getNeighbourKey(x, y, i);
 			if(scenario.get(k) == null && !holes.contains(k))
@@ -200,13 +198,13 @@ public class Board {
 	/* Given a tile at position x, y, return the neighbour tile that is 
 	 * touching the first one at the specified side. */
 	private Tile getNeighbourTile(short x, short y, short side) {
-		int k = getNeighbourKey(x, y, side);
-		if(k != -1)
+		String k = getNeighbourKey(x, y, side);
+		if(k != null)
 			return scenario.get(k);
 		return null;
 	}
 	
-	private int getNeighbourKey(short x, short y, short side) {
+	private String getNeighbourKey(short x, short y, short side) {
 		switch (side) {
 			case Tile.SIDE_TOP:
 				return getKey(x,(short)(y + 1));
@@ -218,7 +216,7 @@ public class Board {
 				return getKey((short)(x - 1),y);
 			case Tile.SIDE_CENTER:
 			default:
-				return -1;
+				return null;
 		}
 	}
 	
@@ -367,9 +365,9 @@ public class Board {
 		meeple.setTile(tile);
 	}
 	
-	private static final Integer getKey(short x, short y) {	
-		int key = (int) x + ((int) y << 16);
-		return key;
+	// TODO: better optimization
+	private static final String getKey(short x, short y) {	
+		return Integer.toString((int)x) + ";" + Integer.toString((int)y);
 	}
 	
 	private static final short getInverseDirection(short direction) {
