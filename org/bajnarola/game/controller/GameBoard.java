@@ -43,6 +43,7 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 		this.randomGenerator = new Random();
 		// XXX: new Board constructor needs players list
 		//this.board = new Board();
+		
 		this.diceLock = new Lock();
 		
 		this.diceValue = -1;
