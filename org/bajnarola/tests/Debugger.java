@@ -1,5 +1,7 @@
 package org.bajnarola.tests;
 
+import java.util.List;
+
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.City;
 import org.bajnarola.game.model.Cloister;
@@ -17,6 +19,15 @@ public class Debugger {
 			System.out.printf("Board:\ndeck:\n\tsize: %d\nplayers:\n\tsize: %d\nscenario:\n\tsize: %d\n", board.getDeck().size(), board.getPlayers().size(), board.getScenario().size());
 		else
 			System.out.printf("Board:\n\tNULL\n");
+		separator();
+	}
+	
+	public static final void printDeck(List<Tile> deck){
+		separator();
+		System.out.println("Deck:");
+		for(Tile t: deck){
+			System.out.printf("\t%s\n", t.getName());
+		}
 		separator();
 	}
 	

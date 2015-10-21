@@ -22,8 +22,13 @@
 
 package org.bajnarola.game.model;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Random;
+
+import org.bajnarola.utils.Shuffler;
 
 import sun.security.action.GetLongAction;
 
@@ -34,6 +39,7 @@ public class Board {
 	ArrayList<Player> players;
 	ArrayList<Tile> deck;
 	ArrayList<String> holes;
+	Shuffler random;
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
@@ -49,7 +55,7 @@ public class Board {
 		this.holes = new ArrayList<String>();
 	}
 	
-	public void initBoard(List<String> playerNames) {
+	public void initBoard(List<String> playerNames, int seed) {
 		for(String pl : playerNames){
 			players.add(new Player(pl));
 		}
@@ -57,9 +63,8 @@ public class Board {
 		/* initialise the deck: create all the tiles. */
 		initDeck();
 		
-		
-		
-		// TODO: shuffle deck
+		random = new Shuffler(seed);
+		random.shuffleDeck(deck);
 		
 		/* add the initial tile */
 		place((short) 0, (short) 0, initTile(Tile.ELTYPE_CITY,

@@ -25,7 +25,7 @@ public class BoardTest1 {
 		
 		Board board = new Board();
 		
-		board.initBoard(players);
+		board.initBoard(players, 42);
 		
 		System.out.println("board initialized");
 		Debugger.printBoardStats(board);
