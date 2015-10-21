@@ -16,19 +16,22 @@ public class BoardTest1 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// - 0
+		System.out.println("## - 0");
+		
 		List<String> players = new ArrayList<String>();
 		players.add("player1");
 		players.add("player2");
 		
 		
-		Board board = new Board(players);
+		Board board = new Board();
+		
+		board.initBoard(players);
 		
 		System.out.println("board initialized");
 		Debugger.printBoardStats(board);
 		
-		// - 1
-		Tile t = board.drawTile();
+		System.out.println("## - 1");
+		Tile t = board.beginTurn();
 		System.out.println("tile drawed");
 		Debugger.printBoardStats(board);
 		Debugger.printTileStats(t);
@@ -59,7 +62,10 @@ public class BoardTest1 {
 		Debugger.printMeepleStats(m);
 		Debugger.printCloysterStats((Cloister)t.getLSElement(Tile.SIDE_CENTER));
 		
-		// - 2
+		board.endTurn(t);
+		System.out.println("turn ended");
+		
+		System.out.println("## - 2");
 		// GSSSG
 		t = board.getDeck().remove(62);
 		System.out.println("extracted specific tile");
@@ -87,8 +93,11 @@ public class BoardTest1 {
 		Debugger.printTileStats(t);
 		Debugger.printMeepleStats(m);
 		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_LEFT));
+	
+		board.endTurn(t);
+		System.out.println("turn ended");
 		
-		// - 3
+		System.out.println("## - 3");
 		m = p1.getMeeple();
 		m.setTileSide(Tile.SIDE_RIGHT);
 		System.out.println("got meeple from player 1 and set side");
@@ -135,11 +144,13 @@ public class BoardTest1 {
 			Debugger.printMeepleStats(m);
 		}
 		
+		board.endTurn(t);
+		System.out.println("turn ended");
 		System.out.println("player 2 should have his meeple back and score set");
 		Debugger.printPlayerStats(p2);
 		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_RIGHT));
 		
-		System.out.println("done??");
+		System.out.println("## done??");
 	}
 
 }

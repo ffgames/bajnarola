@@ -33,6 +33,7 @@ public class Board {
 	Hashtable<Integer, Tile> scenario;
 	ArrayList<Player> players;
 	ArrayList<Tile> deck;
+	ArrayList<Integer> holes;
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
@@ -40,20 +41,19 @@ public class Board {
 	 * - probeAll to check the current scenario boundary
 	 * */
 	
-	public Board(List<String> playerNames) {
+	public Board() {
 		this.turn = 0;
 		this.scenario = new Hashtable<Integer, Tile>();
 		this.deck = new ArrayList<Tile>();
 		this.players = new ArrayList<Player>();
-		
-		initBoard();
-		
+		this.holes = new ArrayList<Integer>();
+	}
+	
+	public void initBoard(List<String> playerNames) {
 		for(String pl : playerNames){
 			players.add(new Player(pl));
 		}
-	}
-	
-	private void initBoard() {
+		
 		/* initialise the deck: create all the tiles. */
 		initDeck();
 		
@@ -66,6 +66,11 @@ public class Board {
 				Tile.ELTYPE_STREET, 
 				Tile.ELTYPE_GRASS, 
 				false));
+		
+		holes.add(getKey((short)0, (short)1));
+		holes.add(getKey((short)0, (short)-1));
+		holes.add(getKey((short)1, (short)0));
+		holes.add(getKey((short)-1, (short)0));
 	}
 	
 	public int getTurn() {
@@ -85,16 +90,42 @@ public class Board {
 		return scenario.get(getKey(x, y));
 	}
 	
-	public Tile drawTile(){
-		return deck.remove(0);
-	}
-	
 	public ArrayList<Tile> getDeck() {
 		return deck;
 	}
 
 	public ArrayList<Player> getPlayers() {
 		return players;
+	}
+	
+	public Tile beginTurn(){
+		Tile newTile = null;
+		boolean ok = false;
+
+		while(!ok){
+			newTile = deck.remove(0);
+			if(newTile == null)
+				break;
+			for(int i = 0; i < 4; i++){
+				if(!ok){
+					for(Integer k : holes){
+						if(probe(k, newTile)){
+							ok = true;
+							break;
+						}
+					}
+				}
+				newTile.rotate(true);
+			}
+		}
+		
+		return newTile;
+	}
+	
+	public void endTurn(Tile tile){
+		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
+			checkScores(tile.getLSElement(i));
+		}
 	}
 	
 	/* Check if the given tile can be placed at position x y of the board.
@@ -136,30 +167,58 @@ public class Board {
 		return true;
 	}
 	
+	private boolean probe(int k, Tile tile){
+		short x, y;
+		x = (short) (k & 0xFFFF);
+		y = (short) ((k >> 16) & 0xFFFF);
+		
+		return probe(x, y, tile);
+	}
+	
 	/* Place a tile in the position x y of the board.
 	 * The landscape elements related to that tile are updated 
 	 * according to current status of the scenario. */
 	public void place(int x, int y, Tile tile) {
-		scenario.put(getKey((short)x,(short)y), tile);
-		tile.setCoordinates((short)x, (short)y);
-		updateLandscape((short)x, (short)y, tile);
+		short sx = (short)x;
+		short sy = (short)y;
+		scenario.put(getKey(sx,sy), tile);
+		tile.setCoordinates(sx, sy);
+		updateHoles(sx, sy);
+		updateLandscape(sx, sy, tile);
+	}
+	
+	private void updateHoles(short x, short y){
+		holes.remove(getKey(x, y));
+		int k;
+		for(short i = 0; i < Tile.SIDE_COUNT-1; i++){
+			k = getNeighbourKey(x, y, i);
+			if(scenario.get(k) == null && !holes.contains(k))
+				holes.add(k);
+		}
 	}
 
 	/* Given a tile at position x, y, return the neighbour tile that is 
 	 * touching the first one at the specified side. */
 	private Tile getNeighbourTile(short x, short y, short side) {
+		int k = getNeighbourKey(x, y, side);
+		if(k != -1)
+			return scenario.get(k);
+		return null;
+	}
+	
+	private int getNeighbourKey(short x, short y, short side) {
 		switch (side) {
 			case Tile.SIDE_TOP:
-				return scenario.get(getKey(x,(short)(y + 1)));
+				return getKey(x,(short)(y + 1));
 			case Tile.SIDE_RIGHT:
-				return scenario.get(getKey((short)(x + 1),y));
+				return getKey((short)(x + 1),y);
 			case Tile.SIDE_BOTTOM:
-				return scenario.get(getKey(x,(short)(y - 1)));
+				return getKey(x,(short)(y - 1));
 			case Tile.SIDE_LEFT:
-				return scenario.get(getKey((short)(x - 1),y));
+				return getKey((short)(x - 1),y);
 			case Tile.SIDE_CENTER:
 			default:
-				return null;
+				return -1;
 		}
 	}
 	
@@ -271,10 +330,9 @@ public class Board {
 			else
 				createTileLandscape(tile, x, y, i);
 			
-			
-			checkScores(tile.getLSElement(i));
 		}
 		
+		LandscapeElement el;
 		
 		/* Check if there is any cloister on the 8 neighbour tiles of this current tile. 
 		 * Add every cloister neighbour to its landscape. */
@@ -283,15 +341,14 @@ public class Board {
 				if (j != k || j != 0) {
 					neighbour = scenario.get(getKey((short)(x + j), (short)(y + k)));
 					if (neighbour != null && neighbour.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
-						neighbour.getLSElement(Tile.SIDE_CENTER).addTile(tile, (short)-1);
-						checkScores(neighbour.getLSElement(Tile.SIDE_CENTER));
+						el = neighbour.getLSElement(Tile.SIDE_CENTER);
+						el.addTile(tile, (short)-1);
+						checkScores(el);
 					}
 					
 				}
 			}
-		}
-		
-		
+		}		
 	}
 	
 	/* Check if the given meeple can be placed on the Tile */
@@ -331,13 +388,12 @@ public class Board {
 	}
 	
 	private static final void checkScores(LandscapeElement scoreEl) {
-		if (scoreEl != null && !scoreEl.isScoreSet() && scoreEl.isCompleted()){
+		if (scoreEl != null && scoreEl.isCompleted()){
 			List<Player> owners = scoreEl.getScoreOwners();
 			for(Player o : owners){
 				o.setScore((short)(o.getScore()+scoreEl.getValue()));
 			}
 			scoreEl.clear();
-			scoreEl.setScore();
 		}
 	}
 	

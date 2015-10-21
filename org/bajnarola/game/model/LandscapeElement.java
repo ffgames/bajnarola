@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class LandscapeElement {
-	boolean completed, visited, scoreSet;
+	boolean completed, visited;
 	Map<Player, Integer> owners;
 	List<Tile> tiles;
 	Tile elementRoot;
 	short value;
 	
 	public LandscapeElement(Tile elementRoot, short tileSide) {
-		visited = completed = scoreSet = false;
+		visited = completed = false;
 		this.owners = new Hashtable<Player, Integer>();
 		this.elementRoot = elementRoot;
 		this.value = 0;
@@ -57,14 +57,6 @@ public abstract class LandscapeElement {
 	}
 	public void visit() {
 		visited = true;
-	}
-	
-	public void setScore(){
-		scoreSet = true;
-	}
-	
-	public boolean isScoreSet(){
-		return scoreSet;
 	}
 	
 	protected void complete() {
@@ -126,6 +118,7 @@ public abstract class LandscapeElement {
 			if(m != null){
 				t.removeMeeple();
 			}
+			t.unlinkLSElement(this);
 		}
 	}
 	

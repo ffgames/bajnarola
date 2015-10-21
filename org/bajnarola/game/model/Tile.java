@@ -130,6 +130,16 @@ public class Tile {
 		return false;
 	}
 	
+	public void unlinkLSElement(LandscapeElement el){
+		LandscapeElement te;
+		
+		for (int i = 0; i < SIDE_COUNT; i++){
+			te = landscapes.get(i);
+			if(el.equals(te))
+				landscapes.remove(i);
+		}
+	}
+	
 	public void setCoordinates(short x, short y){
 		this.x = x;
 		this.y = y;

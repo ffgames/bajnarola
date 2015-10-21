@@ -13,28 +13,38 @@ public class Debugger {
 
 	public static final void printBoardStats(Board board){
 		separator();
-		System.out.printf("Board:\ndeck:\n\tsize: %d\nplayers:\n\tsize: %d\nscenario:\n\tsize: %d\n", board.getDeck().size(), board.getPlayers().size(), board.getScenario().size());
+		if(board != null)
+			System.out.printf("Board:\ndeck:\n\tsize: %d\nplayers:\n\tsize: %d\nscenario:\n\tsize: %d\n", board.getDeck().size(), board.getPlayers().size(), board.getScenario().size());
+		else
+			System.out.printf("Board:\n\tNULL\n");
 		separator();
 	}
 	
 	public static final void printTileStats(Tile tile){
 		separator();
-		System.out.printf("Tile:\n\tname: %s\n\tcoords: %d, %d\n\tdirection: %d (%s)\n\tmeeple: %s\n",
-				tile.getName(), tile.getX(), tile.getY(), tile.getDirection(), stringSide((short)tile.getDirection()),
-				(tile.getMeeple() != null ? tile.getMeeple().getOwner().getName() : "null"));
-		System.out.printf("\telements:\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\tpennant: %s\n\tlsCount: %d\n", 
-				stringElement(tile.getElements()[Tile.SIDE_TOP]),
-				stringElement(tile.getElements()[Tile.SIDE_RIGHT]),
-				stringElement(tile.getElements()[Tile.SIDE_BOTTOM]),
-				stringElement(tile.getElements()[Tile.SIDE_LEFT]),
-				stringElement(tile.getElements()[Tile.SIDE_CENTER]),
-				stringBool(tile.hasPennant()), tile.getLSCount());
+		if(tile != null){
+			System.out.printf("Tile:\n\tname: %s\n\tcoords: %d, %d\n\tdirection: %d (%s)\n\tmeeple: %s\n",
+					tile.getName(), tile.getX(), tile.getY(), tile.getDirection(), stringSide((short)tile.getDirection()),
+					(tile.getMeeple() != null ? tile.getMeeple().getOwner().getName() : "null"));
+			System.out.printf("\telements:\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\tpennant: %s\n\tlsCount: %d\n", 
+					stringElement(tile.getElements()[Tile.SIDE_TOP]),
+					stringElement(tile.getElements()[Tile.SIDE_RIGHT]),
+					stringElement(tile.getElements()[Tile.SIDE_BOTTOM]),
+					stringElement(tile.getElements()[Tile.SIDE_LEFT]),
+					stringElement(tile.getElements()[Tile.SIDE_CENTER]),
+					stringBool(tile.hasPennant()), tile.getLSCount());
+		} else {
+			System.out.printf("Tile:\n\tNULL\n");
+		}
 		separator();
 	}
 	
 	public static final void printMeepleStats(Meeple meeple){
 		separator();
-		System.out.printf("Meeple:\n\towner: %s\n\ttile: %s\n\ttileSide: %s\n", meeple.getOwner().getName(), stringTile(meeple.getTile()), stringSide(meeple.getTileSide()));
+		if(meeple != null)
+			System.out.printf("Meeple:\n\towner: %s\n\ttile: %s\n\ttileSide: %s\n", meeple.getOwner().getName(), stringTile(meeple.getTile()), stringSide(meeple.getTileSide()));
+		else
+			System.out.printf("Meeple:\n\tNULL\n");
 		separator();
 	}
 	
@@ -47,9 +57,12 @@ public class Debugger {
 			separator();
 			System.out.println("LandscapeElement:");
 		}
-		System.out.printf("\tcompleted: %s\n\tvisited: %s\n\tscoreSet: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d\n", 
-				stringBool(element.isCompleted()), stringBool(element.isVisited()), stringBool(element.isScoreSet()),
+		if(element != null)
+			System.out.printf("\tcompleted: %s\n\tvisited: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d\n", 
+				stringBool(element.isCompleted()), stringBool(element.isVisited()),
 				element.getScoreOwners().size(), element.getTiles().size(), stringTile(element.getElementRoot()), element.getValue());
+		else
+			System.out.printf("\tNULL\n");
 		if(separe)
 			separator();
 	}
@@ -58,7 +71,8 @@ public class Debugger {
 		separator();
 		System.out.println("Street:");
 		printLSElementStats(street, false);
-		System.out.printf("\tstreetEnds: %d\n", street.getStreetEnds());
+		if(street != null)
+			System.out.printf("\tstreetEnds: %d\n", street.getStreetEnds());
 		separator();
 	}
 	
@@ -66,7 +80,8 @@ public class Debugger {
 		separator();
 		System.out.println("City:");
 		printLSElementStats(city, false);
-		System.out.printf("\topenSides: %d\n", city.getOpenSides());
+		if(city != null)
+			System.out.printf("\topenSides: %d\n", city.getOpenSides());
 		separator();
 	}
 	
@@ -79,7 +94,10 @@ public class Debugger {
 	
 	public static final void printPlayerStats(Player player){
 		separator();
-		System.out.printf("Player: %s\n\tscore: %d\n\tmeeples: %s\n\tscoreChanged: "+(player.isScoreChanged() ? "true" : "false")+"\n", player.getName(), player.getScore(), player.getMeepleCount());
+		if(player != null)
+			System.out.printf("Player: %s\n\tscore: %d\n\tmeeples: %s\n\tscoreChanged: "+(player.isScoreChanged() ? "true" : "false")+"\n", player.getName(), player.getScore(), player.getMeepleCount());
+		else
+			System.out.printf("Player:\n\tNULL\n");
 		separator();
 	}
 	
