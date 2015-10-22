@@ -23,12 +23,6 @@
 package org.bajnarola.game.controller;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-
-import org.bajnarola.game.model.Meeple;
-import org.bajnarola.game.model.Player;
-import org.bajnarola.game.model.Tile;
 
 public interface BoardController extends Remote {
 	public int getTurn() throws RemoteException;

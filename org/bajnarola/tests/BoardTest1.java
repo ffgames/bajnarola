@@ -151,7 +151,7 @@ public class BoardTest1 {
 		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_RIGHT));
 		
 		board.finalCheckScores();
-		System.out.println("endgame score checks");
+		System.out.println("endgame score checks (pl1 should have 4 points, pl2 3 points)");
 		Debugger.printPlayerStats(p1);
 		Debugger.printPlayerStats(p2);
 		

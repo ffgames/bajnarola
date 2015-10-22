@@ -14,9 +14,6 @@ import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
 public class Gui extends BasicGame implements InputProviderListener {
-
-	private static final int SCREEN_WIDTH = 1900;
-	private static final int SCREEN_HEIGHT = 1000;
 	
 	private InputProvider provider;
 	private Input rawInput;
@@ -90,7 +87,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 		 
 		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), backComm);
 		 
-		 rawInput = new Input(SCREEN_HEIGHT);
+		 rawInput = new Input(gc.getScreenHeight());
 		 
 		 background = new Image("res/Craggy_Rock.jpg");
 		 backgroundType = bg_type.BG_TILED;
@@ -125,6 +122,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 			selectAct(true);
 		else if(button == 1)
 			backAct();
+		message += " x: "+x+", y: "+y;
 	}
 	
 	@Override

@@ -2,16 +2,14 @@ package org.bajnarola.game.controller;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
-import org.bajnarola.game.model.Board;
 
 import sun.misc.Lock;
 

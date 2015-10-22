@@ -25,14 +25,10 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 import org.bajnarola.game.controller.GameBoard;
-import org.bajnarola.game.model.Board;
 import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.RandomString;
-
-import java.util.Hashtable;
 
 public class BajnarolaServer {
 

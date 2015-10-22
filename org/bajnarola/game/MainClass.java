@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.bajnarola.game.controller.BoardController;
 import org.bajnarola.game.controller.GameBoard;
-import org.bajnarola.game.model.Board;
 import org.bajnarola.lobby.LobbyClient;
 
 public class MainClass {
