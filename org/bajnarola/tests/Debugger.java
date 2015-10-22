@@ -69,9 +69,9 @@ public class Debugger {
 			System.out.println("LandscapeElement:");
 		}
 		if(element != null)
-			System.out.printf("\tcompleted: %s\n\tvisited: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d\n", 
-				stringBool(element.isCompleted()), stringBool(element.isVisited()),
-				element.getScoreOwners().size(), element.getTiles().size(), stringTile(element.getElementRoot()), element.getValue());
+			System.out.printf("\tcompleted: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d\n", 
+				stringBool(element.isCompleted()), element.getScoreOwners().size(), 
+				element.getTiles().size(), stringTile(element.getElementRoot()), element.getValue());
 		else
 			System.out.printf("\tNULL\n");
 		if(separe)

@@ -55,7 +55,7 @@ public class Board {
 		this.holes = new ArrayList<String>();
 	}
 	
-	public void initBoard(List<String> playerNames, int seed) {
+	public void initBoard(List<String> playerNames, boolean shuffle, int seed) {
 		for(String pl : playerNames){
 			players.add(new Player(pl));
 		}
@@ -63,8 +63,10 @@ public class Board {
 		/* initialise the deck: create all the tiles. */
 		initDeck();
 		
-		random = new Shuffler(seed);
-		random.shuffleDeck(deck);
+		if(shuffle){
+			random = new Shuffler(seed);
+			random.shuffleDeck(deck);
+		}
 		
 		/* add the initial tile */
 		place((short) 0, (short) 0, initTile(Tile.ELTYPE_CITY,
@@ -74,6 +76,10 @@ public class Board {
 				Tile.ELTYPE_GRASS, 
 				false));
 		
+	}
+	
+	public void initBoard(List<String> playerNames, int seed) {
+		initBoard(playerNames, true, seed);
 	}
 	
 	public Player getPlayerByName(String name) {

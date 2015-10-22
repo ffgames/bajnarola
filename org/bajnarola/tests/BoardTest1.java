@@ -25,7 +25,7 @@ public class BoardTest1 {
 		
 		Board board = new Board();
 		
-		board.initBoard(players, 42);
+		board.initBoard(players, false, 0);
 		
 		System.out.println("board initialized");
 		Debugger.printBoardStats(board);
@@ -149,6 +149,11 @@ public class BoardTest1 {
 		System.out.println("player 2 should have his meeple back and score set");
 		Debugger.printPlayerStats(p2);
 		Debugger.printStreetStats((Street)t.getLSElement(Tile.SIDE_RIGHT));
+		
+		board.finalCheckScores();
+		System.out.println("endgame score checks");
+		Debugger.printPlayerStats(p1);
+		Debugger.printPlayerStats(p2);
 		
 		System.out.println("## done??");
 		
