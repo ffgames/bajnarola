@@ -127,7 +127,7 @@ public class Board {
 	
 	public void endTurn(Tile tile){
 		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
-			checkScores(tile.getLSElement(i));
+			checkScores(tile.getLSElement(i), false);
 		}
 	}
 	
@@ -346,7 +346,7 @@ public class Board {
 					if (neighbour != null && neighbour.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
 						el = neighbour.getLSElement(Tile.SIDE_CENTER);
 						el.addTile(tile, (short)-1);
-						checkScores(el);
+						checkScores(el, false);
 					}
 					
 				}
@@ -390,13 +390,32 @@ public class Board {
 		return direction;
 	}
 	
-	private static final void checkScores(LandscapeElement scoreEl) {
-		if (scoreEl != null && scoreEl.isCompleted()){
-			List<Player> owners = scoreEl.getScoreOwners();
+	/* If the exists landscape exists and it is completed (or if it exists and the game is ended) 
+	 * assign the current landscape score to its owner(s). */
+	private static final void checkScores(LandscapeElement ls, boolean endGame) {
+		if (ls != null && (ls.isCompleted() || endGame)){
+			short score;
+			List<Player> owners = ls.getScoreOwners();
+			
 			for(Player o : owners){
-				o.setScore((short)(o.getScore()+scoreEl.getValue()));
+				score = ls.getValue();
+				o.setScore((short)(o.getScore() + score));
 			}
-			scoreEl.clear();
+			ls.clear();
+		}
+	}
+	
+	/* Look for all the landscapes of the scenario that are still empty 
+	 * at the end of the game. For those empty landscapes, calculate the score
+	 * and assign it to their current owners(s). */
+	public void finalCheckScores() {
+		LandscapeElement ls;
+		
+		for (Tile t : scenario.values()) {
+			for (short side = 0; side < Tile.SIDE_COUNT; side++) {
+				ls = t.getLSElement(side);
+				checkScores(ls, true);
+			}
 		}
 	}
 	

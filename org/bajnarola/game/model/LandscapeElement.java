@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class LandscapeElement {
-	boolean completed, visited;
+	boolean completed;
 	Map<Player, Integer> owners;
 	List<Tile> tiles;
 	Tile elementRoot;
 	short value;
 	
 	public LandscapeElement(Tile elementRoot, short tileSide) {
-		visited = completed = false;
+		completed = false;
 		this.owners = new Hashtable<Player, Integer>();
 		this.elementRoot = elementRoot;
 		this.value = 0;
@@ -55,9 +55,6 @@ public abstract class LandscapeElement {
 	public List<Tile> getTiles(){
 		return this.tiles;
 	}
-	public void visit() {
-		visited = true;
-	}
 	
 	protected void complete() {
 		completed = true;
@@ -65,10 +62,6 @@ public abstract class LandscapeElement {
 
 	public boolean isCompleted() {
 		return completed;
-	}
-
-	public boolean isVisited() {
-		return visited;
 	}
 	
 	protected void updateValue(short delta) {
