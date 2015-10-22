@@ -33,15 +33,13 @@ import org.bajnarola.game.model.Tile;
 public interface BoardController extends Remote {
 	public int getTurn() throws RemoteException;
 	public void setTurn(int turn) throws RemoteException;
-	public Hashtable<Integer, Tile> getScenario() throws RemoteException;
-	public ArrayList<Tile> getDeck() throws RemoteException;
-	public ArrayList<Player> getPlayers() throws RemoteException;
+
 	
-	public Boolean probe(short x, short y, Tile tile) throws RemoteException;
-	public Boolean probeMeeple(short x, short y, Tile tile, Meeple meeple) throws RemoteException;
-	public void place(short x, short y, Tile tile, Meeple meeple) throws RemoteException;
-	public void updateLandscape(short x, short y) throws RemoteException;
 	public Integer getDiceValue() throws RemoteException;
 	public String winner() throws RemoteException;
+	
+/*	public Hashtable<Integer, Tile> getScenario() throws RemoteException;
+	public ArrayList<Tile> getDeck() throws RemoteException;
+	public ArrayList<Player> getPlayers() throws RemoteException;*/
 }
 

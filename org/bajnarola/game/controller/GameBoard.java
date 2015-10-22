@@ -54,6 +54,56 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 	}
 
 	@Override
+	public Integer getDiceValue() throws RemoteException {
+		if(this.diceValue == 0) {
+			try {
+				this.diceLock.lock();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return this.diceValue;
+	}
+	
+	/* Update the internal board status after a turn has been played by another player.
+	 * Return true if the game has ended, false otherwise. */
+	public boolean updateBoard(TurnDiff diff) throws Exception {
+		Player p;		
+		Tile tile;
+		Meeple meeple;
+	
+		tile = board.beginTurn();
+		if (tile == null) {
+			System.out.println("Game end"); /* TODO: game end */
+			return true;
+		}
+		
+		p = board.getPlayerByName(diff.playerName);
+		if (p == null)
+			throw new Exception("Error: missing player");
+		
+		
+		if (!board.probe(diff.x, diff.y, tile))
+			throw new Exception("Error: illegal tile placement");
+			
+ 		board.place(diff.x, diff.y, tile);
+		
+ 		if (diff.meepleTileSide > -1) {
+ 			meeple = p.getMeeple();
+ 			meeple.setTileSide(diff.meepleTileSide);
+			if (!board.probeMeeple(tile, meeple))
+				throw new Exception("Error: illegal meeple placement");
+			
+			board.placeMeeple(tile, meeple);
+ 		}
+		
+ 		board.endTurn(tile);
+ 		
+		return false;
+	}
+
+	@Override
 	public int getTurn() throws RemoteException {
 		// TODO Auto-generated method stub
 		return 0;
@@ -66,59 +116,9 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 	}
 
 	@Override
-	public Hashtable<Integer, Tile> getScenario() throws RemoteException {
+	public String winner() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public ArrayList<Tile> getDeck() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<Player> getPlayers() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Boolean probe(short x, short y, Tile tile) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Boolean probeMeeple(short x, short y, Tile tile, Meeple meeple)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void place(short x, short y, Tile tile, Meeple meeple)
-			throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void updateLandscape(short x, short y) throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Integer getDiceValue() throws RemoteException {
-		if(this.diceValue == 0) {
-			try {
-				this.diceLock.lock();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return this.diceValue;
-	}
+	
 }

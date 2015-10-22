@@ -76,6 +76,14 @@ public class Board {
 		
 	}
 	
+	public Player getPlayerByName(String name) {
+		for (Player p : players) {
+			if (p.getName().equals(name)) 
+				return p;
+		}
+		return null;
+	}
+	
 	public int getTurn() {
 		return turn;
 	}
@@ -357,7 +365,8 @@ public class Board {
 	/* Check if the given meeple can be placed on the Tile */
 	public boolean probeMeeple(Tile tile, Meeple meeple) {
 		/* Can't place a meeple on the grass */
-		if (tile.getElements()[meeple.getTileSide()] == Tile.ELTYPE_GRASS)
+		if (tile.getElements()[meeple.getTileSide()] == Tile.ELTYPE_GRASS || 
+				meeple == null)
 			return false;
 		
 		/* landscape should be present if element != GRASS */
