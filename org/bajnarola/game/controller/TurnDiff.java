@@ -1,6 +1,8 @@
 package org.bajnarola.game.controller;
 
-public class TurnDiff {
+import java.io.Serializable;
+
+public class TurnDiff implements Serializable {
 	/* If meepleTileSide == -1 no meeple is deployed */
 	public short x, y, tileDirection, meepleTileSide;
 	public String playerName;

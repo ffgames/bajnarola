@@ -87,7 +87,7 @@ public class MainClass {
 			//gBoard.initBoard(iClient.players.keySet());
 			System.out.println("OK");
 			
-			iClient.mainLoop(iServer.getPlayer().username);
+			iClient.mainLoop(iServer.getPlayer().username, gBoard);
 			
 		} catch (RemoteException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();

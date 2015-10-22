@@ -37,6 +37,8 @@ public interface BoardController extends Remote {
 	
 	public Integer getDiceValue() throws RemoteException;
 	public String winner() throws RemoteException;
+	public boolean updateBoard(TurnDiff dState) throws RemoteException, Exception;
+	public TurnDiff play(String sender, Integer turn) throws RemoteException;
 	
 /*	public Hashtable<Integer, Tile> getScenario() throws RemoteException;
 	public ArrayList<Tile> getDeck() throws RemoteException;

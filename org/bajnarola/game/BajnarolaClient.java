@@ -38,6 +38,7 @@ import java.net.MalformedURLException;
 
 import org.bajnarola.game.controller.BoardController;
 import org.bajnarola.game.controller.GameBoard;
+import org.bajnarola.game.controller.TurnDiff;
 import org.bajnarola.networking.NetPlayer;
 
 import java.util.Collections;
@@ -114,11 +115,9 @@ public class BajnarolaClient {
 	}
 	
 	/* Game main loop */
-	public void mainLoop(String myUsername) {
+	public void mainLoop(String myUsername, GameBoard myBc) {
 		Boolean endGame = false;
-		StateDiff dState = null;
-		
-		BoardController myBc  = this.players.get(myUsername);
+		TurnDiff dState = null;
 		BoardController othBc = null;
 		List<String> deadPlayers = new ArrayList<String>();
 
@@ -128,21 +127,29 @@ public class BajnarolaClient {
 			for (String cPlayer : this.players.keySet()) {
 				if (cPlayer.equals(myUsername)) {
 					/* It's the turn of this player */
-					System.out.println("My turn!");
-					myBc.play();
+					System.out.println("My turn! " + myBc.myPlayedTurn);
+					myBc.localPlay();
 				} else {
 					/* Call the other players and kindly ask them to play */
 					othBc = this.players.get(cPlayer);
 
-					System.out.println("Turn of " + cPlayer + " waiting for a response");
+					System.out.println("Turn of " + cPlayer + " waiting for a response...");
 					
 					try {
-						dState = othBc.play();
-						myBc.updateState(dState);
+						/* TODO: Username is an insecure solution */
+						dState = othBc.play(myUsername, myBc.myPlayedTurn+1);
+						myBc.myPlayedTurn++;
+						
+						myBc.updateBoard(dState);
 					} catch(RemoteException e) {
 						/* XXX CRASH! XXX */
 						System.err.println("Node Crash! (" + cPlayer + ")");
 						deadPlayers.add(cPlayer);
+					} catch(Exception e) {
+						/* TODO specialized exception */
+						System.err.println("Illegal move, cheat by " + cPlayer);
+						e.printStackTrace();
+						/* XXX valuta se eliminare il giocatore */
 					}
 				}
 			}

@@ -5,6 +5,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Random;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
@@ -22,17 +24,15 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 	
 	Board board;
 	Lock diceLock;
+	ReentrantLock playLock;
 	Integer diceValue;
 	Random randomGenerator;
-	
+	Condition waitCondition;
+	TurnDiff myTurnDiff = null;
+
+	public int myPlayedTurn = 0;
 	private void throwDice() {
-		try {
-			this.diceLock.lock();
-			this.diceValue = this.randomGenerator.nextInt();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
+		this.diceValue = this.randomGenerator.nextInt();
 		this.diceLock.unlock();
 	}
 
@@ -43,21 +43,30 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 		this.randomGenerator = new Random();
 		// XXX: new Board constructor needs players list
 		//this.board = new Board();
-		
+
 		this.diceLock = new Lock();
+		this.playLock = new ReentrantLock();
+		try {
+			this.diceLock.lock();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
-		this.diceValue = -1;
+		this.waitCondition = this.playLock.newCondition();
+		this.myPlayedTurn=-1;
+		this.diceValue = null;
 		
 		this.throwDice();
-		
+				
 		/* XXX spareggi */
 	}
 
 	@Override
 	public Integer getDiceValue() throws RemoteException {
-		if(this.diceValue == 0) {
+		if(this.diceValue == null) {
 			try {
 				this.diceLock.lock();
+				this.diceLock.unlock();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -119,6 +128,46 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 	public String winner() throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public TurnDiff play(String sender, Integer turn) throws RemoteException {
+		this.playLock.lock();
+		try {
+			if (this.myPlayedTurn < turn) {
+				System.out.println("Asking for turn " + turn);
+				this.waitCondition.await();
+			} else if (this.myPlayedTurn > turn) {
+				System.err.println("Wrong turn request: myTurn=" + this.myPlayedTurn + " turn: " + turn);
+				/* throw new Exception("Wrong turn"); */
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			this.playLock.unlock();
+		}
+		return this.myTurnDiff;
+	}
+	
+	public TurnDiff localPlay(){
+		this.playLock.lock();
+		/* TODO: play */
+		System.out.print("Playing...");
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("OK");
+		
+		this.myPlayedTurn++;
+		this.waitCondition.signalAll();
+
+		this.playLock.unlock();
+		return this.myTurnDiff;
 	}
 	
 }

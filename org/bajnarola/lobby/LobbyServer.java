@@ -70,7 +70,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 			throw new RemoteException("Game already started");
 		
 		this.players.put(p.username, p);
-		System.out.println("Got a new player: " + p.username + " (" +p.rmiUriBoard+"," + p.rmiUriLobby + ")");
+		System.out.println("Got a new player: " + p.username + " (" +p.rmiUriBoard + ")");
 		
 		if (this.players.size() < this.maxPlayers) {
 			try {
