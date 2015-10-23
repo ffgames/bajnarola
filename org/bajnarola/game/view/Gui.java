@@ -12,16 +12,15 @@ import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
-import sun.misc.Lock;
-
 public class Gui extends BasicGame implements InputProviderListener {
 	
 	static final String GAMENAME = "Bajnarola";
+	static final float SCROLL_AREA_RATEO = (float)0.05;
 	
 	private InputProvider provider;
 	private Input rawInput;
 	
-	private int leftBorderX, rightBorderX, upperBordery, lowerBorderY;
+	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
 	
 	Animator animator;
 	
@@ -34,16 +33,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Command rotateComm = new BasicCommand("rotate");
 	private Command backComm = new BasicCommand("back");
 	
-	private String message = "Press something..";
+	private String message = "Press something..", message2 = "";
 	
 	private Image background;
 	private bg_type backgroundType;
 	
-	private Lock turnEndLock;
-	
-	public Gui(Lock turnEndLock){
+	public Gui(){
 		super(GAMENAME);
-		this.turnEndLock = turnEndLock;
 	}
 	
 	@Override
@@ -60,6 +56,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 rawInput = new Input(gc.getScreenHeight());
 		 
 		 animator = new Animator();
+		 
+		 leftBorderX = (int)((float)gc.getScreenWidth() * SCROLL_AREA_RATEO);
+		 rightBorderX = gc.getScreenWidth() - leftBorderX;
+		 upperBorderY= (int)((float)gc.getScreenHeight() * SCROLL_AREA_RATEO);
+		 lowerBorderY = gc.getScreenHeight() - upperBorderY;
 		 
 		 background = new Image("res/Craggy_Rock.jpg");
 		 backgroundType = bg_type.BG_TILED;
@@ -105,6 +106,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 				break;
 		}
 		g.drawString(message, 10, 20);
+		g.drawString(message2, 10, 50);
 		
 		animator.step();
 	}
@@ -150,7 +152,17 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy){
-		
+		message2 = "";
+		if(newx < leftBorderX){
+			message2 += "Left ";
+		} else if (newx > rightBorderX){
+			message2 += "Roght ";
+		}
+		if(newy < upperBorderY){
+			message2 += "Up";
+		} else if (newy > lowerBorderY){
+			message2 += "Down";
+		}
 	}
 	
 	private void selectAct(boolean mouse){
@@ -168,13 +180,5 @@ public class Gui extends BasicGame implements InputProviderListener {
 	@Override
 	public void controlReleased(Command command) {
 		
-	}
-
-	private void turnEnd(){
-		try {
-			turnEndLock.unlock();
-		} catch (Exception e){
-			
-		}
 	}
 }

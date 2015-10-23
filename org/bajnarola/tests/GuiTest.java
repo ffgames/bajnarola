@@ -12,7 +12,7 @@ public class GuiTest {
 	public static void main(String[] args) {
 		try{
 			AppGameContainer appgc;
-			appgc = new AppGameContainer(new Gui(null));
+			appgc = new AppGameContainer(new Gui());
 			appgc.setDisplayMode(1900, 1000, false);
 			appgc.start();
 		} catch(SlickException ex){
