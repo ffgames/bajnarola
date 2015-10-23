@@ -1,7 +1,5 @@
 package org.bajnarola.game.view;
 
-import java.util.concurrent.locks.Lock;
-
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -14,12 +12,16 @@ import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
+import sun.misc.Lock;
+
 public class Gui extends BasicGame implements InputProviderListener {
 	
 	static final String GAMENAME = "Bajnarola";
 	
 	private InputProvider provider;
 	private Input rawInput;
+	
+	private int leftBorderX, rightBorderX, upperBordery, lowerBorderY;
 	
 	Animator animator;
 	
@@ -42,6 +44,27 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public Gui(Lock turnEndLock){
 		super(GAMENAME);
 		this.turnEndLock = turnEndLock;
+	}
+	
+	@Override
+	public void init(GameContainer gc) throws SlickException {
+		 provider = new InputProvider(gc.getInput());
+		 provider.addListener(this);
+		 
+		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), selectComm);
+		 
+		 provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
+		 		 
+		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), backComm);
+		 
+		 rawInput = new Input(gc.getScreenHeight());
+		 
+		 animator = new Animator();
+		 
+		 background = new Image("res/Craggy_Rock.jpg");
+		 backgroundType = bg_type.BG_TILED;
+		 //background = new Image("res/Medieval_village.jpg");
+		 //backgroundType = bg_type.BG_CENTERED;
 	}
 	
 	private void drawBgTiled(int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
@@ -87,27 +110,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 
 	@Override
-	public void init(GameContainer gc) throws SlickException {
-		 provider = new InputProvider(gc.getInput());
-		 provider.addListener(this);
-		 
-		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), selectComm);
-		 
-		 provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
-		 		 
-		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), backComm);
-		 
-		 rawInput = new Input(gc.getScreenHeight());
-		 
-		 animator = new Animator();
-		 
-		 background = new Image("res/Craggy_Rock.jpg");
-		 backgroundType = bg_type.BG_TILED;
-		 //background = new Image("res/Medieval_village.jpg");
-		 //backgroundType = bg_type.BG_CENTERED;
-	}
-
-	@Override
 	public void update(GameContainer gc, int i) throws SlickException {
 		// TODO Auto-generated method stub
 
@@ -144,6 +146,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 			rotateAct(true);
 		else if(change < 0)
 			rotateAct(false);
+	}
+	
+	@Override
+	public void mouseMoved(int oldx, int oldy, int newx, int newy){
+		
 	}
 	
 	private void selectAct(boolean mouse){
