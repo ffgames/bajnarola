@@ -147,9 +147,9 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 		return this.myTurnDiff;
 	}
 	
-	public TurnDiff localPlay(){
+	public TurnDiff localPlay(String me){
 		this.playLock.lock();
-		/* TODO: play */
+		
 		System.out.print("Playing...");
 		
 		try {
@@ -158,6 +158,28 @@ public class GameBoard extends UnicastRemoteObject implements BoardController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		Tile tile = board.beginTurn();
+		
+		/* TODO: - Wait for the view
+		 * updateturn()
+		 * 		 - Notify the model
+		 *		 - Model create LocalDiff
+		 *		 - Notify view */
+		
+		board.endTurn(tile);
+		
+		
+		short meepleTileSide = -1;
+		if (tile.getMeeple() != null)
+			meepleTileSide = tile.getMeeple().getTileSide();
+		
+		myTurnDiff = new TurnDiff(tile.getX(),
+		                          tile.getY(),
+		                          (short)tile.getDirection(), 
+		                          meepleTileSide,
+		                          me);
+		
 		
 		System.out.println("OK");
 		

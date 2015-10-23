@@ -127,7 +127,7 @@ public class BajnarolaClient {
 				if (cPlayer.equals(myUsername)) {
 					/* It's the turn of this player */
 					System.out.println("My turn! " + myBc.myPlayedTurn);
-					myBc.localPlay();
+					myBc.localPlay(myUsername);
 				} else {
 					/* Call the other players and kindly ask them to play */
 					othBc = this.players.get(cPlayer);
@@ -139,7 +139,7 @@ public class BajnarolaClient {
 						dState = othBc.play(myUsername, myBc.myPlayedTurn+1);
 						myBc.myPlayedTurn++;
 						
-						myBc.updateBoard(dState);
+						myBc.updateBoard(dState); /* TODO: updateTurn() */
 					} catch(RemoteException e) {
 						/* XXX CRASH! XXX */
 						System.err.println("Node Crash! (" + cPlayer + ")");
