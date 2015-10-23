@@ -1,5 +1,6 @@
 package org.bajnarola.game.view;
 
+import java.util.concurrent.locks.Lock;
 
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -14,6 +15,8 @@ import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
 public class Gui extends BasicGame implements InputProviderListener {
+	
+	static final String GAMENAME = "Bajnarola";
 	
 	private InputProvider provider;
 	private Input rawInput;
@@ -34,8 +37,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Image background;
 	private bg_type backgroundType;
 	
-	public Gui(String gamename){
-		super(gamename);	
+	private Lock turnEndLock;
+	
+	public Gui(Lock turnEndLock){
+		super(GAMENAME);
+		this.turnEndLock = turnEndLock;
 	}
 	
 	private void drawBgTiled(int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
@@ -157,4 +163,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 		
 	}
 
+	private void turnEnd(){
+		try {
+			turnEndLock.unlock();
+		} catch (Exception e){
+			
+		}
+	}
 }
