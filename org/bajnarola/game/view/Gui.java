@@ -29,17 +29,20 @@ public class Gui extends BasicGame implements InputProviderListener {
 		BG_CENTERED
 	};
 	
+	private ViewController controller;
+	
 	private Command selectComm = new BasicCommand("select");
 	private Command rotateComm = new BasicCommand("rotate");
 	private Command backComm = new BasicCommand("back");
 	
 	private String message = "Press something..", message2 = "";
 	
-	private Image background;
-	private bg_type backgroundType;
+	private Image boardBackground;
+	private bg_type boardBackgroundType;
 	
-	public Gui(){
+	public Gui(ViewController controller){
 		super(GAMENAME);
+		this.controller = controller;
 	}
 	
 	@Override
@@ -57,18 +60,23 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 
 		 animator = new Animator();
 		 
-		 leftBorderX = (int)((float)gc.getScreenWidth() * SCROLL_AREA_RATEO);
-		 rightBorderX = gc.getScreenWidth() - leftBorderX;
-		 upperBorderY= (int)((float)gc.getScreenHeight() * SCROLL_AREA_RATEO);
-		 lowerBorderY = gc.getScreenHeight() - upperBorderY;
+		 leftBorderX = (int)((float)gc.getWidth() * SCROLL_AREA_RATEO);
+		 rightBorderX = gc.getWidth() - leftBorderX;
+		 upperBorderY= (int)((float)gc.getHeight() * SCROLL_AREA_RATEO);
+		 lowerBorderY = gc.getHeight() - upperBorderY;
 		 
-		 background = new Image("res/Craggy_Rock.jpg");
-		 backgroundType = bg_type.BG_TILED;
+		 if(gc.getHeight() > 800){
+			 boardBackground = new Image("res/backgrounds/Craggy_Rock_1024.jpg");
+		 } else if(gc.getHeight() > 500){
+			 boardBackground = new Image("res/backgrounds/Craggy_Rock_512.jpg");
+		 } else
+			 boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
+		 boardBackgroundType = bg_type.BG_TILED;
 		 //background = new Image("res/Medieval_village.jpg");
 		 //backgroundType = bg_type.BG_CENTERED;
 	}
 	
-	private void drawBgTiled(int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
+	private void drawBgTiled(Image background, int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
 		int sw;
 		int sh = screenHeight;
@@ -86,7 +94,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 	
-	private void drawBgCentered(int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
+	private void drawBgCentered(Image background, int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
 		tx = (screenWidth - backgroundWidth) / 2;
 		ty = (screenHeight - backgroundHeight) / 2;
@@ -95,12 +103,12 @@ public class Gui extends BasicGame implements InputProviderListener {
 		
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		switch(backgroundType){
+		switch(boardBackgroundType){
 			case BG_TILED:
-				drawBgTiled(gc.getWidth(), gc.getHeight(), background.getWidth(), background.getHeight());
+				drawBgTiled(boardBackground, gc.getWidth(), gc.getHeight(), boardBackground.getWidth(), boardBackground.getHeight());
 				break;
 			case BG_CENTERED:
-				drawBgCentered(gc.getWidth(), gc.getHeight(), background.getWidth(), background.getHeight());
+				drawBgCentered(boardBackground, gc.getWidth(), gc.getHeight(), boardBackground.getWidth(), boardBackground.getHeight());
 				break;
 			default:
 				break;
@@ -156,7 +164,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		if(newx < leftBorderX){
 			message2 += "Left ";
 		} else if (newx > rightBorderX){
-			message2 += "Roght ";
+			message2 += "Right ";
 		}
 		if(newy < upperBorderY){
 			message2 += "Up";
