@@ -35,8 +35,8 @@ import java.util.Map.Entry;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 
-import org.bajnarola.game.controller.BoardController;
-import org.bajnarola.game.controller.GameBoard;
+import org.bajnarola.game.controller.GameControllerRemote;
+import org.bajnarola.game.controller.GameController;
 import org.bajnarola.game.controller.TurnDiff;
 import org.bajnarola.networking.NetPlayer;
 
@@ -45,36 +45,37 @@ import java.util.Collections;
 import java.util.List;
 
 public class BajnarolaClient {
-	/* XXX maybe a list is better. */
-	Map<String,BoardController> players;
+	Map<String,GameControllerRemote> players;
 
 	public BajnarolaClient() {
-		this.players = new LinkedHashMap<String,BoardController>();
+		this.players = new LinkedHashMap<String,GameControllerRemote>();
 	}
 	
 	public void getPlayers(Map<String,NetPlayer> playersStrings) {
 		for (String user : playersStrings.keySet()) {
-			BoardController bc;
+			GameControllerRemote bc;
 			try {
-				bc = (BoardController) Naming.lookup(playersStrings.get(user).rmiUriBoard);
+				String uriBoard = playersStrings.get(user).rmiUriBoard;
+				bc = (GameControllerRemote) Naming.lookup(uriBoard);
 				this.players.put(user, bc);
-			} catch (MalformedURLException e) {
+			} catch (MalformedURLException | NotBoundException e) {
 				e.printStackTrace();
 			} catch (RemoteException e) {
-				/* XXX crash! */
-				e.printStackTrace();
-			} catch (NotBoundException e) {
-				e.printStackTrace();
+				/* crash! */
+				System.out.println("No answer from " + user);
 			}
 		}
 	}
 	
 	public void sortPlayerOnDiceThrow(Map<String, Integer> dices) {
 
-		Map<String,BoardController> tmpplayers = new LinkedHashMap<String,BoardController>();
+		Map<String,GameControllerRemote> tmpplayers;
+		List<Entry<String,Integer>> tmpl;
 		
-		List<Entry<String,Integer>> tmpl = new LinkedList <Entry<String,Integer>>(dices.entrySet());
+		tmpl = new LinkedList <Entry<String,Integer>>(dices.entrySet());		
+		tmpplayers = new LinkedHashMap<String,GameControllerRemote>();
 
+		
 		Collections.sort(tmpl,
 			new Comparator<Entry<String,Integer>>() {
 				public int compare(Entry<String,Integer> e1, Entry<String,Integer> e2) {
@@ -95,12 +96,12 @@ public class BajnarolaClient {
 	}
 	
 	public <T> Map<String,T> multicastInvoke(Method m) {
-		BoardController cGameBoard;
+		GameControllerRemote cGameBoard;
 		Map <String,T> retMap = new Hashtable<String,T>();
 		T retVal;
 		
 		for (String user : this.players.keySet()) {
-			cGameBoard = (BoardController) this.players.get(user);
+			cGameBoard = (GameControllerRemote) this.players.get(user);
 			
 			try {
 				 retVal = (T) m.invoke(cGameBoard);
@@ -114,10 +115,10 @@ public class BajnarolaClient {
 	}
 	
 	/* Game main loop */
-	public void mainLoop(String myUsername, GameBoard myBc) {
+	public void mainLoop(String myUsername, GameController myBc) {
 		Boolean endGame = false;
 		TurnDiff dState = null;
-		BoardController othBc = null;
+		GameControllerRemote othBc = null;
 		List<String> deadPlayers = new ArrayList<String>();
 
 		/* While the game is running and there are 2 or more players. */
@@ -127,7 +128,10 @@ public class BajnarolaClient {
 				if (cPlayer.equals(myUsername)) {
 					/* It's the turn of this player */
 					System.out.println("My turn! " + myBc.myPlayedTurn);
-					myBc.localPlay(myUsername);
+					if (myBc.localPlay(myUsername)) {
+						System.out.println("Game ended for empty deck");
+						endGame = true;
+					}
 				} else {
 					/* Call the other players and kindly ask them to play */
 					othBc = this.players.get(cPlayer);
@@ -135,13 +139,16 @@ public class BajnarolaClient {
 					System.out.println("Turn of " + cPlayer + " waiting for a response...");
 					
 					try {
-						/* TODO: Username is an insecure solution */
-						dState = othBc.play(myUsername, myBc.myPlayedTurn+1);
-						myBc.myPlayedTurn++;
-						
-						myBc.updateBoard(dState); /* TODO: updateTurn() */
+						if (!myBc.isDeckEmpty()) {
+							dState = othBc.play(myBc.myPlayedTurn+1);
+							myBc.myPlayedTurn++;
+							myBc.updateBoard(dState);
+						} else {
+							endGame = true;
+							System.out.println("Game ended for empty deck");
+						}
 					} catch(RemoteException e) {
-						/* XXX CRASH! XXX */
+						/* CRASH! */
 						System.err.println("Node Crash! (" + cPlayer + ")");
 						deadPlayers.add(cPlayer);
 					} catch(Exception e) {
@@ -161,7 +168,22 @@ public class BajnarolaClient {
 			if (this.players.size() == 1) {
 				/* The player is alone he is the winner. */
 				endGame = true;
-				/* TODO: winner string */
+				System.out.println("I am the winner"); 
+				/* TODO: Notify the view */
+			} else if (endGame) {
+				
+				Map<String, Integer> scores = myBc.finalCheckScore();
+				List<String> winners = new ArrayList<>();
+				
+				int max = Collections.max(scores.values());
+				for (String p: scores.keySet()) {
+					if (scores.get(p) == max) {
+						winners.add(p);
+						System.out.println("Winner " + p + " with score " + scores.get(p));
+					}
+				}
+				
+				/* TODO: send the map and the list to the view */
 			}
 		}
 	}

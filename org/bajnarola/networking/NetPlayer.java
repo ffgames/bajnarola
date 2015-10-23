@@ -2,7 +2,7 @@ package org.bajnarola.networking;
 
 import java.io.Serializable;
 
-import org.bajnarola.game.controller.GameBoard;
+import org.bajnarola.game.controller.GameController;
 
 public class NetPlayer implements Serializable {
 	/**
@@ -14,6 +14,6 @@ public class NetPlayer implements Serializable {
 	
 	public NetPlayer(String uname, String uri) {
 		this.username = uname;
-		this.rmiUriBoard = uri + "/" + GameBoard.class.getName();
+		this.rmiUriBoard = uri + "/" + GameController.class.getName();
 	}
 }

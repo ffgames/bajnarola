@@ -1,5 +1,6 @@
 package org.bajnarola.game.view;
 
+import org.bajnarola.game.controller.ViewController;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;

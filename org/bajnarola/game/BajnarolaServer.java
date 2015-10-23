@@ -26,7 +26,7 @@ import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import org.bajnarola.game.controller.GameBoard;
+import org.bajnarola.game.controller.GameController;
 import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.RandomString;
 
@@ -49,17 +49,17 @@ public class BajnarolaServer {
 		System.out.print("\n\tListening on '" + npath + "' ...");
 	}
 	
-	private void CommonConstruct(String server, String basepath, GameBoard myBoard) {
+	private void CommonConstruct(String server, String basepath, GameController myBoard) {
 		String path = server + "/" + basepath;
 		this.player = new NetPlayer(basepath, path);
 				
 		this.setRebind(path, myBoard);
 	}
 
-	public BajnarolaServer(String server, String basepath, GameBoard myBoard) {
+	public BajnarolaServer(String server, String basepath, GameController myBoard) {
 		this.CommonConstruct(server, basepath, myBoard);
 	}
-	public BajnarolaServer(String server, GameBoard myBoard) {
+	public BajnarolaServer(String server, GameController myBoard) {
 		String s = RandomString.generateAsciiString();
 		this.CommonConstruct(server, s, myBoard);
 	}

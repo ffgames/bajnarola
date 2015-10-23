@@ -24,6 +24,7 @@ package org.bajnarola.game.model;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.bajnarola.utils.Shuffler;
 
@@ -51,8 +52,11 @@ public class Board {
 	}
 	
 	public void initBoard(List<String> playerNames, boolean shuffle, int seed) {
+		
+		short i = 0;
 		for(String pl : playerNames){
-			players.add(new Player(pl));
+			players.add(new Player(pl, i));
+			i++;	
 		}
 		
 		/* initialise the deck: create all the tiles. */
@@ -134,10 +138,14 @@ public class Board {
 		return newTile;
 	}
 	
-	public void endTurn(Tile tile){
+	public Map<String, Boolean> endTurn(Tile tile){
+		Map<String, Boolean> points = new Hashtable<String, Boolean>();
+		
 		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
-			checkScores(tile.getLSElement(i), false);
+			points.putAll(checkScores(tile.getLSElement(i), false));
 		}
+		
+		return points;
 	}
 	
 	/* Check if the given tile can be placed at position x y of the board.
@@ -381,7 +389,7 @@ public class Board {
 	}
 	
 	// TODO: better optimization
-	private static final String getKey(short x, short y) {	
+	public static final String getKey(short x, short y) {	
 		return Integer.toString((int)x) + ";" + Integer.toString((int)y);
 	}
 	
@@ -402,9 +410,23 @@ public class Board {
 	
 	/* If the exists landscape exists and it is completed (or if it exists and the game is ended) 
 	 * assign the current landscape score to its owner(s). */
-	private static final void checkScores(LandscapeElement ls, boolean endGame) {
-		if (ls != null && (ls.isCompleted() || endGame)){
+	private static final Map<String, Boolean> checkScores(LandscapeElement ls, boolean endGame) {
+		if (ls != null && (ls.isCompleted() || endGame)){	
 			short score;
+			
+			/* Add the points of a landscape to the set.
+			 * Duplicated points are not added in the set. */
+			Map<String,Boolean> points = new Hashtable<String, Boolean>();
+			short x, y;
+			String key;
+			for (Tile t : ls.getTiles()) {
+				x = t.getX();
+				y = t.getY();
+				key = Board.getKey(x, y);
+				
+				points.put(key, t.hasMeeple());
+			}
+			
 			List<Player> owners = ls.getScoreOwners();
 			
 			for(Player o : owners){
@@ -412,7 +434,10 @@ public class Board {
 				o.setScore((short)(o.getScore() + score));
 			}
 			ls.clear();
+			
+			return points;
 		}
+		return null;
 	}
 	
 	/* Look for all the landscapes of the scenario that are still empty 

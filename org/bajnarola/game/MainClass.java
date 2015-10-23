@@ -3,8 +3,8 @@ package org.bajnarola.game;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import org.bajnarola.game.controller.BoardController;
-import org.bajnarola.game.controller.GameBoard;
+import org.bajnarola.game.controller.GameControllerRemote;
+import org.bajnarola.game.controller.GameController;
 import org.bajnarola.lobby.LobbyClient;
 
 public class MainClass {
@@ -44,7 +44,7 @@ public class MainClass {
 			System.out.println("Bajnarola starting up.");
 			
 			System.out.print("Personal board set up...");
-			GameBoard gBoard = new GameBoard();
+			GameController gBoard = new GameController();
 			System.out.println("OK!");
 
 			System.out.print("Server start up:");
@@ -53,6 +53,8 @@ public class MainClass {
 			else
 				iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
 			System.out.println("OK!");
+			
+			gBoard.setPlayerName(iServer.getPlayer().username);
 			
 			System.out.print("Client module initilization:");
 			iClient = new BajnarolaClient();
@@ -73,7 +75,7 @@ public class MainClass {
 			/* Get others dice throws */
 			Map<String,Integer> dices;
 			
-			dices = iClient.multicastInvoke(BoardController.class.getMethod("getDiceValue"));
+			dices = iClient.multicastInvoke(GameControllerRemote.class.getMethod("getDiceValue"));
 			/* Sorting players based on dice throws */
 			iClient.sortPlayerOnDiceThrow(dices);
 			

@@ -51,6 +51,13 @@ public class Tile {
 	public Meeple getMeeple() {
 		return meeple;
 	}
+	
+	public boolean hasMeeple() {
+		if (this.meeple != null)
+			return true;
+		
+		return false;
+	}
 
 	public String getName() {
 		return name;

@@ -24,18 +24,8 @@ package org.bajnarola.game.controller;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface BoardController extends Remote {
-	public int getTurn() throws RemoteException;
-	public void setTurn(int turn) throws RemoteException;
-
-	
+public interface GameControllerRemote extends Remote {
 	public Integer getDiceValue() throws RemoteException;
-	public String winner() throws RemoteException;
-	public boolean updateBoard(TurnDiff dState) throws RemoteException, Exception;
-	public TurnDiff play(String sender, Integer turn) throws RemoteException;
-	
-/*	public Hashtable<Integer, Tile> getScenario() throws RemoteException;
-	public ArrayList<Tile> getDeck() throws RemoteException;
-	public ArrayList<Player> getPlayers() throws RemoteException;*/
+	public TurnDiff play(Integer turn) throws RemoteException;
 }
 

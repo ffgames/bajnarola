@@ -8,14 +8,14 @@ public class Player {
 	static final short PLAYER_N_MEEPLE = 7;
 	Meeple meepleList[];
 	List<Meeple> hand;
-	short score;
+	short score, id;
 	boolean scoreChanged;
 	String name;
 	
-	public Player(String name) {
+	public Player(String name, short id) {
 		meepleList = new Meeple[PLAYER_N_MEEPLE];
 		hand = new ArrayList<Meeple>();
-				
+		this.id = id;
 		
 		for (int i = 0; i < meepleList.length ; i++) {
 			meepleList[i] = new Meeple(this);
@@ -34,6 +34,10 @@ public class Player {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public short getId() {
+		return id;
 	}
 	
 	public short getUpdateScore() {
