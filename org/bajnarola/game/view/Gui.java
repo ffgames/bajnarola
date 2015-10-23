@@ -18,6 +18,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private InputProvider provider;
 	private Input rawInput;
 	
+	Animator animator;
+	
 	private enum bg_type {
 		BG_TILED,
 		BG_CENTERED
@@ -74,6 +76,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 				break;
 		}
 		g.drawString(message, 10, 20);
+		
+		animator.step();
 	}
 
 	@Override
@@ -88,6 +92,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), backComm);
 		 
 		 rawInput = new Input(gc.getScreenHeight());
+		 
+		 animator = new Animator();
 		 
 		 background = new Image("res/Craggy_Rock.jpg");
 		 backgroundType = bg_type.BG_TILED;
