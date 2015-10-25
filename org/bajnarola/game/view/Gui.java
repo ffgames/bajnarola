@@ -13,6 +13,10 @@ import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
+import sun.misc.GC;
+
+import com.sun.javafx.scene.traversal.SceneTraversalEngine;
+
 public class Gui extends BasicGame implements InputProviderListener {
 	
 	static final String GAMENAME = "Bajnarola";
@@ -22,24 +26,37 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Input rawInput;
 	
 	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
+	private int windowWidth, windowHeight;
 	
 	Animator animator;
 	
-	private enum bg_type {
+	public enum bg_type {
 		BG_TILED,
 		BG_CENTERED
 	};
 	
-	private ViewController controller;
+	public enum scene_type {
+		SCENE_GAME,
+		SCENE_MENU,
+		SCENE_PAUSE
+	}
 	
-	private Command selectComm = new BasicCommand("select");
+	public ViewController controller;
+	
 	private Command rotateComm = new BasicCommand("rotate");
 	private Command backComm = new BasicCommand("back");
+	private Command escComm = new BasicCommand("esc");
 	
 	private String message = "Press something..", message2 = "";
 	
 	private Image boardBackground;
-	private bg_type boardBackgroundType;
+	
+	private IScene currentScene;
+	private MenuScene menuScene;
+	private GameScene gameScene;
+	private PauseScene pauseScene;
+	
+	private GameContainer container;
 	
 	public Gui(ViewController controller){
 		super(GAMENAME);
@@ -51,20 +68,25 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 provider = new InputProvider(gc.getInput());
 		 provider.addListener(this);
 		 
-		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), selectComm);
-		 
 		 provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
 		 		 
 		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), backComm);
+		 
+		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
 		 
 		 rawInput = new Input(gc.getScreenHeight());
 		 
 		 animator = new Animator();
 		 
-		 leftBorderX = (int)((float)gc.getWidth() * SCROLL_AREA_RATEO);
-		 rightBorderX = gc.getWidth() - leftBorderX;
-		 upperBorderY= (int)((float)gc.getHeight() * SCROLL_AREA_RATEO);
-		 lowerBorderY = gc.getHeight() - upperBorderY;
+		 windowHeight = gc.getHeight();
+		 windowWidth = gc.getWidth();
+		 
+		 leftBorderX = (int)((float)windowWidth * SCROLL_AREA_RATEO);
+		 rightBorderX = windowWidth - leftBorderX;
+		 upperBorderY= (int)((float)windowHeight * SCROLL_AREA_RATEO);
+		 lowerBorderY = windowHeight - upperBorderY;
+		 
+		 menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED);
 		 
 		 if(gc.getHeight() > 800){
 			 boardBackground = new Image("res/backgrounds/Craggy_Rock_1024.jpg");
@@ -73,17 +95,38 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 } else
 			 boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
 		 boardBackgroundType = bg_type.BG_TILED;
-		 //background = new Image("res/Medieval_village.jpg");
-		 //backgroundType = bg_type.BG_CENTERED;
+		 
+		 menuBackground =;
+		 menuBackgroundType = ;
+		 
+		 pauseBackground = new Image(windowWidth, windowHeight, Image.FILTER_LINEAR);
+		 pauseBackgroundType = bg_type.BG_CENTERED;
+		 
+		 currentScene = scene_type.SCENE_GAME;
+		 
+		 container = gc;
 	}
 	
-	private void drawBgTiled(Image background, int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
+	public void drawBackground(Image background, bg_type backgroundType){
+		switch(backgroundType){
+			case BG_TILED:
+				drawBgTiled(background, background.getWidth(), background.getHeight());
+				break;
+			case BG_CENTERED:
+				drawBgCentered(background, background.getWidth(), background.getHeight());
+				break;
+			default:
+				break;
+		}
+	}
+	
+	private void drawBgTiled(Image background, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
 		int sw;
-		int sh = screenHeight;
+		int sh = windowHeight;
 		ty = 0;
 		while(sh > 0){
-			sw = screenWidth;
+			sw = windowWidth;
 			tx = 0;
 			while(sw > 0){
 				background.draw(tx, ty);
@@ -95,29 +138,22 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 	
-	private void drawBgCentered(Image background, int screenWidth, int screenHeight, int backgroundWidth, int backgroundHeight){
+	private void drawBgCentered(Image background, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
-		tx = (screenWidth - backgroundWidth) / 2;
-		ty = (screenHeight - backgroundHeight) / 2;
-		background.draw(tx, ty);
+		tx = (windowWidth > backgroundWidth ? (windowWidth - backgroundWidth) / 2 : 0);
+		ty = (windowHeight > backgroundHeight ? (windowHeight - backgroundHeight) / 2 : 0);
+		background.draw(tx, ty, (windowWidth < backgroundWidth ? windowWidth : backgroundWidth), (windowHeight < backgroundHeight ? windowHeight : backgroundHeight));
 	}
-		
+	
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		switch(boardBackgroundType){
-			case BG_TILED:
-				drawBgTiled(boardBackground, gc.getWidth(), gc.getHeight(), boardBackground.getWidth(), boardBackground.getHeight());
-				break;
-			case BG_CENTERED:
-				drawBgCentered(boardBackground, gc.getWidth(), gc.getHeight(), boardBackground.getWidth(), boardBackground.getHeight());
-				break;
-			default:
-				break;
-		}
+		currentScene.render(gc, g);
+		
+		if(currentScene.sceneType == scene_type.SCENE_GAME && ((gc.isUpdatingOnlyWhenVisible() && !gc.isPaused()) || !gc.isUpdatingOnlyWhenVisible()))
+			animator.step();
+		
 		g.drawString(message, 10, 20);
 		g.drawString(message2, 10, 50);
-		
-		animator.step();
 	}
 
 	@Override
@@ -128,15 +164,15 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 	@Override
 	public void controlPressed(Command command) {
-		if(command.equals(selectComm)){
-			selectAct(false);
-		} else if(command.equals(rotateComm)){
+		if(command.equals(rotateComm)){
 			if(rawInput.isKeyDown(Input.KEY_LSHIFT) || rawInput.isKeyDown(Input.KEY_RSHIFT))
 				rotateAct(false);
 			else
 				rotateAct(true);
 		} else if(command.equals(backComm)){
 			backAct();
+		} else if(command.equals(escComm)){
+			escAct();
 		}
 	}
 
@@ -144,7 +180,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public void mouseClicked(int button, int x, int y, int clickCount) {
 		super.mouseClicked(button, x, y, clickCount);
 		if(button == 0)
-			selectAct(true);
+			selectAct(x, y);
 		else if(button == 1)
 			backAct();
 		message += " x: "+x+", y: "+y;
@@ -161,21 +197,45 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy){
+		//TODO: check if mouse is still in window space
 		message2 = "";
-		if(newx < leftBorderX){
+		if(newx < leftBorderX && newx > 2){
 			message2 += "Left ";
-		} else if (newx > rightBorderX){
+		} else if (newx > rightBorderX && newx < windowWidth-3){
 			message2 += "Right ";
 		}
-		if(newy < upperBorderY){
+		if(newy < upperBorderY && newy > 2){
 			message2 += "Up";
-		} else if (newy > lowerBorderY){
+		} else if (newy > lowerBorderY && newy < windowHeight-3){
 			message2 += "Down";
 		}
 	}
 	
-	private void selectAct(boolean mouse){
-		message = "select "+(mouse ? "mouse" : "keyboard");
+	private void selectAct(int x, int y){
+		message = "select x: "+x+", y: "+y;
+		switch(currentScene){
+			case SCENE_MENU:
+				break;
+			case SCENE_PAUSE:
+				break;
+			case SCENE_GAME:
+				break;
+		}
+	}
+	
+	private void switchScene(scene_type newScene){
+		switch(newScene){
+			case SCENE_PAUSE:
+				container.getGraphics().copyArea(pauseBackground, 0, 0);
+				currentScene = scene_type.SCENE_PAUSE;
+				break;
+			case SCENE_GAME:
+				currentScene = scene_type.SCENE_GAME;
+				break;
+			case SCENE_MENU:
+				currentScene = scene_type.SCENE_MENU;
+				break;
+		}
 	}
 	
 	private void rotateAct(boolean clockwise){
@@ -184,6 +244,15 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 	private void backAct(){
 		message = "back key pressed";
+	}
+	
+	private void escAct(){
+		message = "esc key pressed";
+		if(currentScene == scene_type.SCENE_GAME){
+			switchScene(scene_type.SCENE_PAUSE);
+		} else if(currentScene == scene_type.SCENE_PAUSE){
+			switchScene(scene_type.SCENE_GAME);
+		}
 	}
 	
 	@Override
