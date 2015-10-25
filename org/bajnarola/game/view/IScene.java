@@ -1,7 +1,5 @@
 package org.bajnarola.game.view;
 
-import org.bajnarola.game.view.Gui.bg_type;
-import org.bajnarola.game.view.Gui.scene_type;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -9,19 +7,24 @@ import org.newdawn.slick.Image;
 public abstract class IScene {
 	Gui guiManager;
 
-	Image background;
+	public Image background;
 	Gui.bg_type backgroundType;
 	
 	public Gui.scene_type sceneType;
 	
-	public IScene(Gui guiManager, Image background, bg_type backgroundType){
+	public IScene(Gui guiManager, Image background, Gui.bg_type backgroundType){
 		this.guiManager = guiManager;
 		this.background = background;
 		this.backgroundType = backgroundType;
-		this.sceneType = sceneType;
 	}
 	
-	public abstract HitBox click(int x, int y);
+	public abstract void leftClick(int x, int y);
+	public abstract void rightClick(int x, int y);
+	public abstract void wheelMoved(boolean up);
+	public abstract void enterPressed();
+	public abstract void escPressed();
+	public abstract void backspacePressed();
+	public abstract void mouseMoved(int oldx, int oldy, int newx, int newy);
 	
 	public abstract void render(GameContainer gc, Graphics g);
 }
