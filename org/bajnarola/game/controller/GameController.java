@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
@@ -33,6 +35,8 @@ public class GameController extends UnicastRemoteObject implements
 	endGameCause endCause;
 	Map<String, Integer> finalScores;
 	boolean winner;
+	GameOptions goptions;
+
 	
 	Board board;
 	Lock diceLock;
@@ -42,7 +46,6 @@ public class GameController extends UnicastRemoteObject implements
 	Condition waitCondition;
 	ViewController viewCtl;
 	TurnDiff myTurnDiff = null;
-	
 	
 	public int myPlayedTurn = 0;
 
@@ -64,7 +67,9 @@ public class GameController extends UnicastRemoteObject implements
 		this.randomGenerator = new Random();
 
 		this.board = new Board();
-
+		
+		this.viewCtl = new ViewController(board, this);
+		
 		this.diceLock = new Lock();
 		this.playLock = new ReentrantLock();
 		try {
@@ -76,12 +81,23 @@ public class GameController extends UnicastRemoteObject implements
 		this.waitCondition = this.playLock.newCondition();
 		this.myPlayedTurn = -1;
 		this.diceValue = null;
-
+		
 		this.throwDice();
 		
 		/* XXX spareggi */
 	}
 
+	public void setGameOptions(GameOptions goptions) {
+		this.goptions = goptions;
+	}
+	
+	public GameOptions getGameOptions() {
+		return this.goptions;
+	}
+	
+	public void waitOptionsFromUser() {
+		viewCtl.waitOptionsFromView();
+	}
 
 	@Override
 	public Integer getDiceValue() throws RemoteException {
@@ -99,10 +115,6 @@ public class GameController extends UnicastRemoteObject implements
 
 	public boolean isDeckEmpty() {
 		return board.getDeck().isEmpty();
-	}
-
-	public void setPlayerName(String playerName) {
-		this.viewCtl = new ViewController(board, playerName, this);
 	}
 
 	public endGameCause getEndCause() {
@@ -227,5 +239,10 @@ public class GameController extends UnicastRemoteObject implements
 		this.viewCtl.enqueueViewUpdate(new ViewUpdate(null, null));
 	}
 
+
+	public void initBoard(String playerName, List<String> playerNames, int seed) {
+		board.initBoard(playerNames, seed);
+		viewCtl.setPlayer(playerName);
+	}
 	
 }

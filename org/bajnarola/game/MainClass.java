@@ -1,6 +1,8 @@
 package org.bajnarola.game;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.bajnarola.game.controller.GameControllerRemote;
@@ -8,37 +10,20 @@ import org.bajnarola.game.controller.GameController;
 import org.bajnarola.lobby.LobbyClient;
 
 public class MainClass {
-	private static final String SERVER = "localhost";
-	private static final String LOBBY_SERVER = "localhost";
 	private static final String SERVICE = "rmi";
-
+	private static int seed = -1; 
+	
+	
 	public static void main(String[] argv) {
-		/* TODO: RMI modules            */
-		/* TODO: new BajnarolaClient(); */
-		
-		/* TODO: Graphics               */
-		/* TODO: new Gui();             */
 		LobbyClient     iLobby  = null;
 		BajnarolaServer iServer = null;
 		BajnarolaClient iClient = null;
 		
+		GameOptions goptions = null;
+		
 		String username = "";
 		String server   = "";
 		String lobbyserver;
-		
-		/* TODO getopt */
-		if (argv.length > 0)
-			username = argv[0];
-		
-		if (argv.length > 1)
-			lobbyserver = argv[1];
-		else
-			lobbyserver = LOBBY_SERVER;
-		
-		if (argv.length > 2)
-			server = argv[2];
-		else
-			server = SERVER;
 		
 		try {
 			System.out.println("Bajnarola starting up.");
@@ -46,6 +31,14 @@ public class MainClass {
 			System.out.print("Personal board set up...");
 			GameController gBoard = new GameController();
 			System.out.println("OK!");
+		
+			gBoard.waitOptionsFromUser();
+			
+			goptions = gBoard.getGameOptions();
+			
+			username = goptions.getPlayerName();
+			server = goptions.getLocalServerName();
+			lobbyserver = goptions.getLobbyServerURI();
 
 			System.out.print("Server start up:");
 			if (!username.isEmpty())
@@ -53,9 +46,7 @@ public class MainClass {
 			else
 				iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
 			System.out.println("OK!");
-			
-			gBoard.setPlayerName(iServer.getPlayer().username);
-			
+						
 			System.out.print("Client module initilization:");
 			iClient = new BajnarolaClient();
 			System.out.println("OK!");
@@ -64,8 +55,8 @@ public class MainClass {
 			iLobby = new LobbyClient(lobbyserver);
 			System.out.println("OK!");
 			
-			/* TODO: differentiate more room and real lobby dispatching */
 			System.out.print("Joining the default room...");
+			
 			/* Join the lobby and set neighbors list */
 			iClient.getPlayers(iLobby.join(iServer.getPlayer()));
 			
@@ -82,10 +73,15 @@ public class MainClass {
 			System.out.println("Got players:");
 			for (String k : iClient.players.keySet()) {
 				System.out.println("\t" + k + " with dice throw: " + dices.get(k));
+				if (seed == -1)
+					seed = dices.get(k);
 			}
 			
 			System.out.print("Initializing the board...");
-			//gBoard.initBoard(iClient.players.keySet());
+			
+			List<String> playerNames = new ArrayList<>(iClient.players.keySet());
+			
+			gBoard.initBoard(iServer.getPlayer().username, playerNames, seed);
 			System.out.println("OK");
 			
 			iClient.mainLoop(iServer.getPlayer().username, gBoard);

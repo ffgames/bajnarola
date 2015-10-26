@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
@@ -32,14 +33,14 @@ public class ViewController {
 	Tile drawnTile;
 	
 	
-	public ViewController(Board board, String playerName, GameController gameCtl) {
+	public ViewController(Board board, GameController gameCtl) {
 		super();
 		viewUpdatesQueue = new ArrayList<>();
 		this.gameCtl = gameCtl;
 		this.drawnTile = null;
 		this.guiLock = new Lock();
 		this.board = board;
-		this.player = board.getPlayerByName(playerName);
+		this.player = null;
 		
 		try {
 			this.guiLock.lock();
@@ -128,5 +129,22 @@ public class ViewController {
 
 	public boolean amIWinner() {
 		return gameCtl.amIWinner();
+	}
+	
+	public void waitOptionsFromView() {
+		try {
+			guiLock.lock();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayer(String playerName) {
+		this.player = board.getPlayerByName(playerName);
+	}
+	
+	public void setGameOptions(String playerName, String lobbyURI) {
+		this.gameCtl.setGameOptions(new GameOptions(playerName, lobbyURI));
+		guiLock.unlock();
 	}
 }
