@@ -127,8 +127,14 @@ public class GameScene extends IScene {
 	}
 	
 	public void meeplePlaced(){
-		placedMeeples.put(meepleToPlace.coords, meepleToPlace);
-		meepleToPlace = null;
+		if(meepleToPlace != null){
+			placedMeeples.put(meepleToPlace.coords, meepleToPlace);
+			meepleToPlace = null;
+		}
+	}
+	
+	public void landscapesSet(){
+		currentLanscape = null;
 	}
 	
 	public void probed(){
