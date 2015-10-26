@@ -45,32 +45,22 @@ public class MenuScene extends IScene {
 
 	@Override
 	public void rightClick(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void wheelMoved(boolean up) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void enterPressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void escPressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void backspacePressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

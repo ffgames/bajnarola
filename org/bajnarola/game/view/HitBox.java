@@ -3,7 +3,15 @@ package org.bajnarola.game.view;
 public class HitBox {
 	int ulx, uly, lrx, lry;
 	
+	public HitBox(){
+		reset(0,0,0,0);
+	}
+	
 	public HitBox(int upperLeftX, int upperLeftY, int lowerRightX, int lowerRightY){
+		reset(upperLeftX, upperLeftY, lowerRightX, lowerRightY);
+	}
+	
+	public void reset(int upperLeftX, int upperLeftY, int lowerRightX, int lowerRightY){
 		this.ulx = upperLeftX;
 		this.uly = upperLeftY;
 		this.lrx = lowerRightX;

@@ -8,8 +8,9 @@ public class ViewUpdate {
 	/* The set of points of all the completed landscapes.
 	 * For each point a boolean indicates whether a meeple is still present
 	 * or not in the corresponding tile. */
-	Map<String, Boolean> points;
-	Tile placedTile;
+	public Map<String, Boolean> points;
+	public Tile placedTile;
+	public boolean meeplesRemoved;
 	
 	ViewUpdate(Map<String,Boolean> points, Tile placedTile) {
 		this.placedTile = placedTile;

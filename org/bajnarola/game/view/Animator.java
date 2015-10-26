@@ -72,42 +72,46 @@ public class Animator {
 		return -1;
 	}
 	
-	private float getMeeplePlacementYOffset(){
+	private int getMeeplePlacementYOffset(){
 		if(meeplePlacementOn){
-			return (((MEEPLE_PLACEMENT_FINAL_OFFSET - MEEPLE_PLACEMENT_INITIAL_OFFSET) / MEEPLE_PLACEMENT_DURATION) * meeplePlacementFrame) + MEEPLE_PLACEMENT_INITIAL_OFFSET;
+			return (int) ((((MEEPLE_PLACEMENT_FINAL_OFFSET - MEEPLE_PLACEMENT_INITIAL_OFFSET) / MEEPLE_PLACEMENT_DURATION) * meeplePlacementFrame) + MEEPLE_PLACEMENT_INITIAL_OFFSET);
 		}
 		return 0;
 	}
 	
-	private float getMeepleRemovalYOffset(){
+	private int getMeepleRemovalYOffset(){
 		if(meepleRemovalOn){
-			return (((MEEPLE_REMOVAL_FINAL_OFFSET - MEEPLE_REMOVAL_INITIAL_OFFSET) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OFFSET;
+			return (int) ((((MEEPLE_REMOVAL_FINAL_OFFSET - MEEPLE_REMOVAL_INITIAL_OFFSET) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OFFSET);
 		}
 		return 0;
 	}
 	
-	public void drawLandscapeGlowingTile(GraphicalTile tile, float x, float y){
+	public void drawLandscapeGlowingTile(GraphicalTile tile, boolean zoomOutView, float scale){
 		Color blue = new Color(Color.blue);
 		blue.a = getLandscapeGlowGradient();
-		tile.draw(x, y, blue);
+		tile.draw(zoomOutView, scale, blue);
 	}
 	
-	public void drawTilePlacement(GraphicalTile tile, float x, float y){
-		tile.draw(x, y, getTilePlacementScale());
+	public void drawTilePlacement(GraphicalTile tile, boolean zoomOutView, float scale){
+		tile.draw(zoomOutView, scale, getTilePlacementScale());
 	}
 	
-	public void drawTileProbe(Image tryEffect, float x, float y){
+	public void drawTileProbe(GraphicalTile tryEffect, boolean zoomOutView, float scale, boolean result){
 		tryEffect.setAlpha(getTileProbeOpacity());
-		tryEffect.draw(x, y);
+		if(result)
+			tryEffect.draw(zoomOutView, scale, new Color(Color.green));
+		else
+			tryEffect.draw(zoomOutView, scale, new Color(Color.red));
 	}
 	
-	public void drawMeeplePlacement(GraphicalTile tile, float tileX, float tileY, GraphicalMeeple meeple, float meepleX, float meepleY){
-		tile.draw(tileX, tileY);
-		meeple.draw(meepleX, meepleY + getMeeplePlacementYOffset());
+	public void drawMeeplePlacement(GraphicalMeeple meeple, boolean zoomOutView, float scale){
+		meeple.displace(0, getMeeplePlacementYOffset());
+		meeple.draw(zoomOutView, scale);
 	}
 	
-	public void drawMeeplePlacement(GraphicalMeeple meeple, float x, float y){
-		meeple.draw(x, y + getMeepleRemovalYOffset());
+	public void drawMeepleRemoval(GraphicalMeeple meeple, boolean zoomOutView, float scale){
+		meeple.displace(0, getMeepleRemovalYOffset());
+		meeple.draw(zoomOutView, scale);
 	}
 	
 	public void step(){
@@ -162,6 +166,10 @@ public class Animator {
 	
 	public boolean isMeepleRemovalOn(){
 		return meepleRemovalOn;
+	}
+	
+	public boolean automaticAnimationsEnded(){
+		return !meeplePlacementOn && !meepleRemovalOn && !tilePlacementOn && !landscapeGlowOn;
 	}
 	
 	public void enableTilePlacement(){

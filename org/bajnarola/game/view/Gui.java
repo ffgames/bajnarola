@@ -1,6 +1,7 @@
 package org.bajnarola.game.view;
 
 import org.bajnarola.game.controller.ViewController;
+import org.bajnarola.game.controller.ViewUpdate;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -33,7 +34,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		SCENE_GAME,
 		SCENE_MENU,
 		SCENE_PAUSE,
-		SCENE_OPTIONS
+		SCENE_OPTIONS,
+		SCENE_LOBBY,
+		SCENE_ENDGAME
 	}
 	
 	public ViewController controller;
@@ -50,6 +53,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private GameScene gameScene;
 	private PauseScene pauseScene;
 	private OptionsScene optionsScene;
+	private EndgameScene endgameScene;
+	private LobbyScene lobbyScene;
+	
+	public ViewUpdate currentUpdate;
 	
 	private GameContainer container;
 	
@@ -64,7 +71,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 provider.addListener(this);
 		 
 		 provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
-		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), backComm);
+		 provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
 		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
 		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
 		 
@@ -90,7 +97,14 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 		 optionsScene = new OptionsScene(this, null, null);
 		 
+		 endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
+		 
+		 //TODO: wooden table should be lobby screen background
+		 lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType);
+		 
 		 currentScene = menuScene;
+		 
+		 currentUpdate = null;
 		 
 		 container = gc;
 	}
@@ -146,10 +160,31 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 	@Override
 	public void update(GameContainer gc, int i) throws SlickException {
-		// TODO Auto-generated method stub
-
+		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
+			if((currentUpdate = controller.dequeueViewUpdate()) != null){
+				if(currentUpdate.points == null && currentUpdate.placedTile == null){
+					updateEndgameScene();
+				} else {
+					if(!currentUpdate.points.isEmpty()){
+						animator.enableLandscapeGlow();
+						if(gameScene.setCurrentLandscape(currentUpdate.points))
+							animator.enableMeepleRemoval();
+					}
+					animator.enableTilePlacement();
+					if(currentUpdate.placedTile.hasMeeple())
+						animator.enableMeeplePlacement();
+				}
+			}
+		}
+		if(currentUpdate != null && animator.automaticAnimationsEnded()){
+			currentUpdate = null;
+		}
 	}
 
+	private void updateEndgameScene(){
+		//TODO: get endgame stats from controller and set engame scene
+	}
+	
 	@Override
 	public void controlPressed(Command command) {
 		if(command.equals(rotateComm)){
@@ -195,17 +230,19 @@ public class Gui extends BasicGame implements InputProviderListener {
 		currentScene.mouseMoved(oldx, oldy, newx, newy);
 	}
 	
+	private void screencapBackground(Image targetBackground){
+		container.getGraphics().copyArea(targetBackground, 0, 0);
+		targetBackground.setColor(Image.BOTTOM_LEFT, 0.5f, 0.5f, 0.5f);
+		targetBackground.setColor(Image.BOTTOM_RIGHT, 0.5f, 0.5f, 0.5f);
+		targetBackground.setColor(Image.TOP_LEFT, 0.5f, 0.5f, 0.5f);
+		targetBackground.setColor(Image.TOP_RIGHT, 0.5f, 0.5f, 0.5f);
+	}
+	
 	public void switchScene(scene_type newScene){
 		switch(newScene){
 			case SCENE_PAUSE:
-				if(currentScene.equals(gameScene)){
-				// take a screencap of the play area and make it dimmed
-					container.getGraphics().copyArea(pauseScene.background, 0, 0);
-					pauseScene.background.setColor(Image.BOTTOM_LEFT, 0.5f, 0.5f, 0.5f);
-					pauseScene.background.setColor(Image.BOTTOM_RIGHT, 0.5f, 0.5f, 0.5f);
-					pauseScene.background.setColor(Image.TOP_LEFT, 0.5f, 0.5f, 0.5f);
-					pauseScene.background.setColor(Image.TOP_RIGHT, 0.5f, 0.5f, 0.5f);
-				}
+				if(currentScene.equals(gameScene))
+					screencapBackground(pauseScene.background);
 				currentScene = pauseScene;
 				break;
 			case SCENE_GAME:
@@ -219,6 +256,14 @@ public class Gui extends BasicGame implements InputProviderListener {
 				optionsScene.backgroundType = currentScene.backgroundType;
 				optionsScene.prevScene = currentScene.sceneType;
 				currentScene = optionsScene;
+				break;
+			case SCENE_LOBBY:
+				currentScene = lobbyScene;
+				break;
+			case SCENE_ENDGAME:
+				screencapBackground(endgameScene.background);
+				currentScene = endgameScene;
+				break;
 		}
 	}
 	
