@@ -2,6 +2,9 @@ package org.bajnarola.game.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
@@ -23,14 +26,16 @@ public class ViewController {
 	Lock guiLock;
 	Board board;
 	Player player;
+	GameController gameCtl;
 	
 	/* The tile drawn by the local play at the current turn */
 	Tile drawnTile;
 	
 	
-	public ViewController(Board board, String playerName) {
+	public ViewController(Board board, String playerName, GameController gameCtl) {
 		super();
 		viewUpdatesQueue = new ArrayList<>();
+		this.gameCtl = gameCtl;
 		this.drawnTile = null;
 		this.guiLock = new Lock();
 		this.board = board;
@@ -113,4 +118,15 @@ public class ViewController {
 		}
 	}
 	
+	public endGameCause getEndCause() {
+		return gameCtl.getEndCause();
+	}
+
+	public Map<String, Integer> getFinalScores() {
+		return gameCtl.getFinalScores();
+	}
+
+	public boolean amIWinner() {
+		return gameCtl.amIWinner();
+	}
 }

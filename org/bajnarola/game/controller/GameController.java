@@ -3,6 +3,7 @@ package org.bajnarola.game.controller;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
@@ -22,7 +23,17 @@ public class GameController extends UnicastRemoteObject implements
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	public enum endGameCause {
+		notEnded,
+		deckEmpty,
+		lastPlayer
+	}
+	
+	endGameCause endCause;
+	Map<String, Integer> finalScores;
+	boolean winner;
+	
 	Board board;
 	Lock diceLock;
 	ReentrantLock playLock;
@@ -31,7 +42,8 @@ public class GameController extends UnicastRemoteObject implements
 	Condition waitCondition;
 	ViewController viewCtl;
 	TurnDiff myTurnDiff = null;
-
+	
+	
 	public int myPlayedTurn = 0;
 
 	private void throwDice() {
@@ -40,6 +52,11 @@ public class GameController extends UnicastRemoteObject implements
 	}
 
 	public GameController() throws RemoteException {
+		
+		this.endCause = endGameCause.notEnded;
+		this.finalScores = new Hashtable<String, Integer>();
+		this.winner = false;
+		
 		/*
 		 * XXX: check if the seed is distributed or we need a different integer
 		 * distributed on the nodes.
@@ -61,9 +78,10 @@ public class GameController extends UnicastRemoteObject implements
 		this.diceValue = null;
 
 		this.throwDice();
-
+		
 		/* XXX spareggi */
 	}
+
 
 	@Override
 	public Integer getDiceValue() throws RemoteException {
@@ -84,9 +102,21 @@ public class GameController extends UnicastRemoteObject implements
 	}
 
 	public void setPlayerName(String playerName) {
-		this.viewCtl = new ViewController(board, playerName);
+		this.viewCtl = new ViewController(board, playerName, this);
 	}
 
+	public endGameCause getEndCause() {
+		return endCause;
+	}
+
+	public Map<String, Integer> getFinalScores() {
+		return finalScores;
+	}
+
+	public boolean amIWinner() {
+		return winner;
+	}
+	
 
 	@Override
 	public TurnDiff play(Integer turn) throws RemoteException {
@@ -109,19 +139,19 @@ public class GameController extends UnicastRemoteObject implements
 	}
 
 	/*
-	 * Update the internal board status after a turn has been played by another
-	 * player. Return true if the game has ended, false otherwise.
-	 */
-	public boolean updateBoard(TurnDiff diff) throws Exception {
+	 * Update the internal board status after a turn has been 
+	 * played by another player. */
+	public void updateBoard(TurnDiff diff) throws Exception {
 		Player p;
 		Tile tile;
 		Meeple meeple;
 
 		tile = board.beginTurn();
-		if (tile == null) {
-			System.out.println("Game end"); /* TODO: game end */
+		/* XXX: It should never reaches this point if the deck is empty 
+		 * if (tile == null) {
+			System.out.println("Game end");
 			return true;
-		}
+		}*/
 
 		p = board.getPlayerByName(diff.playerName);
 		if (p == null)
@@ -144,25 +174,17 @@ public class GameController extends UnicastRemoteObject implements
 		Map<String, Boolean> points = board.endTurn(tile);
 
 		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
-
-		return false;
 	}
 
-	public boolean localPlay(String me) {
+	public void localPlay(String me) {
 		this.playLock.lock();
 
 		System.out.print("Playing...");
 
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		Tile tile = board.beginTurn();
-		if (tile == null) /* End of the game */
-			return true;
+		/* XXX: It should never reaches this point if the deck is empty
+		if (tile == null) 
+			return true; */
 
 		viewCtl.waitViewChange(tile);
 
@@ -182,7 +204,6 @@ public class GameController extends UnicastRemoteObject implements
 
 		this.playLock.unlock();
 
-		return false;
 	}
 
 	public Map<String,Integer> finalCheckScore() {
@@ -194,4 +215,17 @@ public class GameController extends UnicastRemoteObject implements
 		
 		return scores;
 	}
+
+	
+	/* This is called when the game ends */
+	public void endGame(endGameCause cause, Map<String, Integer> scores, boolean winner) {
+	
+		this.endCause = cause;
+		this.finalScores = scores;
+		this.winner = winner;
+		
+		this.viewCtl.enqueueViewUpdate(new ViewUpdate(null, null));
+	}
+
+	
 }
