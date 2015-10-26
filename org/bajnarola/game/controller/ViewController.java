@@ -1,10 +1,12 @@
 package org.bajnarola.game.controller;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.bajnarola.game.GameOptions;
+import org.bajnarola.game.GuiThread;
 import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
@@ -13,6 +15,7 @@ import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
+
 import sun.misc.Lock;
 
 public class ViewController {
@@ -50,9 +53,15 @@ public class ViewController {
 		
 		try {
 			bajnarolaGui = new Gui(this);
-			appgc = new AppGameContainer(bajnarolaGui);
-			appgc.setDisplayMode(1900, 1000, false);
-			appgc.start();
+			Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+			appgc = new AppGameContainer(bajnarolaGui, screenSize.width, screenSize.height, true);
+			
+			GuiThread guiThread = new GuiThread(appgc);
+			
+			Thread thread = new Thread(guiThread);
+			
+			thread.start();
+
 		} catch (SlickException e) {
 			
 			e.printStackTrace();

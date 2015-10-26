@@ -31,7 +31,6 @@ public class MainClass {
 			System.out.print("Personal board set up...");
 			GameController gBoard = new GameController();
 			System.out.println("OK!");
-		
 			gBoard.waitOptionsFromUser();
 			
 			goptions = gBoard.getGameOptions();

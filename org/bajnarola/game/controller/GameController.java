@@ -60,16 +60,12 @@ public class GameController extends UnicastRemoteObject implements
 		this.finalScores = new Hashtable<String, Integer>();
 		this.winner = false;
 		
-		/*
-		 * XXX: check if the seed is distributed or we need a different integer
-		 * distributed on the nodes.
-		 */
 		this.randomGenerator = new Random();
 
 		this.board = new Board();
 		
 		this.viewCtl = new ViewController(board, this);
-		
+
 		this.diceLock = new Lock();
 		this.playLock = new ReentrantLock();
 		try {
