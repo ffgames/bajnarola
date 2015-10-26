@@ -15,7 +15,7 @@ public class PauseScene extends IScene {
 		super(guiManager, background, backgroundType);
 		sceneType = scene_type.SCENE_PAUSE;
 		
-		continueButton = new Button(guiManager.windowWidth/4, guiManager.windowHeight/10, guiManager.windowWidth/2, guiManager.windowHeight/4, 
+		continueButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4, 
 				new Image("res/menu/continueInactive.png"), new Image("res/menu/continueActive.png"));
 		
 		optionButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4*2,
@@ -28,14 +28,20 @@ public class PauseScene extends IScene {
 	@Override
 	public void render(GameContainer gc, Graphics g) {
 		guiManager.drawBackground(background, backgroundType);
-		
+		continueButton.draw();
+		optionButton.draw();
+		exitButton.draw();
 	}
 
 
 	@Override
 	public void leftClick(int x, int y) {
-		// TODO Auto-generated method stub
-		
+		if(continueButton.isClicked(x, y))
+			escPressed();
+		else if(optionButton.isClicked(x, y))
+			guiManager.switchScene(scene_type.SCENE_OPTIONS);
+		else if(exitButton.isClicked(x, y))
+			guiManager.switchScene(scene_type.SCENE_MENU);
 	}
 
 
@@ -74,8 +80,9 @@ public class PauseScene extends IScene {
 
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
-		// TODO Auto-generated method stub
-		
+		continueButton.isClicked(newx, newy);
+		optionButton.isClicked(newx, newy);
+		exitButton.isClicked(newx, newy);
 	}
 
 }
