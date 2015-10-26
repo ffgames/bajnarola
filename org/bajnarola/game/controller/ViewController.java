@@ -69,7 +69,10 @@ public class ViewController {
 	}
 	
 	public ViewUpdate dequeueViewUpdate() {
-		return this.viewUpdatesQueue.remove(0);
+		if (this.viewUpdatesQueue.size() > 0)
+			return this.viewUpdatesQueue.remove(0);
+		else 
+			return null;
 	}
 	
 	public void enqueueViewUpdate(ViewUpdate update) {

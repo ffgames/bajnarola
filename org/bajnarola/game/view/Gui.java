@@ -100,7 +100,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
 		 
 		 //TODO: wooden table should be lobby screen background
-		 lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, gc.getGraphics().getFont().getLineHeight());
+		 lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, gc.getGraphics().getFont());
 		 
 		 currentScene = menuScene;
 		 
