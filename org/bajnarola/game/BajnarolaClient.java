@@ -187,7 +187,6 @@ public class BajnarolaClient {
 						winner = true;
 				}
 				
-				
 				/* Notify the view */
 				myBc.endGame(cause, scores, winner);
 			}

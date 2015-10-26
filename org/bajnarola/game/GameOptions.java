@@ -13,7 +13,6 @@ public class GameOptions {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		
 		this.playerName = playerName;
 		this.lobbyServerURI = lobbyServerURI;
 	}

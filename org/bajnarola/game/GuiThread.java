@@ -1,7 +1,7 @@
 package org.bajnarola.game;
 
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.AppGameContainer;
 
 public class GuiThread implements Runnable {
 	
