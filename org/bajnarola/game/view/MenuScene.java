@@ -36,7 +36,7 @@ public class MenuScene extends IScene {
 	@Override
 	public void leftClick(int x, int y) {
 		if(startButton.isClicked(x, y))
-			guiManager.switchScene(scene_type.SCENE_GAME);
+			guiManager.switchScene(scene_type.SCENE_LOBBY);
 		else if(optionButton.isClicked(x, y))
 			guiManager.switchScene(scene_type.SCENE_OPTIONS);
 		else if(exitButton.isClicked(x, y))

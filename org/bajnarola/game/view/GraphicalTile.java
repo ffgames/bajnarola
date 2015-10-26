@@ -3,7 +3,7 @@ package org.bajnarola.game.view;
 import org.newdawn.slick.SlickException;
 
 public class GraphicalTile extends GraphicalElement {
-	static final String GTILE_EXTENSION = ".jpg";
+	static final String GTILE_EXTENSION = ".png";
 	static final String GTILE_PATH = "res/tiles/";
 	public static final int TILE_SIZE = 512;
 		
