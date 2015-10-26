@@ -141,6 +141,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 			animator.step();
 		
 		g.drawString(message, 10, 20);
+		g.drawString(animator.printStep(), 10, 40);
 	}
 
 	@Override
@@ -197,12 +198,14 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public void switchScene(scene_type newScene){
 		switch(newScene){
 			case SCENE_PAUSE:
+				if(currentScene.equals(gameScene)){
 				// take a screencap of the play area and make it dimmed
-				container.getGraphics().copyArea(pauseScene.background, 0, 0);
-				pauseScene.background.setColor(Image.BOTTOM_LEFT, 0.5f, 0.5f, 0.5f);
-				pauseScene.background.setColor(Image.BOTTOM_RIGHT, 0.5f, 0.5f, 0.5f);
-				pauseScene.background.setColor(Image.TOP_LEFT, 0.5f, 0.5f, 0.5f);
-				pauseScene.background.setColor(Image.TOP_RIGHT, 0.5f, 0.5f, 0.5f);
+					container.getGraphics().copyArea(pauseScene.background, 0, 0);
+					pauseScene.background.setColor(Image.BOTTOM_LEFT, 0.5f, 0.5f, 0.5f);
+					pauseScene.background.setColor(Image.BOTTOM_RIGHT, 0.5f, 0.5f, 0.5f);
+					pauseScene.background.setColor(Image.TOP_LEFT, 0.5f, 0.5f, 0.5f);
+					pauseScene.background.setColor(Image.TOP_RIGHT, 0.5f, 0.5f, 0.5f);
+				}
 				currentScene = pauseScene;
 				break;
 			case SCENE_GAME:
