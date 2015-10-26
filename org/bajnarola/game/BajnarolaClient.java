@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 
+import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.game.controller.GameController;
 import org.bajnarola.game.controller.TurnDiff;
@@ -116,22 +117,24 @@ public class BajnarolaClient {
 	
 	/* Game main loop */
 	public void mainLoop(String myUsername, GameController myBc) {
-		Boolean endGame = false;
+		Boolean gameEnded = false;
+		endGameCause cause = null;
 		TurnDiff dState = null;
 		GameControllerRemote othBc = null;
 		List<String> deadPlayers = new ArrayList<String>();
 
 		/* While the game is running and there are 2 or more players. */
-		while (!endGame) {
+		while (!gameEnded) {
 			/* For Every player */
 			for (String cPlayer : this.players.keySet()) {
+				
 				if (cPlayer.equals(myUsername)) {
 					/* It's the turn of this player */
 					System.out.println("My turn! " + myBc.myPlayedTurn);
-					if (myBc.localPlay(myUsername)) {
-						System.out.println("Game ended for empty deck");
-						endGame = true;
-					}
+					
+					if (!(gameEnded = myBc.isDeckEmpty()))
+						myBc.localPlay(myUsername);
+					
 				} else {
 					/* Call the other players and kindly ask them to play */
 					othBc = this.players.get(cPlayer);
@@ -139,13 +142,10 @@ public class BajnarolaClient {
 					System.out.println("Turn of " + cPlayer + " waiting for a response...");
 					
 					try {
-						if (!myBc.isDeckEmpty()) {
-							dState = othBc.play(myBc.myPlayedTurn+1);
+						if (!(gameEnded = myBc.isDeckEmpty())) {
+							dState = othBc.play(myBc.myPlayedTurn + 1);
 							myBc.myPlayedTurn++;
 							myBc.updateBoard(dState);
-						} else {
-							endGame = true;
-							System.out.println("Game ended for empty deck");
 						}
 					} catch(RemoteException e) {
 						/* CRASH! */
@@ -159,31 +159,37 @@ public class BajnarolaClient {
 					}
 				}
 			}
-
+			
 			/* Garbage collecting the crashed players */
-			for(String cPlayer : deadPlayers) {
+			for (String cPlayer : deadPlayers)
 				this.players.remove(cPlayer);
+			
+			/* If this player is the only remaining one, end the game */
+			if (players.size() == 1) {
+				gameEnded = true;
+				cause = endGameCause.lastPlayer;
 			}
 			
-			if (this.players.size() == 1) {
-				/* The player is alone he is the winner. */
-				endGame = true;
-				System.out.println("I am the winner"); 
-				/* TODO: Notify the view */
-			} else if (endGame) {
+			if (gameEnded) {
 				
 				Map<String, Integer> scores = myBc.finalCheckScore();
-				List<String> winners = new ArrayList<>();
+				boolean winner = false;
 				
-				int max = Collections.max(scores.values());
-				for (String p: scores.keySet()) {
-					if (scores.get(p) == max) {
-						winners.add(p);
-						System.out.println("Winner " + p + " with score " + scores.get(p));
-					}
+				if (cause == endGameCause.lastPlayer) {
+					System.out.println("Game ended as I am the last player");
+					winner = true;
+				} else {
+					cause = endGameCause.deckEmpty;
+					System.out.println("Game ended for empty deck");
+					
+					int max = Collections.max(scores.values());
+					if (scores.get(myUsername) == max)
+						winner = true;
 				}
 				
-				/* TODO: send the map and the list to the view */
+				
+				/* Notify the view */
+				myBc.endGame(cause, scores, winner);
 			}
 		}
 	}

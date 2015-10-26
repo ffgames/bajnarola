@@ -1,7 +1,13 @@
 package org.bajnarola.game.controller;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.bajnarola.game.GameOptions;
+import org.bajnarola.game.GuiThread;
+import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
@@ -9,6 +15,7 @@ import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
+
 import sun.misc.Lock;
 
 public class ViewController {
@@ -23,18 +30,20 @@ public class ViewController {
 	Lock guiLock;
 	Board board;
 	Player player;
+	GameController gameCtl;
 	
 	/* The tile drawn by the local play at the current turn */
 	Tile drawnTile;
 	
 	
-	public ViewController(Board board, String playerName) {
+	public ViewController(Board board, GameController gameCtl) {
 		super();
 		viewUpdatesQueue = new ArrayList<>();
+		this.gameCtl = gameCtl;
 		this.drawnTile = null;
 		this.guiLock = new Lock();
 		this.board = board;
-		this.player = board.getPlayerByName(playerName);
+		this.player = null;
 		
 		try {
 			this.guiLock.lock();
@@ -44,9 +53,15 @@ public class ViewController {
 		
 		try {
 			bajnarolaGui = new Gui(this);
-			appgc = new AppGameContainer(bajnarolaGui);
-			appgc.setDisplayMode(1900, 1000, false);
-			appgc.start();
+			Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+			appgc = new AppGameContainer(bajnarolaGui, screenSize.width, screenSize.height, true);
+			
+			GuiThread guiThread = new GuiThread(appgc);
+			
+			Thread thread = new Thread(guiThread);
+			
+			thread.start();
+
 		} catch (SlickException e) {
 			
 			e.printStackTrace();
@@ -113,4 +128,32 @@ public class ViewController {
 		}
 	}
 	
+	public endGameCause getEndCause() {
+		return gameCtl.getEndCause();
+	}
+
+	public Map<String, Integer> getFinalScores() {
+		return gameCtl.getFinalScores();
+	}
+
+	public boolean amIWinner() {
+		return gameCtl.amIWinner();
+	}
+	
+	public void waitOptionsFromView() {
+		try {
+			guiLock.lock();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayer(String playerName) {
+		this.player = board.getPlayerByName(playerName);
+	}
+	
+	public void setGameOptions(String playerName, String lobbyURI) {
+		this.gameCtl.setGameOptions(new GameOptions(playerName, lobbyURI));
+		guiLock.unlock();
+	}
 }
