@@ -31,9 +31,10 @@ public class GameScene extends IScene {
 	private Map<String, Boolean> currentLanscape;
 	private Map<String, GraphicalMeeple> placedMeeples;
 	private List<GraphicalMeeple> meeplesToRemove;
-	private GraphicalMeeple meepleToPlace;
-	private GraphicalTile tileToPlace, probeSquare;
-	private boolean probing, probeResult;
+	public GraphicalMeeple meepleToPlace;
+	public GraphicalTile tileToPlace;
+	public boolean probing, probeResult;
+	private GraphicalTile probeSquare;
 	
 	String message2 = "";
 
@@ -79,20 +80,22 @@ public class GameScene extends IScene {
 		}
 		
 		for(GraphicalMeeple m : placedMeeples.values()){
-			m.draw(zoomOutView, scaleFactor);
+			if(m.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+				m.draw(zoomOutView, scaleFactor);
 		}
 		
 		for(GraphicalMeeple m : meeplesToRemove){
-			guiManager.animator.drawMeepleRemoval(m, zoomOutView, scaleFactor);
+			if(m.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+				guiManager.animator.drawMeepleRemoval(m, zoomOutView, scaleFactor);
 		}
 		
-		if(meepleToPlace != null)
+		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
 		
-		if(tileToPlace != null)
+		if(tileToPlace != null && tileToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawTilePlacement(tileToPlace, zoomOutView, scaleFactor);
 		
-		if(probing)
+		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
 		
 		g.drawString(message2, 10, 50);
@@ -116,6 +119,20 @@ public class GameScene extends IScene {
 	
 	public void meeplesRemoved(){
 		meeplesToRemove.clear();
+	}
+	
+	public void tilePlaced(){
+		currentScenario.put(tileToPlace.coords, tileToPlace);
+		tileToPlace = null;
+	}
+	
+	public void meeplePlaced(){
+		placedMeeples.put(meepleToPlace.coords, meepleToPlace);
+		meepleToPlace = null;
+	}
+	
+	public void probed(){
+		probing = false;
 	}
 	
 	public boolean placeGraphicalTile(Tile tile, String coords) throws SlickException{

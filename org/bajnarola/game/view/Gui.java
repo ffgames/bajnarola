@@ -165,19 +165,23 @@ public class Gui extends BasicGame implements InputProviderListener {
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
 					updateEndgameScene();
 				} else {
-					if(!currentUpdate.points.isEmpty()){
-						animator.enableLandscapeGlow();
-						if(gameScene.setCurrentLandscape(currentUpdate.points))
-							animator.enableMeepleRemoval();
-					}
+					gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY());
 					animator.enableTilePlacement();
 					if(currentUpdate.placedTile.hasMeeple())
 						animator.enableMeeplePlacement();
+					currentUpdate.placedTile = null;
 				}
 			}
 		}
-		if(currentUpdate != null && animator.automaticAnimationsEnded()){
-			currentUpdate = null;
+		if(currentUpdate != null){
+			if(!animator.isTilePlacementOn() && !animator.isMeeplePlacementOn() && currentUpdate.points != null && !currentUpdate.points.isEmpty()){
+				animator.enableLandscapeGlow();
+				if(gameScene.setCurrentLandscape(currentUpdate.points))
+					animator.enableMeepleRemoval();
+				currentUpdate.points = null;
+			}
+			if(animator.automaticAnimationsEnded())
+				currentUpdate = null;
 		}
 	}
 
@@ -201,6 +205,12 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 
+	@Override
+	public void keyPressed(int key, char c) {
+		if(currentScene.sceneType == scene_type.SCENE_LOBBY)
+			lobbyScene.keyPressed(key, c);
+	}
+	
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
 		super.mouseClicked(button, x, y, clickCount);
