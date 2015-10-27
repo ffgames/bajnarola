@@ -7,7 +7,9 @@ import java.util.Map;
 
 import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.game.controller.GameController;
+import org.bajnarola.game.view.LobbyScene.UnlockCause;
 import org.bajnarola.lobby.LobbyClient;
+import org.bajnarola.networking.NetPlayer;
 
 public class MainClass {
 	private static final String SERVICE = "rmi";
@@ -19,11 +21,16 @@ public class MainClass {
 		BajnarolaServer iServer = null;
 		BajnarolaClient iClient = null;
 		
+		boolean okUser = false;
 		GameOptions goptions = null;
 		
 		String username = "";
 		String server   = "";
 		String lobbyserver;
+		
+		Map<String, NetPlayer> players = null;
+		UnlockCause cause;
+		
 		
 		try {
 			System.out.println("Bajnarola starting up.");
@@ -31,35 +38,58 @@ public class MainClass {
 			System.out.print("Personal board set up...");
 			GameController gBoard = new GameController();
 			System.out.println("OK!");
-			gBoard.waitOptionsFromUser();
+			while (!okUser) {
 			
-			goptions = gBoard.getGameOptions();
+				gBoard.waitOptionsFromUser();
+				
+				goptions = gBoard.getGameOptions();
+				
+				username = goptions.getPlayerName();
+				server = goptions.getLocalServerName();
+				lobbyserver = goptions.getLobbyServerURI();
+	
+				System.out.print("Server start up:");
+				if (!username.isEmpty())
+					iServer = new BajnarolaServer(SERVICE + "://" + server, username, gBoard);
+				else
+					iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
+				System.out.println("OK!");
+							
+				System.out.print("Client module initilization:");
+				iClient = new BajnarolaClient();
+				System.out.println("OK!");
+				
+				System.out.print("Registering to lobby... ");
+				iLobby = new LobbyClient(lobbyserver);
+				System.out.println("OK!");
+				
+				System.out.print("Joining the default room...");
+				try {
+					/* Join the lobby and set neighbors list */
+					players = iLobby.join(iServer.getPlayer());
+					okUser = true;
+					
+					
+				} catch (RemoteException e) {
+					if (e.getMessage().contains("User")) {
+						okUser = false;
+						iServer = null;
+						System.err.println("User already exists");
+						cause = UnlockCause.userExists;
+						gBoard.viewCtl.unlockView(cause);
+					} else {
+						System.err.println("Game already started");
+						cause = UnlockCause.gameStarted;
+					}
+				}
+			}
 			
-			username = goptions.getPlayerName();
-			server = goptions.getLocalServerName();
-			lobbyserver = goptions.getLobbyServerURI();
-
-			System.out.print("Server start up:");
-			if (!username.isEmpty())
-				iServer = new BajnarolaServer(SERVICE + "://" + server, username, gBoard);
-			else
-				iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
+			iClient.getPlayers(players);
+			
 			System.out.println("OK!");
-						
-			System.out.print("Client module initilization:");
-			iClient = new BajnarolaClient();
-			System.out.println("OK!");
+			cause = UnlockCause.userOk;
+			gBoard.viewCtl.unlockView(cause);
 			
-			System.out.print("Registering to lobby... ");
-			iLobby = new LobbyClient(lobbyserver);
-			System.out.println("OK!");
-			
-			System.out.print("Joining the default room...");
-			
-			/* Join the lobby and set neighbors list */
-			iClient.getPlayers(iLobby.join(iServer.getPlayer()));
-			
-			System.out.println("OK!");
 			System.out.println("Beginning game with " + iClient.players.size() + " players.");
 			
 			/* Get others dice throws */

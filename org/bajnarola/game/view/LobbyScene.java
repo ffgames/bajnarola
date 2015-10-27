@@ -9,6 +9,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+import sun.misc.Lock;
+
 public class LobbyScene extends IScene {
 
 	InputBox unameInputBox;
@@ -17,9 +19,14 @@ public class LobbyScene extends IScene {
 	
 	Button joinButton;
 	Button backButton;
-
 	
 	int textAreaWidth;
+	
+	public static enum UnlockCause {
+		userOk,
+		userExists,
+		gameStarted
+	}
 	
 	public LobbyScene(Gui guiManager, Image background, 
 	                  bg_type backgroundType, Font font) throws SlickException {
@@ -40,7 +47,7 @@ public class LobbyScene extends IScene {
 				font.getLineHeight() + 2, 
                 guiManager.windowWidth/2,
                 guiManager.windowHeight/4 + 40, 
-                "Lobby server",
+                "localhost",
                 new Image("res/menu/inputbox.png"), font);
 		
 		
@@ -69,12 +76,33 @@ public class LobbyScene extends IScene {
 			selectedInputBox = lobbyUriInputBox;
 		else  if (backButton.isClicked(x, y))
 			guiManager.switchScene(scene_type.SCENE_MENU);
-		else if (joinButton.isClicked(x, y))
-			/* TODO: join first and check if the username is free */
-			guiManager.switchScene(scene_type.SCENE_GAME); 
+		else if (joinButton.isClicked(x, y)) {
+			String uname, lobbyURI;
+			uname = unameInputBox.getText();
+			lobbyURI = lobbyUriInputBox.getText();
+			System.out.println("Joining...");
 			
+			/* TODO: check strings, join and check if the username is free */
+			guiManager.controller.setGameOptions(uname, lobbyURI);
+		}
 	}
 
+	public void unlock(UnlockCause cause) {
+		switch (cause) {
+		case gameStarted:
+				System.out.println("Game already started: lobby full or timed out");
+			break;
+		case userExists:
+			System.out.println("User exists");
+			break;
+		case userOk:
+			guiManager.switchScene(scene_type.SCENE_GAME);
+			break;
+		default:
+			System.err.println("grrrrrr...");
+		}
+	}
+	
 	@Override
 	public void rightClick(int x, int y) {
 	
@@ -97,7 +125,6 @@ public class LobbyScene extends IScene {
 
 	@Override
 	public void backspacePressed() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -114,8 +141,8 @@ public class LobbyScene extends IScene {
 			} else if (key == Input.KEY_TAB && selectedInputBox.equals(unameInputBox)) {
 				selectedInputBox = lobbyUriInputBox;
 				selectedInputBox.initialize();
-			} else {
-				selectedInputBox.putChar(c);
+			} else if (key != Input.KEY_TAB) {
+				selectedInputBox.putChar(c); /* TODO: escape input for lobbyURI */
 			}
 		}
 	}

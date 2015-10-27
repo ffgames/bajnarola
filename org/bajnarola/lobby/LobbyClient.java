@@ -23,8 +23,10 @@
 package org.bajnarola.lobby;
 
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.Map;
 
+import org.bajnarola.game.UserExistsException;
 import org.bajnarola.lobby.LobbyController;
 import org.bajnarola.lobby.LobbyServer;
 import org.bajnarola.networking.NetPlayer;
@@ -46,18 +48,16 @@ public class LobbyClient {
 		}
 	}
 	
-	public Map<String,NetPlayer> join(NetPlayer p, String room) {
+	public Map<String,NetPlayer> join(NetPlayer p, String room) throws UserExistsException, RemoteException {
 		Map<String,NetPlayer> omap = null;
-		try {
-			omap = this.lobbyCallback.join(p, room);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+		omap = this.lobbyCallback.join(p, room);
+		
 		
 		return omap;
 	}
 
-	public Map<String,NetPlayer> join(NetPlayer p) {
+	public Map<String,NetPlayer> join(NetPlayer p) throws UserExistsException, RemoteException {
 		return this.join(p, "");
 	}
 }

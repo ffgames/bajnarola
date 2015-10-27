@@ -2,6 +2,7 @@ package org.bajnarola.game.view;
 
 import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
+import org.bajnarola.game.view.LobbyScene.UnlockCause;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -287,6 +288,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 		
 	}
 
+	public void unlockLobbyScene(UnlockCause cause) {
+		lobbyScene.unlock(cause);
+	}
+	
 	public void exit(){
 		container.exit();
 	}

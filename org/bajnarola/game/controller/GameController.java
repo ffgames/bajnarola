@@ -44,7 +44,7 @@ public class GameController extends UnicastRemoteObject implements
 	Integer diceValue;
 	Random randomGenerator;
 	Condition waitCondition;
-	ViewController viewCtl;
+	public ViewController viewCtl;
 	TurnDiff myTurnDiff = null;
 	
 	public int myPlayedTurn = 0;
@@ -211,6 +211,8 @@ public class GameController extends UnicastRemoteObject implements
 		this.waitCondition.signalAll();
 
 		this.playLock.unlock();
+		
+		/* TODO: update the view */
 
 	}
 

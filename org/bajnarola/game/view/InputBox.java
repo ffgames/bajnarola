@@ -46,6 +46,12 @@ public class InputBox {
 		return hitted;
 	}
 	
+	
+	
+	public String getText() {
+		return text;
+	}
+
 	public void putChar(char c) {
 		if (font.getWidth(this.text) < this.width - 40)
 			this.text += c;

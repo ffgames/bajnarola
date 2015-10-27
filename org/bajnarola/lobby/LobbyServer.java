@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.bajnarola.game.UserExistsException;
 import org.bajnarola.networking.NetPlayer;
 
 import sun.misc.Lock;
@@ -63,9 +64,9 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	}
 	
 	@Override
-	public Map<String,NetPlayer> join(NetPlayer p, String room) throws RemoteException {
+	public Map<String,NetPlayer> join(NetPlayer p, String room) throws UserExistsException, RemoteException {
 		if (this.players.containsKey(p.username))
-			throw new RemoteException("User Already Present");
+			throw new UserExistsException("User Already Present");
 		if (this.done)
 			throw new RemoteException("Game already started");
 		

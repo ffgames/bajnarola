@@ -13,6 +13,7 @@ import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui;
+import org.bajnarola.game.view.LobbyScene.UnlockCause;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
@@ -158,5 +159,9 @@ public class ViewController {
 	public void setGameOptions(String playerName, String lobbyURI) {
 		this.gameCtl.setGameOptions(new GameOptions(playerName, lobbyURI));
 		guiLock.unlock();
+	}
+	
+	public void unlockView(UnlockCause cause) {
+		this.bajnarolaGui.unlockLobbyScene(cause);
 	}
 }
