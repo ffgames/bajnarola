@@ -33,14 +33,14 @@ public class LobbyScene extends IScene {
 		                             font.getLineHeight() + 2, 
 		                             guiManager.windowWidth/2,
 		                             guiManager.windowHeight/4, 
-		                             "Inserisci nome utente",
+		                             "Username",
 		                             new Image("res/menu/inputbox.png"), font); 
 		
 		lobbyUriInputBox = new InputBox(textAreaWidth,
 				font.getLineHeight() + 2, 
                 guiManager.windowWidth/2,
                 guiManager.windowHeight/4 + 40, 
-                "Inserisci lobby URI",
+                "Lobby server",
                 new Image("res/menu/inputbox.png"), font);
 		
 		
@@ -48,15 +48,15 @@ public class LobbyScene extends IScene {
 		                        guiManager.windowHeight/9,
 		                        guiManager.windowWidth/2,
 		                        guiManager.windowHeight/4*2,
-		                        new Image("res/menu/optionsInactive.png"),
-		                        new Image("res/menu/optionsActive.png"));
+		                        new Image("res/menu/joinInactive.png"),
+		                        new Image("res/menu/joinActive.png"));
 		
-		backButton = new Button(guiManager.windowWidth/5,
-		                         guiManager.windowHeight/11,
+		backButton = new Button(guiManager.windowWidth/3,
+		                         guiManager.windowHeight/9,
 		                         guiManager.windowWidth/2,
 		                         guiManager.windowHeight/4*3,
-		                         new Image("res/menu/exitInactive.png"),
-		                         new Image("res/menu/exitActive.png"));
+		                         new Image("res/menu/backInactive.png"),
+		                         new Image("res/menu/backActive.png"));
 	}
 
 	@Override

@@ -15,13 +15,13 @@ public class MenuScene extends IScene {
 		super(guiManager, background, backgroundType);
 		sceneType = scene_type.SCENE_MENU;
 		
-		startButton = new Button(guiManager.windowWidth/4, guiManager.windowHeight/11, guiManager.windowWidth/2, guiManager.windowHeight/4, 
+		startButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4, 
 				new Image("res/menu/startInactive.png"), new Image("res/menu/startActive.png"));
 		
 		optionButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4*2,
 				new Image("res/menu/optionsInactive.png"), new Image("res/menu/optionsActive.png"));
 		
-		exitButton = new Button(guiManager.windowWidth/5, guiManager.windowHeight/11, guiManager.windowWidth/2, guiManager.windowHeight/4*3,
+		exitButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4*3,
 				new Image("res/menu/exitInactive.png"), new Image("res/menu/exitActive.png"));
 	}
 
