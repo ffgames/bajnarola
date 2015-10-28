@@ -53,7 +53,7 @@ public class LobbyScene extends IScene {
 		joinButton = new Button(guiManager.windowWidth/3,
 		                        guiManager.windowHeight/9,
 		                        guiManager.windowWidth/2,
-		                        guiManager.windowHeight/4*2,
+		                        guiManager.windowHeight/4*2+50,
 		                        new Image("res/menu/joinInactive.png"),
 		                        new Image("res/menu/joinActive.png"),
 		                        new Image("res/menu/joinDisabled.png"));
@@ -64,6 +64,8 @@ public class LobbyScene extends IScene {
 		                         guiManager.windowHeight/4*3,
 		                         new Image("res/menu/backInactive.png"),
 		                         new Image("res/menu/backActive.png"));
+		
+		/* TODO: Add "create local lobby" button and correlated feature */
 	}
 
 	@Override
@@ -94,7 +96,7 @@ public class LobbyScene extends IScene {
 
 		switch (cause) {
 		case gameStarted:
-				System.out.println("Game already started: lobby full or timed out");
+			System.out.println("Game already started: lobby full or timed out");
 			break;
 		case userExists:
 			System.out.println("User exists");
