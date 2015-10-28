@@ -239,8 +239,9 @@ public class GameController extends UnicastRemoteObject implements
 
 
 	public void initBoard(String playerName, List<String> playerNames, int seed) {
-		board.initBoard(playerNames, seed);
+		Tile initialTile = board.initBoard(playerNames, seed);
 		viewCtl.setPlayer(playerName);
+		viewCtl.enqueueViewUpdate(new ViewUpdate(new Hashtable<String, Boolean>(), initialTile));
 	}
 	
 }
