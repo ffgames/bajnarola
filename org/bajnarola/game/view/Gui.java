@@ -175,12 +175,14 @@ public class Gui extends BasicGame implements InputProviderListener {
 			}
 		}
 		if(currentUpdate != null){
-			if(!animator.isTilePlacementOn() && !animator.isMeeplePlacementOn() && currentUpdate.points != null && !currentUpdate.points.isEmpty()){
+			if(!animator.isTilePlacementOn() && !animator.isMeeplePlacementOn() && currentUpdate.points != null){
 				gameScene.tilePlaced();
 				gameScene.meeplePlaced();
-				animator.enableLandscapeGlow();
-				if(gameScene.setCurrentLandscape(currentUpdate.points))
-					animator.enableMeepleRemoval();
+				if(!currentUpdate.points.isEmpty()){
+					animator.enableLandscapeGlow();
+					if(gameScene.setCurrentLandscape(currentUpdate.points))
+						animator.enableMeepleRemoval();
+				}
 				currentUpdate.points = null;
 			}
 			if(animator.automaticAnimationsEnded()){

@@ -47,14 +47,15 @@ public class GameScene extends IScene {
 		upperBorderY= (int)((float)guiManager.windowHeight * SCROLL_AREA_RATEO);
 		lowerBorderY = guiManager.windowHeight - upperBorderY;
 		
-		xOff = yOff = 0;
 		// TODO: check if tiles have to be resized in "zoom in" mode
 		tileSize = GraphicalTile.TILE_SIZE;
 		meepleSize = GraphicalMeeple.MEEPLE_SIZE;
-		maxX = maxY = GraphicalTile.TILE_SIZE * Board.TOTAL_TILES_COUNT;
+		maxX = maxY = GraphicalTile.TILE_SIZE * (Board.TOTAL_TILES_COUNT * 2);
 		globalCenterOffset = maxX / 2;
 		scaleFactor = 1;
 		zoomOutView = false;
+		xOff = globalCenterOffset - (guiManager.windowWidth/2);
+		yOff = globalCenterOffset - (guiManager.windowHeight/2);
 		
 		logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
 		
@@ -62,7 +63,7 @@ public class GameScene extends IScene {
 		currentLanscape = null;
 		placedMeeples = new Hashtable<String, GraphicalMeeple>();
 		meeplesToRemove = new ArrayList<GraphicalMeeple>();
-		probeSquare = new GraphicalTile("probe", "0,0", 0, globalCenterOffset, globalCenterOffset, tileSize);
+		probeSquare = new GraphicalTile(this, "probe", "0,0", 0, globalCenterOffset, globalCenterOffset, tileSize);
 		probing = false;
 	}
 
@@ -89,14 +90,14 @@ public class GameScene extends IScene {
 				guiManager.animator.drawMeepleRemoval(m, zoomOutView, scaleFactor);
 		}
 		
-		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
-			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
+		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+			guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
 		
 		if(tileToPlace != null && tileToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawTilePlacement(tileToPlace, zoomOutView, scaleFactor);
 		
-		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
-			guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
+		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
 		
 		g.drawString(message2, 10, 50);
 	}
@@ -144,12 +145,12 @@ public class GameScene extends IScene {
 	public boolean placeGraphicalTile(Tile tile, String coords) throws SlickException{
 		int lx = getLogicalX(coords);
 		int ly = getLogicalY(coords);
-		tileToPlace = new GraphicalTile(tile.getName(), coords, tile.getDirection(), getGlobalCoord(lx), getGlobalCoord(ly), tileSize);
+		tileToPlace = new GraphicalTile(this, tile.getName(), coords, tile.getDirection(), getGlobalCoord(lx), getGlobalCoord(ly), tileSize);
 		
 		setViewScaleValues(lx, ly);
 		
 		if(tile.hasMeeple()){
-			meepleToPlace = new GraphicalMeeple(tile.getMeeple().getOwner().getId(), coords, getGlobalCoord(lx), getGlobalCoord(ly), meepleSize);
+			meepleToPlace = new GraphicalMeeple(this, tile.getMeeple().getOwner().getId(), coords, getGlobalCoord(lx), getGlobalCoord(ly), meepleSize);
 			return true;
 		}
 		return false;

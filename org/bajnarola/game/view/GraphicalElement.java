@@ -5,10 +5,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public class GraphicalElement extends Image {
-	static final String GTILE_EXTENSION = ".jpg";
-	static final String GTILE_PATH = "res/tiles/";
-	public static final int TILE_SIZE = 512;
-	
 	String fname;
 	String coords;
 	HitBox hitbox;
@@ -16,11 +12,14 @@ public class GraphicalElement extends Image {
 	int globalCenterX, globalCenterY, size;
 	int scaledX, scaledY, scaledSize;
 	
-	public GraphicalElement(String fname, String coordinates, int direction, int globalCenterX, int globalCenterY, int size) throws SlickException{
+	GameScene scene;
+	
+	public GraphicalElement(GameScene scene, String fname, String coordinates, int direction, int globalCenterX, int globalCenterY, int size) throws SlickException{
 		super(fname);
-		this.fname = GTILE_PATH + name + GTILE_EXTENSION;
+		this.fname = fname;
 		this.rotate(direction*90);
 		this.size = size;
+		this.scene = scene;
 		hitbox = new HitBox();
 		setCoordinates(coordinates, globalCenterX, globalCenterY);
 	}
@@ -59,19 +58,19 @@ public class GraphicalElement extends Image {
 	public void draw(boolean small, float scaleFactor, Color color){
 		if(small){
 			setScaledVals(scaleFactor);
-			this.draw(scaledX, scaledY, scaledSize, scaledSize, color);
+			this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize, color);
 		}
 		else
-			this.draw(hitbox.ulx, hitbox.uly, width, height, color);
+			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, width, height, color);
 	}
 	
 	public void draw(boolean small, float scaleFactor){
 		if(small){
 			setScaledVals(scaleFactor);
-			this.draw(scaledX, scaledY, scaledSize, scaledSize);
+			this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
 		}
 		else
-			this.draw(hitbox.ulx, hitbox.uly, width, height);
+			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, width, height);
 	}
 	
 	public void draw(boolean small, float scaleFactor, float animScaleFactor){
@@ -79,7 +78,7 @@ public class GraphicalElement extends Image {
 			setScaledVals(scaleFactor*animScaleFactor);
 		else
 			setScaledVals(animScaleFactor);
-		this.draw(scaledX, scaledY, scaledSize, scaledSize);
+		this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
 	}
 	
 	public boolean isInView(int offX, int offY, int viewWidth, int viewHeight){
