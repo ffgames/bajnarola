@@ -37,15 +37,13 @@ public class LobbyClient {
 	private LobbyController lobbyCallback = null;
 
 	
-	public LobbyClient(String server) {
-		try {
-			String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
-					
-			System.out.print("\n\tLookup on: " + lookupString + " ...");
-			this.lobbyCallback = (LobbyController) Naming.lookup(lookupString);
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
+	public LobbyClient(String server) throws Exception {
+		
+		String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
+				
+		System.out.print("\n\tLookup on: " + lookupString + " ...");
+		this.lobbyCallback = (LobbyController) Naming.lookup(lookupString);
+		
 	}
 	
 	public Map<String,NetPlayer> join(NetPlayer p, String room) throws UserExistsException, RemoteException {

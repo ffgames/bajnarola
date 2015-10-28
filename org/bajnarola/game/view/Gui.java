@@ -233,6 +233,21 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 	
 	@Override
+	public void mouseReleased(int button, int x, int y) {
+		super.mouseReleased(button, x, y);
+		message = "mouse ";
+		if(button == 0){
+			currentScene.leftRelease(x, y);
+			message += "left";
+		}
+		else if(button == 1){
+			currentScene.rightRelease(x, y);
+			message += "right";
+		}
+		message += " released x: "+x+", y: "+y;
+	}
+	
+	@Override
 	public void mouseWheelMoved(int change) {
 		super.mouseWheelMoved(change);
 		if(change > 0)

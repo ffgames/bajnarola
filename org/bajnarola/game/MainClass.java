@@ -60,7 +60,15 @@ public class MainClass {
 				System.out.println("OK!");
 				
 				System.out.print("Registering to lobby... ");
-				iLobby = new LobbyClient(lobbyserver);
+				try {
+					iLobby = new LobbyClient(lobbyserver);
+				} catch (Exception e1) {
+					iLobby = null;
+					iServer = null;
+					gBoard.viewCtl.unlockView(UnlockCause.lobbyError);
+					System.err.println("Can't connect to lobby");
+					continue;
+				}
 				System.out.println("OK!");
 				
 				System.out.print("Joining the default room...");
@@ -68,8 +76,6 @@ public class MainClass {
 					/* Join the lobby and set neighbors list */
 					players = iLobby.join(iServer.getPlayer());
 					okUser = true;
-					
-					
 				} catch (RemoteException e) {
 					if (e.getMessage().contains("User")) {
 						okUser = false;

@@ -9,8 +9,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
-import sun.misc.Lock;
-
 public class LobbyScene extends IScene {
 
 	InputBox unameInputBox;
@@ -25,7 +23,8 @@ public class LobbyScene extends IScene {
 	public static enum UnlockCause {
 		userOk,
 		userExists,
-		gameStarted
+		gameStarted,
+		lobbyError
 	}
 	
 	public LobbyScene(Gui guiManager, Image background, 
@@ -56,7 +55,8 @@ public class LobbyScene extends IScene {
 		                        guiManager.windowWidth/2,
 		                        guiManager.windowHeight/4*2,
 		                        new Image("res/menu/joinInactive.png"),
-		                        new Image("res/menu/joinActive.png"));
+		                        new Image("res/menu/joinActive.png"),
+		                        new Image("res/menu/joinDisabled.png"));
 		
 		backButton = new Button(guiManager.windowWidth/3,
 		                         guiManager.windowHeight/9,
@@ -81,13 +81,17 @@ public class LobbyScene extends IScene {
 			uname = unameInputBox.getText();
 			lobbyURI = lobbyUriInputBox.getText();
 			System.out.println("Joining...");
+			joinButton.disable();
 			
 			/* TODO: check strings, join and check if the username is free */
 			guiManager.controller.setGameOptions(uname, lobbyURI);
 		}
 	}
 
+	
 	public void unlock(UnlockCause cause) {
+		joinButton.enable();
+
 		switch (cause) {
 		case gameStarted:
 				System.out.println("Game already started: lobby full or timed out");
@@ -97,6 +101,9 @@ public class LobbyScene extends IScene {
 			break;
 		case userOk:
 			guiManager.switchScene(scene_type.SCENE_GAME);
+			break;
+		case lobbyError:
+			System.out.println("Can't connect to the specified lobby");
 			break;
 		default:
 			System.err.println("grrrrrr...");
@@ -154,6 +161,20 @@ public class LobbyScene extends IScene {
 		lobbyUriInputBox.draw(g);
 		joinButton.draw();
 		backButton.draw();
+	}
+
+	@Override
+	public void leftRelease(int x, int y) {
+		if (joinButton.isClicked(x, y))
+			joinButton.deactivate();
+		if (backButton.isClicked(x, y))
+			backButton.deactivate();
+	}
+
+	@Override
+	public void rightRelease(int x, int y) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

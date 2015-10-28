@@ -20,6 +20,8 @@ public abstract class IScene {
 	
 	public abstract void leftClick(int x, int y);
 	public abstract void rightClick(int x, int y);
+	public abstract void leftRelease(int x, int y);
+	public abstract void rightRelease(int x, int y);
 	public abstract void wheelMoved(boolean up);
 	public abstract void enterPressed();
 	public abstract void escPressed();

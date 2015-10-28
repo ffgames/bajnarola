@@ -242,4 +242,16 @@ public class GameScene extends IScene {
 	private int getGlobalCoord(int lc){
 		return globalCenterOffset + (lc * tileSize);
 	}
+
+	@Override
+	public void leftRelease(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void rightRelease(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
 }

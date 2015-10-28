@@ -85,4 +85,16 @@ public class PauseScene extends IScene {
 		exitButton.isClicked(newx, newy);
 	}
 
+	@Override
+	public void leftRelease(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void rightRelease(int x, int y) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
