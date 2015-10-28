@@ -9,7 +9,6 @@ import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;

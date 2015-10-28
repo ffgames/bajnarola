@@ -21,7 +21,7 @@ public class MainClass {
 		BajnarolaServer iServer = null;
 		BajnarolaClient iClient = null;
 		
-		boolean okUser = false;
+		boolean okLobby = false;
 		GameOptions goptions = null;
 		
 		String username = "";
@@ -38,7 +38,7 @@ public class MainClass {
 			System.out.print("Personal board set up...");
 			GameController gBoard = new GameController();
 			System.out.println("OK!");
-			while (!okUser) {
+			while (!okLobby) {
 			
 				gBoard.waitOptionsFromUser();
 				
@@ -65,27 +65,34 @@ public class MainClass {
 				} catch (Exception e1) {
 					iLobby = null;
 					iServer = null;
-					gBoard.viewCtl.unlockView(UnlockCause.lobbyError);
-					System.err.println("Can't connect to lobby");
+					gBoard.viewCtl.unlockView(UnlockCause.lobbyNotFound);
+					System.err.println("Can't reach the lobby");
 					continue;
 				}
 				System.out.println("OK!");
 				
 				System.out.print("Joining the default room...");
 				try {
-					/* Join the lobby and set neighbors list */
+					/* Join the lobby and set neighbors list.
+					 * If there is any error, try again. */
 					players = iLobby.join(iServer.getPlayer());
-					okUser = true;
+					okLobby = true;
 				} catch (RemoteException e) {
 					if (e.getMessage().contains("User")) {
-						okUser = false;
 						iServer = null;
 						System.err.println("User already exists");
 						cause = UnlockCause.userExists;
 						gBoard.viewCtl.unlockView(cause);
-					} else {
+					} else if (e.getMessage().contains("Game")){
 						System.err.println("Game already started");
 						cause = UnlockCause.gameStarted;
+						gBoard.viewCtl.unlockView(cause);
+					} else {
+						iLobby = null;
+						iServer = null;
+						gBoard.viewCtl.unlockView(UnlockCause.lobbyError);
+						System.err.println("Can't connect to the lobby");
+						e.printStackTrace();
 					}
 				}
 			}

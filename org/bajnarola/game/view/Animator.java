@@ -1,7 +1,6 @@
 package org.bajnarola.game.view;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Image;
 
 public class Animator {
 	final static int TILE_PLACEMENT_DURATION = 50; //in frames (~2sec)

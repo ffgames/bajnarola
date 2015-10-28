@@ -9,6 +9,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+
 public class LobbyScene extends IScene {
 
 	InputBox unameInputBox;
@@ -18,12 +19,30 @@ public class LobbyScene extends IScene {
 	Button joinButton;
 	Button backButton;
 	
+	Font font;
+
+	static final String labelUsername = "INSERT USERNAME";
+	static final String labelLobby = "INSERT LOBBY SERVER";
+	static final String errorGameStarted = "Too late, game has already started";
+	static final String errorUsernameExists = "Your username already exists";
+	static final String errorLobby = "Can't connect to the specified lobby";
+	static final String errorLobbyNotFound = "Lobby not found";
+	static final String infoJoining = "Joining, please wait...";
+	
+	static int labelUsernamePosX, labelLobbyPosX, 
+	           labelUsernamePosY, labelLobbyPosY,
+	           labelJoinPosY;
+	
+	int labelJoinPosX;
+	String joinMessage = "";
+	
 	int textAreaWidth;
 	
 	public static enum UnlockCause {
 		userOk,
 		userExists,
 		gameStarted,
+		lobbyNotFound,
 		lobbyError
 	}
 	
@@ -31,21 +50,22 @@ public class LobbyScene extends IScene {
 	                  bg_type backgroundType, Font font) throws SlickException {
 		super(guiManager, background, backgroundType);
 		
-		selectedInputBox = null;
+		this.font = font;
+		
 		sceneType = scene_type.SCENE_LOBBY;
 		textAreaWidth = guiManager.windowWidth/2;
 		
 		unameInputBox = new InputBox(textAreaWidth,
 		                             font.getLineHeight() + 2, 
 		                             guiManager.windowWidth/2,
-		                             guiManager.windowHeight/4, 
+		                             guiManager.windowHeight/5, 
 		                             "Username",
 		                             new Image("res/menu/inputbox.png"), font); 
 		
 		lobbyUriInputBox = new InputBox(textAreaWidth,
 				font.getLineHeight() + 2, 
                 guiManager.windowWidth/2,
-                guiManager.windowHeight/4 + 40, 
+                guiManager.windowHeight/5 + 80, 
                 "localhost",
                 new Image("res/menu/inputbox.png"), font);
 		
@@ -53,7 +73,7 @@ public class LobbyScene extends IScene {
 		joinButton = new Button(guiManager.windowWidth/3,
 		                        guiManager.windowHeight/9,
 		                        guiManager.windowWidth/2,
-		                        guiManager.windowHeight/4*2+50,
+		                        guiManager.windowHeight/4*2 + 50,
 		                        new Image("res/menu/joinInactive.png"),
 		                        new Image("res/menu/joinActive.png"),
 		                        new Image("res/menu/joinDisabled.png"));
@@ -65,9 +85,34 @@ public class LobbyScene extends IScene {
 		                         new Image("res/menu/backInactive.png"),
 		                         new Image("res/menu/backActive.png"));
 		
+		selectedInputBox = unameInputBox;
+		
+		labelUsernamePosX = (guiManager.windowWidth/2) - (font.getWidth(labelUsername)/2);
+		labelLobbyPosX = (guiManager.windowWidth/2) - (font.getWidth(labelLobby)/2);
+		labelUsernamePosY = guiManager.windowHeight/5 - 40;
+		labelLobbyPosY = guiManager.windowHeight/5 + 40;
+		
+		labelJoinPosY = guiManager.windowHeight/4*2 - 50;
+		
 		/* TODO: Add "create local lobby" button and correlated feature */
 	}
 
+	private void setJoinMessage(String msg) {
+		joinMessage = msg;
+		labelJoinPosX = (guiManager.windowWidth/2) - (font.getWidth(joinMessage)/2);
+	}
+	
+	private void join() {
+		String uname, lobbyURI;
+		uname = unameInputBox.getText();
+		lobbyURI = lobbyUriInputBox.getText();
+		setJoinMessage(infoJoining);
+		joinButton.disable();
+		
+		/* TODO: check strings, join and check if the username is free */
+		guiManager.controller.setGameOptions(uname, lobbyURI);
+	}
+	
 	@Override
 	public void leftClick(int x, int y) {
 		selectedInputBox = null;
@@ -79,33 +124,31 @@ public class LobbyScene extends IScene {
 		else  if (backButton.isClicked(x, y))
 			guiManager.switchScene(scene_type.SCENE_MENU);
 		else if (joinButton.isClicked(x, y)) {
-			String uname, lobbyURI;
-			uname = unameInputBox.getText();
-			lobbyURI = lobbyUriInputBox.getText();
-			System.out.println("Joining...");
-			joinButton.disable();
-			
-			/* TODO: check strings, join and check if the username is free */
-			guiManager.controller.setGameOptions(uname, lobbyURI);
+			join();
 		}
 	}
 
+	
 	
 	public void unlock(UnlockCause cause) {
 		joinButton.enable();
 
 		switch (cause) {
 		case gameStarted:
-			System.out.println("Game already started: lobby full or timed out");
+			setJoinMessage(errorGameStarted);
 			break;
 		case userExists:
-			System.out.println("User exists");
-			break;
-		case userOk:
-			guiManager.switchScene(scene_type.SCENE_GAME);
+			setJoinMessage(errorUsernameExists);
 			break;
 		case lobbyError:
-			System.out.println("Can't connect to the specified lobby");
+			setJoinMessage(errorLobby);
+			break;
+		case lobbyNotFound:
+			setJoinMessage(errorLobbyNotFound);
+			break;
+		case userOk:
+			joinMessage = "";
+			guiManager.switchScene(scene_type.SCENE_GAME);
 			break;
 		default:
 			System.err.println("grrrrrr...");
@@ -147,11 +190,20 @@ public class LobbyScene extends IScene {
 		if (selectedInputBox != null) {
 			if (key == Input.KEY_BACK) {
 				selectedInputBox.delChar();
-			} else if (key == Input.KEY_TAB && selectedInputBox.equals(unameInputBox)) {
-				selectedInputBox = lobbyUriInputBox;
+			} else if (key == Input.KEY_TAB ) {
+				if (selectedInputBox.equals(unameInputBox))
+					selectedInputBox = lobbyUriInputBox;
+				else 
+					selectedInputBox = unameInputBox;
+				
 				selectedInputBox.initialize();
-			} else if (key != Input.KEY_TAB) {
-				selectedInputBox.putChar(c); /* TODO: escape input for lobbyURI */
+			} else if (key == Input.KEY_ENTER) {
+				join();
+			} else {
+				if (!selectedInputBox.initialized)
+					selectedInputBox.initialize();
+				/* TODO: escape input for lobbyURI */
+				selectedInputBox.putChar(c); 
 			}
 		}
 	}
@@ -163,6 +215,10 @@ public class LobbyScene extends IScene {
 		lobbyUriInputBox.draw(g);
 		joinButton.draw();
 		backButton.draw();
+		g.drawString(labelUsername, labelUsernamePosX, labelUsernamePosY);
+		g.drawString(labelLobby, labelLobbyPosX, labelLobbyPosY);
+		
+		g.drawString(joinMessage, labelJoinPosX, labelJoinPosY);
 	}
 
 	@Override
