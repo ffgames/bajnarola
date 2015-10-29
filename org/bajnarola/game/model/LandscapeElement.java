@@ -80,7 +80,7 @@ public abstract class LandscapeElement {
 			tileTmp = elTiles.remove(0);	
 
 			for (short i = 0; i < Tile.SIDE_COUNT; i++) {
-				if (tileTmp.getLSElement(i).equals(el)) {
+				if (tileTmp.getLSElement(i) != null && tileTmp.getLSElement(i).equals(el)) {
 					tileTmp.popLSElement(i);
 					tileTmp.putLSElement(i, this);
 				}

@@ -160,10 +160,11 @@ public class ViewController {
 		if (meeple == null)
 			return probeSides;
 		
-		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
+		for (short i = 0; i < Tile.SIDE_COUNT-1; i++) {
 			meeple.setTileSide(i);
 			probeSides[i] = board.probeMeeple(drawnTile, meeple);
 		}
+		probeSides[Tile.SIDE_CENTER] = (drawnTile.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER ? true : false);
 		
 		player.giveMeepleBack(meeple);
 		

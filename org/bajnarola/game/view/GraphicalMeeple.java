@@ -8,6 +8,6 @@ public class GraphicalMeeple extends GraphicalElement {
 	public static final int MEEPLE_SIZE = 128;
 	
 	public GraphicalMeeple(GameScene scene, int name, String coordinates, int globalCenterX, int globalCenterY, int size) throws SlickException {
-		super(scene, GMEEPLE_PATH+name+GMEEPLE_EXTENSION, coordinates, 0, globalCenterX, globalCenterY, size);
+		super(scene, GMEEPLE_PATH+name+GMEEPLE_EXTENSION, coordinates, 0, globalCenterX, globalCenterY, size, false);
 	}
 }

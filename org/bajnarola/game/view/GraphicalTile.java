@@ -8,6 +8,6 @@ public class GraphicalTile extends GraphicalElement {
 	public static final int TILE_SIZE = 256;
 		
 	public GraphicalTile(GameScene scene, String name, String coordinates, int direction, int globalCenterX, int globalCenterY, int size) throws SlickException{
-		super(scene, GTILE_PATH + name + GTILE_EXTENSION, coordinates, direction, globalCenterX, globalCenterY, size);
+		super(scene, GTILE_PATH + name + GTILE_EXTENSION, coordinates, direction, globalCenterX, globalCenterY, size, true);
 	}
 }

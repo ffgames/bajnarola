@@ -5,35 +5,41 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public class GraphicalElement extends Image {
-	String fname;
-	String coords;
+	String fname, coords;
 	HitBox hitbox;
 	
-	int globalCenterX, globalCenterY, size;
+	int globalCenterX, globalCenterY, size, direction = 0;
 	int scaledX, scaledY, scaledSize;
 	
-	int direction;
+	boolean isMultiDirection;
+	Image dirImages[] = null;
 	
 	GameScene scene;
 	
-	public GraphicalElement(GameScene scene, String fname, String coordinates, int direction, int globalCenterX, int globalCenterY, int size) throws SlickException{
+	public GraphicalElement(GameScene scene, String fname, String coordinates, int direction, int globalCenterX, int globalCenterY, int size, boolean multiDirection) throws SlickException{
 		super(fname);
+		dirImages = new Image[4];
+		dirImages[0] = this;
+		this.isMultiDirection = multiDirection;
+		if(isMultiDirection){
+			dirImages[1] = new Image(fname.split(GraphicalTile.GTILE_EXTENSION)[0]+"r"+GraphicalTile.GTILE_EXTENSION);
+			dirImages[2] = new Image(fname.split(GraphicalTile.GTILE_EXTENSION)[0]+"d"+GraphicalTile.GTILE_EXTENSION);
+			dirImages[3] = new Image(fname.split(GraphicalTile.GTILE_EXTENSION)[0]+"l"+GraphicalTile.GTILE_EXTENSION);
+			this.direction = direction;
+		}
 		this.fname = fname;
 		this.size = size;
 		this.scene = scene;
 		hitbox = new HitBox();
-		setCoordinates(coordinates, globalCenterX, globalCenterY);
-		this.direction = direction;
-		this.rotate(direction*90);
-	}
-	
-	public void rotate(boolean clockwise){
-		this.rotate((clockwise ? 90 : 270));
-		direction = (direction + (clockwise ? 1 : -1)) % 4;
+		setCoordinates(coordinates, globalCenterX, globalCenterY);	
 	}
 	
 	public String getCoordinates(){
 		return coords;
+	}
+	
+	public void rotate(boolean clockwise){
+		direction = (direction + (clockwise ? 1 : 3)) % 4;
 	}
 	
 	public void displace(int globalOffsetX, int globalOffsetY){
@@ -48,6 +54,26 @@ public class GraphicalElement extends Image {
 		hitbox.reset(globalCenterX-(size/2), globalCenterY-(size/2), globalCenterX+(size/2), globalCenterY+(size/2));
 	}
 	
+	public GraphicalElement copy(){
+		GraphicalElement newGE = null;
+		try {
+			newGE = new GraphicalElement(scene, fname, coords, direction, globalCenterX, globalCenterY, size, isMultiDirection);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		return newGE;
+	}
+	
+	public GraphicalElement copy(String coordinates, int globalCenterX, int globalCenterY, int size){
+		GraphicalElement newGE = null;
+		try {
+			newGE = new GraphicalElement(scene, fname, coordinates, direction, globalCenterX, globalCenterY, size, isMultiDirection);
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		return newGE;
+	}
+	
 	public void setCoordinates(HitBox newHb){
 		hitbox = newHb;
 		globalCenterX = hitbox.getCenterX();
@@ -56,6 +82,16 @@ public class GraphicalElement extends Image {
 	
 	public String getFileName(){
 		return fname;
+	}
+	
+	@Override
+	public void setAlpha(float alpha) {
+		super.setAlpha(alpha);
+		if(isMultiDirection){
+			dirImages[1].setAlpha(alpha);
+			dirImages[2].setAlpha(alpha);
+			dirImages[3].setAlpha(alpha);
+		}
 	}
 	
 	public boolean isClicked(int x, int y, int viewOffX, int viewOffY){
@@ -68,40 +104,29 @@ public class GraphicalElement extends Image {
 		scaledY = globalCenterY - (int)((size * smallScaleFactor) / 2);
 		scaledSize = (int)(size * smallScaleFactor);
 	}
-	
-	// XXX: horrible fix
+		
 	public void drawAbsolute(){
-		int x = hitbox.ulx;
-		int y = hitbox.uly;
-		switch(direction){
-			case 2:
-				y -= 12;
-			case 1:
-				x -= 12;
-				break;
-			case 3:
-				y -= 12;
-				break;
-		}
-		this.draw(x, y, size, size);
+		dirImages[direction].draw(hitbox.ulx, hitbox.uly, size, size);
 	}
 	
 	public void draw(boolean small, float scaleFactor, Color color){
 		if(small){
 			setScaledVals(scaleFactor);
-			this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize, color);
+			dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize, color);
 		}
-		else
-			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
+		else{
+			dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
+		}
 	}
 	
 	public void draw(boolean small, float scaleFactor){
 		if(small){
 			setScaledVals(scaleFactor);
-			this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+			dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
 		}
-		else
-			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+		else{
+			dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+		}
 	}
 	
 	public void draw(boolean small, float scaleFactor, float animScaleFactor){
@@ -109,7 +134,7 @@ public class GraphicalElement extends Image {
 			setScaledVals(scaleFactor*animScaleFactor);
 		else
 			setScaledVals(animScaleFactor);
-		this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+		dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
 	}
 	
 	public boolean isInView(int offX, int offY, int viewWidth, int viewHeight){
