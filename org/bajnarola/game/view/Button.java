@@ -39,6 +39,10 @@ public class Button {
 		this.active = false;
 	}
 	
+	public void activate() {
+		this.active = true;
+	}
+	
 	public boolean isClicked(int x, int y){
 		if (!disabled)
 			return active = hitbox.hits(x, y);

@@ -61,7 +61,8 @@ public class GraphicalElement extends Image {
 			this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize, color);
 		}
 		else
-			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, width, height, color);
+			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
+		this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
 	}
 	
 	public void draw(boolean small, float scaleFactor){
@@ -70,7 +71,7 @@ public class GraphicalElement extends Image {
 			this.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
 		}
 		else
-			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, width, height);
+			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
 	}
 	
 	public void draw(boolean small, float scaleFactor, float animScaleFactor){

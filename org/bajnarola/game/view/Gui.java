@@ -154,9 +154,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		
 		if(currentScene.sceneType == scene_type.SCENE_GAME && ((gc.isUpdatingOnlyWhenVisible() && !gc.isPaused()) || !gc.isUpdatingOnlyWhenVisible()))
 			animator.step();
-		
-		g.drawString(message, 10, 20);
-		g.drawString(animator.printStep(), 10, 40);
 	}
 
 	@Override

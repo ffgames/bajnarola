@@ -20,7 +20,7 @@ public class GameScene extends IScene {
 	
 	private int globalCenterOffset, tileSize, meepleSize;
 	private float scaleFactor;
-	private boolean zoomOutView;
+	private boolean zoomOutView, zoomable;
 	
 	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
 	public int xOff, yOff, maxX, maxY;
@@ -32,29 +32,31 @@ public class GameScene extends IScene {
 	private List<GraphicalMeeple> meeplesToRemove;
 	public GraphicalMeeple meepleToPlace;
 	public GraphicalTile tileToPlace;
-	public boolean probing, probeResult;
-	private GraphicalTile probeSquare;
-	
-	String message2 = "";
+	public boolean probing, probeResult, mouseOverOn;
+	private GraphicalTile probeSquare, holeOver;
+	private Button zoomButton;
 
 	public GameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
 		sceneType = scene_type.SCENE_GAME;
+		int minWindowSize = (guiManager.windowHeight < guiManager.windowWidth ? guiManager.windowHeight : guiManager.windowWidth); 
 		
 		leftBorderX = (int)((float)guiManager.windowWidth * SCROLL_AREA_RATEO);
 		rightBorderX = guiManager.windowWidth - leftBorderX;
 		upperBorderY= (int)((float)guiManager.windowHeight * SCROLL_AREA_RATEO);
 		lowerBorderY = guiManager.windowHeight - upperBorderY;
 		
-		// TODO: check if tiles have to be resized in "zoom in" mode
-		tileSize = GraphicalTile.TILE_SIZE;
-		meepleSize = GraphicalMeeple.MEEPLE_SIZE;
+		tileSize = minWindowSize / 8;
+		tileSize = (tileSize < GraphicalTile.TILE_SIZE ? tileSize : GraphicalTile.TILE_SIZE);
+		meepleSize = GraphicalMeeple.MEEPLE_SIZE * (tileSize / GraphicalTile.TILE_SIZE);
 		maxX = maxY = GraphicalTile.TILE_SIZE * (Board.TOTAL_TILES_COUNT * 2);
 		globalCenterOffset = maxX / 2;
 		scaleFactor = 1;
-		zoomOutView = false;
+		zoomOutView = zoomable = false;
 		xOff = globalCenterOffset - (guiManager.windowWidth/2);
 		yOff = globalCenterOffset - (guiManager.windowHeight/2);
+		
+		zoomButton = new Button(minWindowSize/10, minWindowSize/10, minWindowSize/10, guiManager.windowHeight-(minWindowSize/10), new Image("res/misc/zoomIn.png"), new Image("res/misc/zoomOut.png"));
 		
 		logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
 		
@@ -62,8 +64,9 @@ public class GameScene extends IScene {
 		currentLanscape = null;
 		placedMeeples = new Hashtable<String, GraphicalMeeple>();
 		meeplesToRemove = new ArrayList<GraphicalMeeple>();
-		probeSquare = new GraphicalTile(this, "probe", "0,0", 0, globalCenterOffset, globalCenterOffset, tileSize);
-		probing = false;
+		probeSquare = new GraphicalTile(this, "probe", "0;0", 0, globalCenterOffset, globalCenterOffset, tileSize);
+		holeOver = new GraphicalTile(this, "holeOver", "0;0", 0, globalCenterOffset, globalCenterOffset, tileSize);
+		probing = mouseOverOn = false;
 	}
 
 	@Override
@@ -89,6 +92,9 @@ public class GameScene extends IScene {
 				guiManager.animator.drawMeepleRemoval(m, zoomOutView, scaleFactor);
 		}
 		
+		if(mouseOverOn && holeOver.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+			holeOver.draw(zoomOutView, scaleFactor);
+		
 		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
 		
@@ -98,7 +104,9 @@ public class GameScene extends IScene {
 		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
 		
-		g.drawString(message2, 10, 50);
+		if(zoomable){
+			zoomButton.draw();
+		}
 	}
 
 	//returns true if at least one meeple has been removed
@@ -169,8 +177,10 @@ public class GameScene extends IScene {
 		tw = (logicalMaxX - logicalMinX) * tileSize;
 		th = (logicalMaxY - logicalMinY) * tileSize;
 		
-		if(tw <= guiManager.windowWidth && th <= guiManager.windowHeight)
+		if(tw <= guiManager.windowWidth && th <= guiManager.windowHeight){
 			scaleFactor = 1;
+			//zoomable = false; should be implicit
+		}
 		else {
 			float hscale, vscale;
 			
@@ -178,13 +188,20 @@ public class GameScene extends IScene {
 			vscale = guiManager.windowWidth / tw;
 		
 			scaleFactor = (hscale < vscale ? hscale : vscale);
+			
+			zoomable = true;
 		}
 	}
 	
 	@Override
 	public void leftClick(int x, int y) {
-		// TODO Auto-generated method stub
-		// if clicked on an empty square probe and set probe tile coords and animation
+		if(zoomable && zoomButton.isClicked(x, y)){
+			if(zoomOutView)
+				zoomButton.deactivate();
+			else
+				zoomButton.activate();
+			zoomOutView = !zoomOutView;
+		}
 	}
 
 	@Override
@@ -218,16 +235,15 @@ public class GameScene extends IScene {
 
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
-		message2 = "";
 		if(newx < leftBorderX && newx > 2){
-			message2 += "Left ";
+		
 		} else if (newx > rightBorderX && newx < guiManager.windowWidth-3){
-			message2 += "Right ";
+		
 		}
 		if(newy < upperBorderY && newy > 2){
-			message2 += "Up";
+		
 		} else if (newy > lowerBorderY && newy < guiManager.windowHeight-3){
-			message2 += "Down";
+		
 		}
 	}
 	

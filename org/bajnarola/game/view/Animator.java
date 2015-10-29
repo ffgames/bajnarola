@@ -25,9 +25,6 @@ public class Animator {
 	final static float MEEPLE_REMOVAL_INITIAL_OFFSET = 0; //pixel
 	final static float MEEPLE_REMOVAL_FINAL_OFFSET = 200; //pixel
 	
-	//XXX: debug variable
-	int globalStep = 0;
-	
 	int tilePlacementFrame;
 	int landscapeGlowFrame;
 	int tileProbeGlowFrame;
@@ -144,7 +141,6 @@ public class Animator {
 				meepleRemovalOn = false;
 			}
 		}
-		globalStep++;
 	}
 	
 	public boolean isTilePlacementOn(){
@@ -194,9 +190,5 @@ public class Animator {
 	public void enableMeepleRemoval(){
 		meepleRemovalFrame = 0;
 		meepleRemovalOn = true;
-	}
-	
-	public String printStep(){
-		return "animator step: "+globalStep;
 	}
 }
