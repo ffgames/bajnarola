@@ -36,7 +36,7 @@ public class Board {
 	Hashtable<String, Tile> scenario;
 	ArrayList<Player> players;
 	ArrayList<Tile> deck;
-	ArrayList<String> holes;
+	List<String> holes;
 	Shuffler random;
 	
 	/* TODO:
@@ -106,7 +106,7 @@ public class Board {
 		return scenario;
 	}
 	
-	public ArrayList<String> getHoles() {
+	public List<String> getHoles() {
 		return this.holes;
 	}
 	

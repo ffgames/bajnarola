@@ -196,8 +196,10 @@ public class GameController extends UnicastRemoteObject implements
 
 		viewCtl.waitViewChange(tile);
 
-		board.endTurn(tile);
+		Map<String, Boolean> points = board.endTurn(tile);
 
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
+		
 		short meepleTileSide = -1;
 		if (tile.getMeeple() != null)
 			meepleTileSide = tile.getMeeple().getTileSide();
@@ -211,9 +213,6 @@ public class GameController extends UnicastRemoteObject implements
 		this.waitCondition.signalAll();
 
 		this.playLock.unlock();
-		
-		/* TODO: update the view */
-
 	}
 
 	public Map<String,Integer> finalCheckScore() {

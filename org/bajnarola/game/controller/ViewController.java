@@ -1,12 +1,19 @@
 package org.bajnarola.game.controller;
 
 import java.awt.Dimension;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.GuiThread;
+import org.bajnarola.game.MainClass;
 import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
@@ -21,11 +28,19 @@ import sun.misc.Lock;
 
 public class ViewController {
 
+	static final int defaultResX = 700;
+	static final int defaultResY = 1200;
+	static final boolean defaultFullscreen = false; 
+	static final String optFileName = "options.conf";
+	static String optFilePath;
+	
 	/* A queue of updates. Each update contains: 
 	 *     - a set of points of all the landscape that 
 	 *       have been completed at its corresponding turn. 
 	 *     - information about the new placed tile. */
 	List<ViewUpdate> viewUpdatesQueue;
+	
+	
 	AppGameContainer appgc;
 	Gui bajnarolaGui;
 	Lock guiLock;
@@ -54,8 +69,56 @@ public class ViewController {
 		
 		try {
 			bajnarolaGui = new Gui(this);
+			
+			int resx = defaultResX, resy = defaultResY;
+			boolean fullscreen = defaultFullscreen;
+			
+			try {
+				File cwd = new File(MainClass.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+				File optFile = new File(cwd, optFileName);
+				optFilePath = optFile.getAbsolutePath();
+				if (!optFile.exists()) {
+					System.out.println("Config file not found. Creating it...");
+					optFile.createNewFile();
+				}
+				
+			} catch (URISyntaxException e) {
+				System.err.println("Can't access to executable current work directory");
+			} catch (IOException e) {
+				System.err.println("Can't create the config file");
+			}
+			
+			Properties prop = new Properties();
+			
+			try {
+				prop.load(new FileInputStream(optFilePath));
+				if (prop.isEmpty()) {
+					prop.setProperty("resx", Integer.toString(resx));
+					prop.setProperty("resy", Integer.toString(resy));
+					prop.setProperty("fullscreen", Boolean.toString(fullscreen));
+					prop.store(new FileOutputStream(optFilePath), "game options");
+				} else {
+					String tmp;
+					
+					if ((tmp = prop.getProperty("resx")) != null)
+							resx = Integer.parseInt(tmp);
+					if ((tmp = prop.getProperty("resy")) != null)
+						resy = Integer.parseInt(tmp);
+					if ((tmp = prop.getProperty("fullscreen")) != null)
+						fullscreen = Boolean.parseBoolean(tmp);
+				}
+			} catch (IOException|NullPointerException e) {
+				e.printStackTrace();
+				System.err.println("Can't access to the config file");
+			}
+			
 			Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-			appgc = new AppGameContainer(bajnarolaGui, screenSize.width-10, screenSize.height-100, false);
+			if (fullscreen) {
+				resx = screenSize.width;
+				resy =  screenSize.height;
+			}
+			
+			appgc = new AppGameContainer(bajnarolaGui, resx, resy, fullscreen);
 			
 			GuiThread guiThread = new GuiThread(appgc);
 			
