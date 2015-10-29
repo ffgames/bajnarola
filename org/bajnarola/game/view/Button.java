@@ -50,6 +50,14 @@ public class Button {
 			return active = false;
 	}
 	
+	public boolean hits(int x, int y){
+		return hitbox.hits(x, y);
+	}
+	
+	public boolean isActive() {
+		return this.active;
+	}
+	
 	public void draw(){
 		if(active){
 			activeImage.draw(hitbox.ulx, hitbox.uly, width, height);

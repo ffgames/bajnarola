@@ -28,8 +28,8 @@ import sun.misc.Lock;
 
 public class ViewController {
 
-	static final int defaultResX = 700;
-	static final int defaultResY = 1200;
+	static final int defaultResX = 1200;
+	static final int defaultResY = 700;
 	static final boolean defaultFullscreen = false; 
 	static final String optFileName = "options.conf";
 	static String optFilePath;
