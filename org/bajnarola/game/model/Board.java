@@ -106,6 +106,9 @@ public class Board {
 		return scenario;
 	}
 	
+	public ArrayList<String> getHoles() {
+		return this.holes;
+	}
 	
 	public Tile getTile(short x, short y) {
 		return scenario.get(getKey(x, y));

@@ -125,6 +125,8 @@ public class ViewController {
 	public void waitViewChange(Tile drawnTile) {
 		this.drawnTile = drawnTile;
 		
+		this.bajnarolaGui.viewPlayTurn(board.getHoles(), drawnTile);
+		
 		try {
 			guiLock.lock();
 		} catch (InterruptedException e) {
