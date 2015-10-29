@@ -24,6 +24,10 @@ public class GraphicalElement extends Image {
 		setCoordinates(coordinates, globalCenterX, globalCenterY);
 	}
 	
+	public void rotate(boolean clockwise){
+		
+	}
+	
 	public String getCoordinates(){
 		return coords;
 	}
@@ -38,6 +42,12 @@ public class GraphicalElement extends Image {
 		this.globalCenterX = globalCenterX;
 		this.globalCenterY = globalCenterY;
 		hitbox.reset(globalCenterX-(size/2), globalCenterY-(size/2), globalCenterX+(size/2), globalCenterY+(size/2));
+	}
+	
+	public void setCoordinates(HitBox newHb){
+		hitbox = newHb;
+		globalCenterX = hitbox.getCenterX();
+		globalCenterY = hitbox.getCenterY();
 	}
 	
 	public String getFileName(){

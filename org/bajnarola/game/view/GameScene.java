@@ -31,10 +31,11 @@ public class GameScene extends IScene {
 	private Map<String, GraphicalMeeple> placedMeeples;
 	private List<GraphicalMeeple> meeplesToRemove;
 	public GraphicalMeeple meepleToPlace;
-	public GraphicalTile tileToPlace;
+	public GraphicalTile tileToPlace, turnTile;
 	public boolean probing, probeResult, mouseOverOn;
 	private GraphicalTile probeSquare, holeOver;
 	private Button zoomButton;
+	private List<HitBox> holes;
 
 	public GameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
@@ -67,6 +68,8 @@ public class GameScene extends IScene {
 		probeSquare = new GraphicalTile(this, "probe", "0;0", 0, globalCenterOffset, globalCenterOffset, tileSize);
 		holeOver = new GraphicalTile(this, "holeOver", "0;0", 0, globalCenterOffset, globalCenterOffset, tileSize);
 		probing = mouseOverOn = false;
+		tileToPlace = turnTile = null;
+		holes = new ArrayList<HitBox>();
 	}
 
 	@Override
@@ -103,6 +106,10 @@ public class GameScene extends IScene {
 		
 		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
+		
+		if(turnTile != null){
+			turnTile.draw();
+		}
 		
 		if(zoomable){
 			zoomButton.draw();
@@ -193,6 +200,17 @@ public class GameScene extends IScene {
 		}
 	}
 	
+	public void beginTurn(List<String> holes, Tile newTile) throws SlickException{
+		turnTile = new GraphicalTile(this, newTile.getName(), "", newTile.getDirection(), guiManager.windowWidth -(tileSize + 5), guiManager.windowHeight - (tileSize + 5), tileSize*2);
+		this.holes.clear();
+		int cx, cy;
+		for(String h : holes){
+			cx = getGlobalCoord(getLogicalX(h));
+			cy = getGlobalCoord(getLogicalY(h));
+			this.holes.add(new HitBox(cx-tileSize/2, cy-tileSize/2, cx+tileSize/2, cy+tileSize/2));
+		}
+	}
+	
 	@Override
 	public void leftClick(int x, int y) {
 		if(zoomable && zoomButton.isClicked(x, y)){
@@ -244,6 +262,16 @@ public class GameScene extends IScene {
 		
 		} else if (newy > lowerBorderY && newy < guiManager.windowHeight-3){
 		
+		}
+		
+		mouseOverOn = false;
+		if(!holes.isEmpty()){
+			for(HitBox h : holes){
+				if(h.hits(newx, newy, xOff, yOff)){
+					holeOver.setCoordinates(h);
+					mouseOverOn = true;
+				}
+			}
 		}
 	}
 	

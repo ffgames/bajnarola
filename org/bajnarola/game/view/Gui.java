@@ -1,7 +1,10 @@
 package org.bajnarola.game.view;
 
+import java.util.List;
+
 import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
+import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.LobbyScene.UnlockCause;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -47,8 +50,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Command escComm = new BasicCommand("esc");
 	private Command enterComm = new BasicCommand("enter");
 	
-	private String message = "Press something..";
-	
 	private IScene currentScene;
 	private MenuScene menuScene;
 	private GameScene gameScene;
@@ -60,6 +61,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public ViewUpdate currentUpdate;
 	
 	private GameContainer container;
+	
+	private boolean myTurn = false;
+	private List<String> holes;
+	private Tile newTile;
 	
 	public Gui(ViewController controller){
 		super(GAMENAME);
@@ -108,6 +113,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 currentUpdate = null;
 		 
 		 container = gc;
+		 gc.setShowFPS(false);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){
@@ -158,6 +164,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 	@Override
 	public void update(GameContainer gc, int i) throws SlickException {
+		if(myTurn){
+			myTurn = false;
+			gameScene.beginTurn(holes, newTile);
+		}
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
@@ -190,6 +200,12 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 
+	public void viewPlayTurn(List<String> holes, Tile newTile){
+		myTurn = true;
+		this.holes = holes;
+		this.newTile = newTile;
+	}
+	
 	private void updateEndgameScene(){
 		//TODO: get endgame stats from controller and set engame scene
 	}
@@ -219,31 +235,23 @@ public class Gui extends BasicGame implements InputProviderListener {
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
 		super.mouseClicked(button, x, y, clickCount);
-		message = "mouse ";
 		if(button == 0){
 			currentScene.leftClick(x, y);
-			message += "left";
 		}
 		else if(button == 1){
 			currentScene.rightClick(x, y);
-			message += "right";
 		}
-		message += " clicked x: "+x+", y: "+y;
 	}
 	
 	@Override
 	public void mouseReleased(int button, int x, int y) {
 		super.mouseReleased(button, x, y);
-		message = "mouse ";
 		if(button == 0){
 			currentScene.leftRelease(x, y);
-			message += "left";
 		}
 		else if(button == 1){
 			currentScene.rightRelease(x, y);
-			message += "right";
 		}
-		message += " released x: "+x+", y: "+y;
 	}
 	
 	@Override

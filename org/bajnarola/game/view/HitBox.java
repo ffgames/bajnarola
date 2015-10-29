@@ -18,6 +18,14 @@ public class HitBox {
 		this.lry = lowerRightY;
 	}
 	
+	public int getCenterX(){
+		return ((lrx - ulx)/2)+ulx;
+	}
+	
+	public int getCenterY(){
+		return ((lry - uly)/2)+uly;
+	}
+	
 	public boolean hits(int x, int y){
 		if(x >= ulx && x <= lrx && y >= uly && y <= lry)
 			return true;

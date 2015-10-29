@@ -55,7 +55,7 @@ public class ViewController {
 		try {
 			bajnarolaGui = new Gui(this);
 			Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-			appgc = new AppGameContainer(bajnarolaGui, screenSize.width, screenSize.height, false);
+			appgc = new AppGameContainer(bajnarolaGui, screenSize.width-10, screenSize.height-100, false);
 			
 			GuiThread guiThread = new GuiThread(appgc);
 			

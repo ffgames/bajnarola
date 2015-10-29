@@ -64,6 +64,6 @@ public class InputBox {
 	
 	public void draw(Graphics g){
 		image.draw(hitbox.ulx, hitbox.uly, width, height);
-		g.drawString(text, hitbox.ulx + 4, hitbox.uly + 1);
+		g.drawString(text, hitbox.ulx + 8, hitbox.uly + 1);
 	}
 }
