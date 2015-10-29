@@ -12,20 +12,24 @@ public class GraphicalElement extends Image {
 	int globalCenterX, globalCenterY, size;
 	int scaledX, scaledY, scaledSize;
 	
+	int direction;
+	
 	GameScene scene;
 	
 	public GraphicalElement(GameScene scene, String fname, String coordinates, int direction, int globalCenterX, int globalCenterY, int size) throws SlickException{
 		super(fname);
 		this.fname = fname;
-		this.rotate(direction*90);
 		this.size = size;
 		this.scene = scene;
 		hitbox = new HitBox();
 		setCoordinates(coordinates, globalCenterX, globalCenterY);
+		this.direction = direction;
+		this.rotate(direction*90);
 	}
 	
 	public void rotate(boolean clockwise){
-		
+		this.rotate((clockwise ? 90 : 270));
+		direction = (direction + (clockwise ? 1 : -1)) % 4;
 	}
 	
 	public String getCoordinates(){
@@ -65,6 +69,23 @@ public class GraphicalElement extends Image {
 		scaledSize = (int)(size * smallScaleFactor);
 	}
 	
+	// XXX: horrible fix
+	public void drawAbsolute(){
+		int x = hitbox.ulx;
+		int y = hitbox.uly;
+		switch(direction){
+			case 2:
+				y -= 12;
+			case 1:
+				x -= 12;
+				break;
+			case 3:
+				y -= 12;
+				break;
+		}
+		this.draw(x, y, size, size);
+	}
+	
 	public void draw(boolean small, float scaleFactor, Color color){
 		if(small){
 			setScaledVals(scaleFactor);
@@ -72,7 +93,6 @@ public class GraphicalElement extends Image {
 		}
 		else
 			this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
-		this.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
 	}
 	
 	public void draw(boolean small, float scaleFactor){

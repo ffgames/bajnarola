@@ -32,10 +32,15 @@ public class GameScene extends IScene {
 	private List<GraphicalMeeple> meeplesToRemove;
 	public GraphicalMeeple meepleToPlace;
 	public GraphicalTile tileToPlace, turnTile;
-	public boolean probing, probeResult, mouseOverOn;
+	private int turnTileCx, turnTileCy, turnTileSize;
+	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private GraphicalTile probeSquare, holeOver;
 	private Button zoomButton;
 	private List<HitBox> holes;
+	private int probedX, probedY;
+	
+	private boolean possibleMeeples[];
+	private GraphicalMeeple tmpMeeples[];
 
 	public GameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
@@ -67,9 +72,20 @@ public class GameScene extends IScene {
 		meeplesToRemove = new ArrayList<GraphicalMeeple>();
 		probeSquare = new GraphicalTile(this, "probe", "0;0", 0, globalCenterOffset, globalCenterOffset, tileSize);
 		holeOver = new GraphicalTile(this, "holeOver", "0;0", 0, globalCenterOffset, globalCenterOffset, tileSize);
-		probing = mouseOverOn = false;
+		probing = mouseOverOn = dimscreen = false;
+		probedX = probedY = 0;
 		tileToPlace = turnTile = null;
 		holes = new ArrayList<HitBox>();
+		turnTileCx = guiManager.windowWidth -tileSize;
+		turnTileCy = guiManager.windowHeight - tileSize;
+		turnTileSize = tileSize * 2;
+		
+		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
+		tmpMeeples[0] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy-(turnTileSize/4), turnTileSize/4);
+		tmpMeeples[1] = new GraphicalMeeple(this, 42, "", turnTileCx+(turnTileSize/4), turnTileCy, turnTileSize/4);
+		tmpMeeples[2] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy+(turnTileSize/4), turnTileSize/4);
+		tmpMeeples[3] = new GraphicalMeeple(this, 42, "", turnTileCx+(turnTileSize/4), turnTileCy, turnTileSize/4);
+		tmpMeeples[4] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy, turnTileSize/4);
 	}
 
 	@Override
@@ -98,8 +114,12 @@ public class GameScene extends IScene {
 		if(mouseOverOn && holeOver.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			holeOver.draw(zoomOutView, scaleFactor);
 		
-		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
-			guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
+		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth)){
+			if(guiManager.animator.isTileProbeGlowOn())
+				guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
+			else
+				probing = false;
+		}
 		
 		if(tileToPlace != null && tileToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawTilePlacement(tileToPlace, zoomOutView, scaleFactor);
@@ -107,13 +127,17 @@ public class GameScene extends IScene {
 		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
 		
-		if(turnTile != null){
-			turnTile.draw();
+		if(zoomable)
+			zoomButton.draw();
+		
+		if(dimscreen){
+			for(int i = 0; i < Tile.SIDE_COUNT; i++)
+				tmpMeeples[i].drawAbsolute();
 		}
 		
-		if(zoomable){
-			zoomButton.draw();
-		}
+		if(turnTile != null)
+			turnTile.drawAbsolute();
+		
 	}
 
 	//returns true if at least one meeple has been removed
@@ -150,10 +174,6 @@ public class GameScene extends IScene {
 	
 	public void landscapesSet(){
 		currentLanscape = null;
-	}
-	
-	public void probed(){
-		probing = false;
 	}
 	
 	public boolean placeGraphicalTile(Tile tile, String coords) throws SlickException{
@@ -201,7 +221,7 @@ public class GameScene extends IScene {
 	}
 	
 	public void beginTurn(List<String> holes, Tile newTile) throws SlickException{
-		turnTile = new GraphicalTile(this, newTile.getName(), "", newTile.getDirection(), guiManager.windowWidth -(tileSize + 5), guiManager.windowHeight - (tileSize + 5), tileSize*2);
+		turnTile = new GraphicalTile(this, newTile.getName(), "", newTile.getDirection(), turnTileCx, turnTileCy, turnTileSize);
 		this.holes.clear();
 		int cx, cy;
 		for(String h : holes){
@@ -209,6 +229,7 @@ public class GameScene extends IScene {
 			cy = getGlobalCoord(getLogicalY(h));
 			this.holes.add(new HitBox(cx-tileSize/2, cy-tileSize/2, cx+tileSize/2, cy+tileSize/2));
 		}
+		probedX = probedY = 0;
 	}
 	
 	@Override
@@ -220,18 +241,36 @@ public class GameScene extends IScene {
 				zoomButton.activate();
 			zoomOutView = !zoomOutView;
 		}
+		if(mouseOverOn){
+			if(getLogicalCoord(holeOver.hitbox.getCenterX()) == probedX && getLogicalCoord(holeOver.hitbox.getCenterY()) == probedY){
+				probing = false;
+				dimscreen = true;
+				possibleMeeples = guiManager.controller.place(probedX, probedY);
+			} else {
+				probing = true;
+				probedX = getLogicalCoord(holeOver.hitbox.getCenterX());
+				probedY = getLogicalCoord(holeOver.hitbox.getCenterY());
+				probeResult = guiManager.controller.probe(probedX, probedY);
+				probeSquare.setCoordinates(holeOver.hitbox);
+				guiManager.animator.enableTileProbeGlow();
+			}
+		}
 	}
 
 	@Override
 	public void rightClick(int x, int y) {
-		// TODO Auto-generated method stub
-		
+		if(turnTile != null){
+			turnTile.rotate(true);
+			guiManager.controller.rotate(true);
+		}
 	}
 
 	@Override
 	public void wheelMoved(boolean up) {
-		// TODO Auto-generated method stub
-		
+		if(turnTile != null){
+			turnTile.rotate(up);
+			guiManager.controller.rotate(up);
+		}
 	}
 
 	@Override
@@ -281,6 +320,10 @@ public class GameScene extends IScene {
 	
 	private static final int getLogicalY(String coords){
 		return Integer.parseInt(coords.split(";")[1]);
+	}
+		
+	private int getLogicalCoord(int gc){
+		return (gc - globalCenterOffset) / tileSize;
 	}
 	
 	private int getGlobalCoord(int lc){

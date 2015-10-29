@@ -5,7 +5,7 @@ import org.newdawn.slick.Color;
 public class Animator {
 	final static int TILE_PLACEMENT_DURATION = 50; //in frames (~2sec)
 	final static int LANDSCAPE_GLOW_DURATION = 120; // (~5sec)
-	final static int TILE_PROBE_GLOW_DURATION = 40; // (<2sec)
+	final static int TILE_PROBE_GLOW_DURATION = 60; // (<2sec)
 	final static int MEEPLE_PLACEMENT_DURATION = 50;
 	final static int MEEPLE_REMOVAL_DURATION = 50;
 	
@@ -63,7 +63,10 @@ public class Animator {
 	
 	private float getTileProbeOpacity(){
 		if(tileProbeGlowOn){
-			return (((TILE_PROBE_GLOW_FINAL_OPACITY - TILE_PROBE_GLOW_INITIAL_OPACITY) / TILE_PROBE_GLOW_DURATION) * tileProbeGlowFrame) + TILE_PROBE_GLOW_INITIAL_OPACITY;
+			if(tileProbeGlowFrame < (TILE_PROBE_GLOW_DURATION / 2))
+				return (((TILE_PROBE_GLOW_FINAL_OPACITY - TILE_PROBE_GLOW_INITIAL_OPACITY) / (TILE_PROBE_GLOW_DURATION/2)) * tileProbeGlowFrame) + TILE_PROBE_GLOW_INITIAL_OPACITY;
+			else
+				return (((TILE_PROBE_GLOW_FINAL_OPACITY - TILE_PROBE_GLOW_INITIAL_OPACITY) / (TILE_PROBE_GLOW_DURATION/2)) * (TILE_PLACEMENT_DURATION - tileProbeGlowFrame)) + TILE_PROBE_GLOW_INITIAL_OPACITY;
 		}
 		return -1;
 	}
