@@ -91,10 +91,10 @@ public class GameScene extends IScene {
 		turnTileSize = tileSize * 2;
 		
 		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
-		tmpMeeples[0] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy-(turnTileSize/4), turnTileSize/4);
-		tmpMeeples[1] = new GraphicalMeeple(this, 42, "", turnTileCx+(turnTileSize/4), turnTileCy, turnTileSize/4);
-		tmpMeeples[2] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy+(turnTileSize/4), turnTileSize/4);
-		tmpMeeples[3] = new GraphicalMeeple(this, 42, "", turnTileCx-(turnTileSize/4), turnTileCy, turnTileSize/4);
+		tmpMeeples[0] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy-(turnTileSize/3), turnTileSize/4);
+		tmpMeeples[1] = new GraphicalMeeple(this, 42, "", turnTileCx+(turnTileSize/3), turnTileCy, turnTileSize/4);
+		tmpMeeples[2] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy+(turnTileSize/3), turnTileSize/4);
+		tmpMeeples[3] = new GraphicalMeeple(this, 42, "", turnTileCx-(turnTileSize/3), turnTileCy, turnTileSize/4);
 		tmpMeeples[4] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy, turnTileSize/4);
 	}
 
