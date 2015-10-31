@@ -116,6 +116,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 
 		 container = gc;
 		 gc.setShowFPS(false);
+		 //TODO: option for this parameter0
+		 gc.setUpdateOnlyWhenVisible(false);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){
@@ -175,10 +177,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
 					updateEndgameScene();
 				} else {
-					gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY());
-					animator.enableTilePlacement();
-					if(currentUpdate.placedTile.hasMeeple())
+					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
 						animator.enableMeeplePlacement();
+					animator.enableTilePlacement();
 					currentUpdate.placedTile = null;
 				}
 			}

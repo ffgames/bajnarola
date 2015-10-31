@@ -17,7 +17,7 @@ public class Animator {
 	final static float TILE_PLACEMENT_INITIAL_SCALE = (float)1.7;
 	final static float TILE_PLACEMENT_FINAL_SCALE = (float)1;
 	final static float LANDSCAPE_GLOW_INITIAL_GRADIENT = (float)0;
-	final static float LANDSCAPE_GLOW_FINAL_GRADIENT = (float)0.5;
+	final static float LANDSCAPE_GLOW_FINAL_GRADIENT = (float)0.3;
 	final static float TILE_PROBE_GLOW_INITIAL_OPACITY = (float)0;
 	final static float TILE_PROBE_GLOW_FINAL_OPACITY = (float)1;
 	final static float MEEPLE_PLACEMENT_INITIAL_OFFSET = 200; //pixel
@@ -104,7 +104,10 @@ public class Animator {
 	}
 	
 	public void drawMeeplePlacement(GraphicalMeeple meeple, boolean zoomOutView, float scale){
-		meeple.displace(0, getMeeplePlacementYOffset());
+		//XXX: meeples are sent to space right now, displace adds an offset to global center of ge and resets its position.. 
+		//when beginning animation the meeple should be displaced to starting coordinates, and then the offset should be a 
+		//negative(positive, as y increses towards the bottom of the screen) to reach its actual position
+		//meeple.displace(0, getMeeplePlacementYOffset());
 		meeple.draw(zoomOutView, scale);
 	}
 	

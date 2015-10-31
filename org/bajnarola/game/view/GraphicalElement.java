@@ -43,15 +43,18 @@ public class GraphicalElement extends Image {
 	}
 	
 	public void displace(int globalOffsetX, int globalOffsetY){
-		globalCenterX += globalOffsetX;
-		globalCenterY += globalOffsetY;
+		setCoordinates(globalCenterX + globalOffsetX, globalCenterY + globalOffsetY);
+	}
+	
+	private void setCoordinates(int globalCenterX, int globalCenterY){
+		this.globalCenterX = globalCenterX;
+		this.globalCenterY = globalCenterY;
+		hitbox.reset(globalCenterX-(size/2), globalCenterY-(size/2), globalCenterX+(size/2), globalCenterY+(size/2));
 	}
 	
 	public void setCoordinates(String coordinates, int globalCenterX, int globalCenterY){
 		this.coords = coordinates;
-		this.globalCenterX = globalCenterX;
-		this.globalCenterY = globalCenterY;
-		hitbox.reset(globalCenterX-(size/2), globalCenterY-(size/2), globalCenterX+(size/2), globalCenterY+(size/2));
+		setCoordinates(globalCenterX, globalCenterY);
 	}
 	
 	public GraphicalElement copy(){

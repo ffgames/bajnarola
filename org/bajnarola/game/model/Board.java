@@ -38,6 +38,7 @@ public class Board {
 	ArrayList<Tile> deck;
 	List<String> holes;
 	Shuffler random;
+	Map<String, Boolean> points;
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
@@ -51,6 +52,7 @@ public class Board {
 		this.deck = new ArrayList<Tile>();
 		this.players = new ArrayList<Player>();
 		this.holes = new ArrayList<String>();
+		this.points = new Hashtable<String, Boolean>();
 	}
 	
 	public Tile initBoard(List<String> playerNames, boolean shuffle, int seed) {
@@ -143,16 +145,15 @@ public class Board {
 			}
 		}
 		
+		points.clear();
+		
 		return newTile;
 	}
 	
 	public Map<String, Boolean> endTurn(Tile tile){
-		Map<String, Boolean> points = new Hashtable<String, Boolean>();
-		
 		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
 			points.putAll(checkScores(tile.getLSElement(i), false));
 		}
-		
 		return points;
 	}
 	
@@ -371,7 +372,7 @@ public class Board {
 					if (neighbour != null && neighbour.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
 						el = neighbour.getLSElement(Tile.SIDE_CENTER);
 						el.addTile(tile, (short)-1);
-						checkScores(el, false);
+						points.putAll(checkScores(el, false));
 					}
 					
 				}

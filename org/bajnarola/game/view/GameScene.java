@@ -66,7 +66,7 @@ public class GameScene extends IScene {
 		
 		tileSize = minWindowSize / 8;
 		tileSize = (tileSize < GraphicalTile.TILE_SIZE ? tileSize : GraphicalTile.TILE_SIZE);
-		meepleSize = GraphicalMeeple.MEEPLE_SIZE * (tileSize / GraphicalTile.TILE_SIZE);
+		meepleSize = tileSize/4;
 		maxX = maxY = GraphicalTile.TILE_SIZE * (Board.TOTAL_TILES_COUNT * 2);
 		globalCenterOffset = maxX / 2;
 		scaleFactor = 1;
@@ -99,11 +99,8 @@ public class GameScene extends IScene {
 		turnTileSize = tileSize * 2;
 		
 		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
-		tmpMeeples[0] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy-(turnTileSize/3), turnTileSize/4);
-		tmpMeeples[1] = new GraphicalMeeple(this, 42, "", turnTileCx+(turnTileSize/3), turnTileCy, turnTileSize/4);
-		tmpMeeples[2] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy+(turnTileSize/3), turnTileSize/4);
-		tmpMeeples[3] = new GraphicalMeeple(this, 42, "", turnTileCx-(turnTileSize/3), turnTileCy, turnTileSize/4);
-		tmpMeeples[4] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy, turnTileSize/4);
+		for(short i = 0; i < Tile.SIDE_COUNT; i++)
+			tmpMeeples[i] = new GraphicalMeeple(this, 42, "", getMeepleCoordX(turnTileCx, turnTileSize, i), getMeepleCoordY(turnTileCy, turnTileSize, i), turnTileSize/4);
 		
 		currentPlayerMeeple = null;
 	}
@@ -237,10 +234,34 @@ public class GameScene extends IScene {
 		setViewScaleValues(lx, ly);
 		
 		if(tile.hasMeeple()){
-			meepleToPlace = new GraphicalMeeple(this, tile.getMeeple().getOwner().getId(), coords, getGlobalCoordX(lx), getGlobalCoordY(ly), meepleSize);
+			meepleToPlace = new GraphicalMeeple(this, tile.getMeeple().getOwner().getId(), coords, 
+					getMeepleCoordX(getGlobalCoordX(lx), tileSize, tile.getMeeple().getTileSide()),
+					getMeepleCoordY(getGlobalCoordY(ly), tileSize, tile.getMeeple().getTileSide()), meepleSize);
 			return true;
 		}
 		return false;
+	}
+	
+	private int getMeepleCoordX(int tileCenterX, int tileSize, short meeplePos){
+		switch(meeplePos){
+			case Tile.SIDE_LEFT:
+				return tileCenterX-(tileSize/3);
+			case Tile.SIDE_RIGHT:
+				return tileCenterX+(tileSize/3);
+			default:
+				return tileCenterX;
+		}
+	}
+	
+	private int getMeepleCoordY(int tileCenterY, int tileSize, short meeplePos){
+		switch(meeplePos){
+			case Tile.SIDE_TOP:
+				return tileCenterY-(tileSize/3);
+			case Tile.SIDE_BOTTOM:
+				return tileCenterY+(tileSize/3);
+			default:
+				return tileCenterY;
+		}
 	}
 	
 	private void setViewScaleValues(int lx, int ly){
