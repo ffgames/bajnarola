@@ -14,38 +14,46 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
-import com.sun.corba.se.spi.ior.iiop.GIOPVersion;
-
 public class GameScene extends IScene {
 	
 	static final float SCROLL_AREA_RATEO = (float)0.05;
 	
-	private int globalCenterOffset, tileSize, meepleSize;
-	private float scaleFactor;
-	private boolean zoomOutView, zoomable;
-	
-	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
-	public int xOff, yOff, maxX, maxY;
-	private int logicalMaxX, logicalMinX, logicalMaxY, logicalMinY;
-	
+	//Animations / scenario
 	private Map<String, GraphicalTile> currentScenario;
 	private Map<String, Boolean> currentLanscape;
 	private Map<String, GraphicalMeeple> placedMeeples;
 	private List<GraphicalMeeple> meeplesToRemove;
 	public GraphicalMeeple meepleToPlace;
-	public GraphicalTile tileToPlace, turnTile;
-	private int turnTileCx, turnTileCy, turnTileSize;
-	public boolean probing, probeResult, mouseOverOn, dimscreen;
+	public GraphicalTile tileToPlace;
+	private int tileSize, meepleSize;
+	
+	//HUD
+		//graphical elements
+	public GraphicalTile turnTile;
 	private GraphicalTile probeSquare, holeOver;
 	private GraphicalElement probingTile;
+	private GraphicalMeeple tmpMeeples[], currentPlayerMeeple;
 	private Button zoomButton, confirmButton;
-	private List<HitBox> holes;
-	private int probedX, probedY;
 	private Image curtain;
-	
+		//logical elements
+	private List<HitBox> holes;
 	private boolean possibleMeeples[];
-	private GraphicalMeeple tmpMeeples[];
-
+	private boolean zoomOutView, zoomable;
+	private int turnTileCx, turnTileCy, turnTileSize;
+	public boolean probing, probeResult, mouseOverOn, dimscreen;
+	private int probedX, probedY;
+	private short turnMeepleSide;
+	
+	
+	//view area controll
+	private int globalCenterOffset;
+	private float scaleFactor;
+	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
+	public int xOff, yOff, maxX, maxY;
+	private int logicalMaxX, logicalMinX, logicalMaxY, logicalMinY;
+	
+	
+	
 	public GameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
 		sceneType = scene_type.SCENE_GAME;
@@ -96,6 +104,8 @@ public class GameScene extends IScene {
 		tmpMeeples[2] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy+(turnTileSize/3), turnTileSize/4);
 		tmpMeeples[3] = new GraphicalMeeple(this, 42, "", turnTileCx-(turnTileSize/3), turnTileCy, turnTileSize/4);
 		tmpMeeples[4] = new GraphicalMeeple(this, 42, "", turnTileCx, turnTileCy, turnTileSize/4);
+		
+		currentPlayerMeeple = null;
 	}
 
 	@Override
@@ -169,6 +179,10 @@ public class GameScene extends IScene {
 			for(int i = 0; i < Tile.SIDE_COUNT; i++)
 				if(possibleMeeples[i])
 					tmpMeeples[i].drawAbsolute();
+			
+			if(turnMeepleSide > -1){
+				currentPlayerMeeple.drawAbsolute();
+			}
 		}
 		
 		if(turnTile != null)
@@ -189,6 +203,10 @@ public class GameScene extends IScene {
 			}
 		}
 		return ret;
+	}
+	
+	public void initPlayerMeeple(int playerId) throws SlickException{
+		currentPlayerMeeple = new GraphicalMeeple(this, playerId, "", 0, 0, turnTileSize/4);
 	}
 	
 	public void meeplesRemoved(){
@@ -266,11 +284,14 @@ public class GameScene extends IScene {
 		}
 		probedX = probedY = 0;
 		confirmButton.disable();
+		turnMeepleSide = -1;
 	}
 	
 	public void endTurn(){
 		turnTile = null;
 		confirmButton.disable();
+		possibleMeeples = null;
+		dimscreen = false;
 	}
 	
 	@Override
@@ -282,7 +303,15 @@ public class GameScene extends IScene {
 				zoomButton.activate();
 			zoomOutView = !zoomOutView;
 		}
-		if(mouseOverOn && !dimscreen){
+		if(confirmButton.isEnabled() && confirmButton.isClicked(x, y)){
+			if(!dimscreen){
+				possibleMeeples = guiManager.controller.place(probedX, probedY);
+				dimscreen = true;
+			} else {
+				guiManager.controller.placeMeeple(turnMeepleSide);
+				endTurn();
+			}
+		} else if(mouseOverOn && !dimscreen){
 			probing = true;
 			probedX = getLogicalCoordX(holeOver.hitbox.getCenterX());
 			probedY = getLogicalCoordY(holeOver.hitbox.getCenterY());
@@ -297,12 +326,15 @@ public class GameScene extends IScene {
 				confirmButton.enable();
 			}
 		}
-		if(confirmButton.isEnabled() && confirmButton.isClicked(x, y)){
-			if(!dimscreen){
-				possibleMeeples = guiManager.controller.place(probedX, probedY);
-				dimscreen = true;
-			} else {
-				
+		if(dimscreen){
+			for(int i = 0; i < possibleMeeples.length; i ++){
+				if(possibleMeeples[i] && tmpMeeples[i].isClicked(x, y, 0, 0)){
+					if(turnMeepleSide != i){
+						turnMeepleSide = (short) i;
+						currentPlayerMeeple.setCoordinates(tmpMeeples[i].hitbox);
+					} else
+						turnMeepleSide = -1;
+				}
 			}
 		}
 	}
@@ -342,17 +374,34 @@ public class GameScene extends IScene {
 		
 	}
 
+	private void shiftView(int direction){
+		switch(direction){
+			case Tile.SIDE_LEFT:
+				
+				break;
+			case Tile.SIDE_RIGHT:
+				
+				break;
+			case Tile.SIDE_BOTTOM:
+				
+				break;
+			case Tile.SIDE_TOP:
+				
+				break;
+		}
+	}
+	
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
 		if(newx < leftBorderX && newx > 2){
-		
+			shiftView(Tile.SIDE_LEFT);
 		} else if (newx > rightBorderX && newx < guiManager.windowWidth-3){
-		
+			shiftView(Tile.SIDE_RIGHT);
 		}
 		if(newy < upperBorderY && newy > 2){
-		
+			shiftView(Tile.SIDE_TOP);
 		} else if (newy > lowerBorderY && newy < guiManager.windowHeight-3){
-		
+			shiftView(Tile.SIDE_BOTTOM);
 		}
 		
 		if(!dimscreen){
@@ -396,14 +445,8 @@ public class GameScene extends IScene {
 	}
 
 	@Override
-	public void leftRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void leftRelease(int x, int y) {}
 
 	@Override
-	public void rightRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void rightRelease(int x, int y) {}
 }

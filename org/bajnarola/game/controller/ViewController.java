@@ -220,6 +220,7 @@ public class ViewController {
 	
 	public void setPlayer(String playerName) {
 		this.player = board.getPlayerByName(playerName);
+		bajnarolaGui.setPlayerMeepleColor(player.getId());
 	}
 	
 	public void setGameOptions(String playerName, String lobbyURI) {

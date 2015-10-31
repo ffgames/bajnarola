@@ -155,6 +155,9 @@ public class GameController extends UnicastRemoteObject implements
 		Meeple meeple;
 
 		tile = board.beginTurn();
+		for(int i = 0; i < diff.tileDirection; i++)
+			tile.rotate(true);
+		
 		/* XXX: It should never reaches this point if the deck is empty 
 		 * if (tile == null) {
 			System.out.println("Game end");

@@ -71,6 +71,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		this.controller = controller;
 	}
 	
+	private int playerId = -1;
+	
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		 provider = new InputProvider(gc.getInput());
@@ -198,6 +200,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 				currentUpdate = null;
 			}
 		}
+		if(playerId > -1){
+			gameScene.initPlayerMeeple(playerId);
+			playerId = -1;
+		}
 	}
 
 	public void viewPlayTurn(List<String> holes, Tile newTile){
@@ -303,6 +309,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 				currentScene = endgameScene;
 				break;
 		}
+	}
+	
+	public void setPlayerMeepleColor(int playerId){
+		this.playerId = playerId;
 	}
 	
 	@Override

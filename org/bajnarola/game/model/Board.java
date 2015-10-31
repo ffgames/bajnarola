@@ -445,7 +445,7 @@ public class Board {
 			
 			return points;
 		}
-		return null;
+		return new Hashtable<String, Boolean>();
 	}
 	
 	/* Look for all the landscapes of the scenario that are still empty 
