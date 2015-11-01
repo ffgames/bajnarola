@@ -42,7 +42,6 @@ import org.bajnarola.game.controller.TurnDiff;
 import org.bajnarola.networking.NetPlayer;
 
 import java.util.Collections;
-
 import java.util.List;
 
 public class BajnarolaClient {
@@ -59,7 +58,7 @@ public class BajnarolaClient {
 				String uriBoard = playersStrings.get(user).rmiUriBoard;
 				bc = (GameControllerRemote) Naming.lookup(uriBoard);
 				this.players.put(user, bc);
-			} catch (MalformedURLException | NotBoundException e) {
+			} catch (NotBoundException | MalformedURLException e) {
 				e.printStackTrace();
 			} catch (RemoteException e) {
 				/* crash! */

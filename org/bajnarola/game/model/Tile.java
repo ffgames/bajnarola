@@ -142,8 +142,12 @@ public class Tile {
 		
 		for (int i = 0; i < SIDE_COUNT; i++){
 			te = landscapes.get(i);
-			if(el.equals(te))
+			if(el.equals(te)){
+				if(meeple != null && meeple.getTileSide() == i){
+					removeMeeple();
+				}
 				landscapes.remove(i);
+			}
 		}
 	}
 	

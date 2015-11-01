@@ -25,7 +25,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	Integer maxPlayers = 0;
 	String lpath;
 	Lock plock;
-	
+
 	private Boolean done;
 	
 	public LobbyServer(String server, int playersNo, int timeout) throws RemoteException {
@@ -104,7 +104,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		try {
 			Naming.unbind(this.lpath);
 			UnicastRemoteObject.unexportObject(this, true);
-		} catch (RemoteException | MalformedURLException | NotBoundException e) {
+		} catch (RemoteException | NotBoundException | MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}

@@ -15,7 +15,6 @@ public class MainClass {
 	private static final String SERVICE = "rmi";
 	private static int seed = -1; 
 	
-	
 	public static void main(String[] argv) {
 		LobbyClient     iLobby  = null;
 		BajnarolaServer iServer = null;
@@ -30,7 +29,6 @@ public class MainClass {
 		
 		Map<String, NetPlayer> players = null;
 		UnlockCause cause;
-		
 		
 		try {
 			System.out.println("Bajnarola starting up.");

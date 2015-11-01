@@ -105,12 +105,7 @@ public abstract class LandscapeElement {
 	}
 	
 	public void clear(){
-		Meeple m;
 		for (Tile t : tiles){
-			m = t.getMeeple();
-			if(m != null){
-				t.removeMeeple();
-			}
 			t.unlinkLSElement(this);
 		}
 	}

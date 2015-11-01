@@ -423,6 +423,14 @@ public class Board {
 		if (ls != null && (ls.isCompleted() || endGame)){	
 			short score;
 			
+			List<Player> owners = ls.getScoreOwners();
+			
+			for(Player o : owners){
+				score = ls.getValue();
+				o.setScore((short)(o.getScore() + score));
+			}
+			ls.clear();
+			
 			/* Add the points of a landscape to the set.
 			 * Duplicated points are not added in the set. */
 			Map<String,Boolean> points = new Hashtable<String, Boolean>();
@@ -435,14 +443,6 @@ public class Board {
 				
 				points.put(key, t.hasMeeple());
 			}
-			
-			List<Player> owners = ls.getScoreOwners();
-			
-			for(Player o : owners){
-				score = ls.getValue();
-				o.setScore((short)(o.getScore() + score));
-			}
-			ls.clear();
 			
 			return points;
 		}

@@ -184,6 +184,10 @@ public class GameScene extends IScene {
 		
 		if(turnTile != null)
 			confirmButton.draw();
+		
+		for(GraphicalTile t : currentScenario.values()){
+			g.drawString(t.getCoordinates(), t.globalCenterX-xOff, t.globalCenterY-yOff);
+		}
 	}
 
 	//returns true if at least one meeple has been removed
@@ -195,9 +199,11 @@ public class GameScene extends IScene {
 			val = ls.get(m.coords);
 			if(val != null && val == false){
 				ret = true;
-				placedMeeples.remove(m.coords);
 				meeplesToRemove.add(m);
 			}
+		}
+		for(GraphicalMeeple m : meeplesToRemove){
+			placedMeeples.remove(m.coords);
 		}
 		return ret;
 	}

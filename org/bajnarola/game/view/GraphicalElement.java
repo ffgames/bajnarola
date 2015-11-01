@@ -47,13 +47,13 @@ public class GraphicalElement extends Image {
 	}
 	
 	private void setCoordinates(int globalCenterX, int globalCenterY){
-		this.globalCenterX = globalCenterX;
-		this.globalCenterY = globalCenterY;
 		hitbox.reset(globalCenterX-(size/2), globalCenterY-(size/2), globalCenterX+(size/2), globalCenterY+(size/2));
 	}
 	
 	public void setCoordinates(String coordinates, int globalCenterX, int globalCenterY){
 		this.coords = coordinates;
+		this.globalCenterX = globalCenterX;
+		this.globalCenterY = globalCenterY;
 		setCoordinates(globalCenterX, globalCenterY);
 	}
 	

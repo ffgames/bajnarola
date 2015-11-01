@@ -20,10 +20,14 @@ public class Animator {
 	final static float LANDSCAPE_GLOW_FINAL_GRADIENT = (float)0.3;
 	final static float TILE_PROBE_GLOW_INITIAL_OPACITY = (float)0;
 	final static float TILE_PROBE_GLOW_FINAL_OPACITY = (float)1;
-	final static float MEEPLE_PLACEMENT_INITIAL_OFFSET = 200; //pixel
+	final static float MEEPLE_PLACEMENT_INITIAL_OFFSET = -200; //pixel
 	final static float MEEPLE_PLACEMENT_FINAL_OFFSET = 0; //pixel
+	final static float MEEPLE_PLACEMENT_INITIAL_OPACITY = 0; 
+	final static float MEEPLE_PLACEMENT_FINAL_OPACITY = 1;
 	final static float MEEPLE_REMOVAL_INITIAL_OFFSET = 0; //pixel
-	final static float MEEPLE_REMOVAL_FINAL_OFFSET = 200; //pixel
+	final static float MEEPLE_REMOVAL_FINAL_OFFSET = -500; //pixel
+	final static float MEEPLE_REMOVAL_INITIAL_OPACITY = 1;
+	final static float MEEPLE_REMOVAL_FINAL_OPACITY = 0;
 	
 	int tilePlacementFrame;
 	int landscapeGlowFrame;
@@ -78,9 +82,23 @@ public class Animator {
 		return 0;
 	}
 	
+	private int getMeeplePlacementAlpha(){
+		if(meeplePlacementOn){
+			return (int) ((((MEEPLE_PLACEMENT_FINAL_OPACITY - MEEPLE_PLACEMENT_INITIAL_OPACITY) / MEEPLE_PLACEMENT_DURATION) * meeplePlacementFrame) + MEEPLE_PLACEMENT_INITIAL_OPACITY);
+		}
+		return 0;
+	}
+	
 	private int getMeepleRemovalYOffset(){
 		if(meepleRemovalOn){
 			return (int) ((((MEEPLE_REMOVAL_FINAL_OFFSET - MEEPLE_REMOVAL_INITIAL_OFFSET) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OFFSET);
+		}
+		return 0;
+	}
+	
+	private int getMeepleRemovalAlpha(){
+		if(meepleRemovalOn){
+			return (int) ((((MEEPLE_REMOVAL_FINAL_OPACITY - MEEPLE_REMOVAL_INITIAL_OPACITY) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OPACITY);
 		}
 		return 0;
 	}
@@ -104,15 +122,14 @@ public class Animator {
 	}
 	
 	public void drawMeeplePlacement(GraphicalMeeple meeple, boolean zoomOutView, float scale){
-		//XXX: meeples are sent to space right now, displace adds an offset to global center of ge and resets its position.. 
-		//when beginning animation the meeple should be displaced to starting coordinates, and then the offset should be a 
-		//negative(positive, as y increses towards the bottom of the screen) to reach its actual position
-		//meeple.displace(0, getMeeplePlacementYOffset());
+		meeple.displace(0, getMeeplePlacementYOffset());
+		meeple.setAlpha(getMeeplePlacementAlpha());
 		meeple.draw(zoomOutView, scale);
 	}
 	
 	public void drawMeepleRemoval(GraphicalMeeple meeple, boolean zoomOutView, float scale){
 		meeple.displace(0, getMeepleRemovalYOffset());
+		meeple.setAlpha(getMeepleRemovalAlpha());
 		meeple.draw(zoomOutView, scale);
 	}
 	

@@ -182,7 +182,8 @@ public class GameController extends UnicastRemoteObject implements
 			board.placeMeeple(tile, meeple);
 		}
 
-		Map<String, Boolean> points = board.endTurn(tile);
+		Map<String, Boolean> points = new Hashtable<String, Boolean>();
+		points.putAll(board.endTurn(tile));
 
 		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
 	}
