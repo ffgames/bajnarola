@@ -189,8 +189,10 @@ public class GameController extends UnicastRemoteObject implements
 
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
 		points.putAll(board.endTurn(tile));
+		Map<String, Integer> scores = new Hashtable<String, Integer>();
+		//scores.putAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
 	}
 
 	public void localPlay(String me) {
@@ -205,9 +207,12 @@ public class GameController extends UnicastRemoteObject implements
 
 		viewCtl.waitViewChange(tile);
 
-		Map<String, Boolean> points = board.endTurn(tile);
+		Map<String, Boolean> points = new Hashtable<String, Boolean>();
+		points.putAll(board.endTurn(tile));
+		Map<String, Integer> scores = new Hashtable<String, Integer>();
+		//scores.putAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
 		
 		short meepleTileSide = -1;
 		if (tile.getMeeple() != null)
@@ -242,14 +247,14 @@ public class GameController extends UnicastRemoteObject implements
 		this.finalScores = scores;
 		this.winner = winner;
 		
-		this.viewCtl.enqueueViewUpdate(new ViewUpdate(null, null));
+		this.viewCtl.enqueueViewUpdate(new ViewUpdate(null, null, null));
 	}
 
 
 	public void initBoard(String playerName, List<String> playerNames, int seed) {
 		Tile initialTile = board.initBoard(playerNames, seed);
 		viewCtl.setPlayer(playerName);
-		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile);
+		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile, new Hashtable<String, Integer>());
 		viewCtl.enqueueViewUpdate(firstupdate);
 	}
 	

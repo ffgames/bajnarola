@@ -6,6 +6,7 @@ import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
+import org.bajnarola.game.view.RelativeSizes.Resolutions;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -82,6 +83,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
 		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
 		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
+		 
+		 //TODO: if fixed resolution is set through options avoid using fullscreen here
+		 RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
 		 
 		 rawInput = new Input(gc.getScreenHeight());
 		 
@@ -195,11 +199,20 @@ public class Gui extends BasicGame implements InputProviderListener {
 				}
 				currentUpdate.points = null;
 			}
-			if(animator.automaticAnimationsEnded()){
+			if(!animator.isLandscapeGlowOn())
 				gameScene.landscapesSet();
-				gameScene.meeplesRemoved();
-				currentUpdate = null;
+			if(!animator.isMeepleRemovalOn())
+				gameScene.meeplesRemoved(controller.getMeeplesInHand());
+			if(!animator.isShowScoreOn()){
+				if(!currentUpdate.scores.isEmpty()){
+					String pos = (String)(currentUpdate.scores.keySet().toArray())[0];
+					gameScene.drawScoreUpdate(pos, currentUpdate.scores.remove(pos));
+					animator.enableShowScore();
+				}
 			}
+			
+			if(animator.automaticAnimationsEnded())
+				currentUpdate = null;
 		}
 		if(playerId > -1){
 			gameScene.initPlayerMeeple(playerId);

@@ -31,7 +31,7 @@ public class GameScene extends IScene {
 		//graphical elements
 	public GraphicalTile turnTile;
 	private GraphicalTile probeSquare, holeOver;
-	private GraphicalElement probingTile;
+	private GraphicalElement probingTile, handMeeples[];
 	private GraphicalMeeple tmpMeeples[], currentPlayerMeeple;
 	private Button zoomButton, confirmButton;
 	private Image curtain;
@@ -40,6 +40,7 @@ public class GameScene extends IScene {
 	private boolean possibleMeeples[];
 	private boolean zoomOutView, zoomable;
 	private int turnTileCx, turnTileCy, turnTileSize;
+	private int meeplesInHand;
 	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private int probedX, probedY;
 	private short turnMeepleSide;
@@ -53,6 +54,7 @@ public class GameScene extends IScene {
 	private int logicalMaxX, logicalMinX, logicalMaxY, logicalMinY;
 	
 	
+	// ##  INIT  ##
 	
 	public GameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
@@ -105,12 +107,41 @@ public class GameScene extends IScene {
 		currentPlayerMeeple = null;
 	}
 
+	public void initPlayerMeeple(int playerId) throws SlickException{
+		currentPlayerMeeple = new GraphicalMeeple(this, playerId, "", 0, 0, turnTileSize/4);
+		
+		handMeeples = new GraphicalElement[7];
+		int handMeepleSize = confirmButton.hitbox.ulx/9;
+		if(handMeepleSize > GraphicalMeeple.MEEPLE_SIZE)
+			handMeepleSize = GraphicalMeeple.MEEPLE_SIZE;
+		RelativeSizes rs = RelativeSizes.getInstance();
+		int nextCenterX = (handMeepleSize/2)+rs.handMeepleXOffset();
+		int nextCenterY = guiManager.windowHeight - (handMeepleSize/2)-rs.handMeepleYOffset();
+		
+		for(int i = 0; i < 7; i++){
+			handMeeples[i] = currentPlayerMeeple.copy("", nextCenterX, nextCenterY, handMeepleSize);
+			nextCenterX += handMeepleSize+rs.handMeepleXOffset();
+		}
+		
+		meeplesInHand = 7;
+	}
+	
+	// ##  RENDERING ##
+	
 	@Override
 	public void render(GameContainer gc, Graphics g) {
 		guiManager.drawBackground(background, backgroundType);
 		
-		//Board render
+		boardRender(gc, g);
 		
+		hudRender(gc, g);
+		
+		/*for(GraphicalTile t : currentScenario.values()){
+			g.drawString(t.getCoordinates(), t.globalCenterX-xOff, t.globalCenterY-yOff);
+		}*/
+	}
+
+	private void boardRender(GameContainer gc, Graphics g){
 		//Static scenario elements
 		
 		for(GraphicalTile t : currentScenario.values()){
@@ -154,11 +185,10 @@ public class GameScene extends IScene {
 		
 		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
-		
-		//Board render ends here
-		
-		//HUD render
-		
+				
+	}
+	
+	private void hudRender(GameContainer gc, Graphics g){
 		if(!dimscreen){
 			if(zoomable)
 				zoomButton.draw();
@@ -182,14 +212,18 @@ public class GameScene extends IScene {
 			}
 		}
 		
+		int meeplesToDraw = meeplesInHand - (dimscreen && turnMeepleSide != -1 ? 1 : 0);
+		for(int i = 0; i < meeplesToDraw; i++){
+			if(handMeeples[i] != null)
+				handMeeples[i].drawAbsolute();
+		}
+		
 		if(turnTile != null)
 			confirmButton.draw();
-		
-		for(GraphicalTile t : currentScenario.values()){
-			g.drawString(t.getCoordinates(), t.globalCenterX-xOff, t.globalCenterY-yOff);
-		}
 	}
-
+	
+	// ##  ANIMATOR CONTROLS  ##
+	
 	//returns true if at least one meeple has been removed
 	public boolean setCurrentLandscape(Map<String, Boolean> ls){
 		currentLanscape = ls;
@@ -208,12 +242,14 @@ public class GameScene extends IScene {
 		return ret;
 	}
 	
-	public void initPlayerMeeple(int playerId) throws SlickException{
-		currentPlayerMeeple = new GraphicalMeeple(this, playerId, "", 0, 0, turnTileSize/4);
+	public void drawScoreUpdate(String position, int value){
+		
 	}
-	
-	public void meeplesRemoved(){
+
+	public void meeplesRemoved(int meeplesInHand){
 		meeplesToRemove.clear();
+
+		this.meeplesInHand = meeplesInHand;
 	}
 	
 	public void tilePlaced(){
@@ -233,6 +269,8 @@ public class GameScene extends IScene {
 		currentLanscape = null;
 	}
 	
+	// ##  TURN MANAGEMENT  ##
+	
 	public boolean placeGraphicalTile(Tile tile, String coords) throws SlickException{
 		int lx = getLogicalX(coords);
 		int ly = getLogicalY(coords);
@@ -246,59 +284,8 @@ public class GameScene extends IScene {
 					getMeepleCoordY(getGlobalCoordY(ly), tileSize, tile.getMeeple().getTileSide()), meepleSize);
 			return true;
 		}
+		
 		return false;
-	}
-	
-	private int getMeepleCoordX(int tileCenterX, int tileSize, short meeplePos){
-		switch(meeplePos){
-			case Tile.SIDE_LEFT:
-				return tileCenterX-(tileSize/3);
-			case Tile.SIDE_RIGHT:
-				return tileCenterX+(tileSize/3);
-			default:
-				return tileCenterX;
-		}
-	}
-	
-	private int getMeepleCoordY(int tileCenterY, int tileSize, short meeplePos){
-		switch(meeplePos){
-			case Tile.SIDE_TOP:
-				return tileCenterY-(tileSize/3);
-			case Tile.SIDE_BOTTOM:
-				return tileCenterY+(tileSize/3);
-			default:
-				return tileCenterY;
-		}
-	}
-	
-	private void setViewScaleValues(int lx, int ly){
-		if(lx < logicalMinX)
-			logicalMinX = lx;
-		if(lx > logicalMaxX)
-			logicalMaxX = lx;
-		if(ly < logicalMinY)
-			logicalMinY = ly;
-		if(ly > logicalMaxY)
-			logicalMaxY = ly;
-		
-		int tw, th;
-		tw = (logicalMaxX - logicalMinX) * tileSize;
-		th = (logicalMaxY - logicalMinY) * tileSize;
-		
-		if(tw <= guiManager.windowWidth && th <= guiManager.windowHeight){
-			scaleFactor = 1;
-			//zoomable = false; should be implicit
-		}
-		else {
-			float hscale, vscale;
-			
-			hscale = guiManager.windowHeight / th;
-			vscale = guiManager.windowWidth / tw;
-		
-			scaleFactor = (hscale < vscale ? hscale : vscale);
-			
-			zoomable = true;
-		}
 	}
 	
 	public void beginTurn(List<String> holes, Tile newTile) throws SlickException{
@@ -316,12 +303,18 @@ public class GameScene extends IScene {
 	}
 	
 	public void endTurn(){
+		if(turnMeepleSide != -1){
+			meeplesInHand --;
+		}
+		turnMeepleSide = -1;
 		turnTile = null;
 		probingTile = null;
 		confirmButton.disable();
 		possibleMeeples = null;
 		dimscreen = false;
 	}
+
+	// ##  INPUT HANDLERS  ##
 	
 	@Override
 	public void leftClick(int x, int y) {
@@ -362,7 +355,7 @@ public class GameScene extends IScene {
 						if(turnMeepleSide != i){
 							turnMeepleSide = (short) i;
 							currentPlayerMeeple.setCoordinates(tmpMeeples[i].hitbox);
-						} else
+						} else 
 							turnMeepleSide = -1;
 					}
 				}
@@ -404,23 +397,6 @@ public class GameScene extends IScene {
 		// TODO Auto-generated method stub
 		
 	}
-
-	private void shiftView(int direction){
-		switch(direction){
-			case Tile.SIDE_LEFT:
-				
-				break;
-			case Tile.SIDE_RIGHT:
-				
-				break;
-			case Tile.SIDE_BOTTOM:
-				
-				break;
-			case Tile.SIDE_TOP:
-				
-				break;
-		}
-	}
 	
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
@@ -451,6 +427,85 @@ public class GameScene extends IScene {
 			}
 		}
 	}
+
+	@Override
+	public void leftRelease(int x, int y) {}
+
+	@Override
+	public void rightRelease(int x, int y) {}
+
+	// ##  VIEW AREA CONTROL  ##
+		
+	private void setViewScaleValues(int lx, int ly){
+		if(lx < logicalMinX)
+			logicalMinX = lx;
+		if(lx > logicalMaxX)
+			logicalMaxX = lx;
+		if(ly < logicalMinY)
+			logicalMinY = ly;
+		if(ly > logicalMaxY)
+			logicalMaxY = ly;
+		
+		int tw, th;
+		tw = (logicalMaxX - logicalMinX) * tileSize;
+		th = (logicalMaxY - logicalMinY) * tileSize;
+		
+		if(tw <= guiManager.windowWidth && th <= guiManager.windowHeight){
+			scaleFactor = 1;
+			//zoomable = false; should be implicit
+		}
+		else {
+			float hscale, vscale;
+			
+			hscale = guiManager.windowHeight / th;
+			vscale = guiManager.windowWidth / tw;
+		
+			scaleFactor = (hscale < vscale ? hscale : vscale);
+			
+			zoomable = true;
+		}
+	}
+
+	private void shiftView(int direction){
+		switch(direction){
+			case Tile.SIDE_LEFT:
+				
+				break;
+			case Tile.SIDE_RIGHT:
+				
+				break;
+			case Tile.SIDE_BOTTOM:
+				
+				break;
+			case Tile.SIDE_TOP:
+				
+				break;
+		}
+	}
+	
+	// ##  COORDINATES MANAGEMENT  ##
+	
+	private int getMeepleCoordX(int tileCenterX, int tileSize, short meeplePos){
+		switch(meeplePos){
+			case Tile.SIDE_LEFT:
+				return tileCenterX-(tileSize/3);
+			case Tile.SIDE_RIGHT:
+				return tileCenterX+(tileSize/3);
+			default:
+				return tileCenterX;
+		}
+	}
+	
+	private int getMeepleCoordY(int tileCenterY, int tileSize, short meeplePos){
+		switch(meeplePos){
+			case Tile.SIDE_TOP:
+				return tileCenterY-(tileSize/3);
+			case Tile.SIDE_BOTTOM:
+				return tileCenterY+(tileSize/3);
+			default:
+				return tileCenterY;
+		}
+	}
 	
 	private static final int getLogicalX(String coords){
 		return Integer.parseInt(coords.split(";")[0]);
@@ -476,9 +531,4 @@ public class GameScene extends IScene {
 		return globalCenterOffset + ((-lc) * tileSize);
 	}
 
-	@Override
-	public void leftRelease(int x, int y) {}
-
-	@Override
-	public void rightRelease(int x, int y) {}
 }

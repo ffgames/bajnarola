@@ -10,10 +10,11 @@ public class ViewUpdate {
 	 * or not in the corresponding tile. */
 	public Map<String, Boolean> points;
 	public Tile placedTile;
-	public boolean meeplesRemoved;
+	public Map<String, Integer> scores;
 	
-	ViewUpdate(Map<String,Boolean> points, Tile placedTile) {
+	ViewUpdate(Map<String,Boolean> points, Tile placedTile, Map<String, Integer> scores) {
 		this.placedTile = placedTile;
 		this.points = points;
+		this.scores = scores;
 	}
 }

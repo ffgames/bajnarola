@@ -1,6 +1,7 @@
 package org.bajnarola.game.view;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
@@ -10,6 +11,7 @@ public class Animator {
 	final static int TILE_PROBE_GLOW_DURATION = 60; // (<2sec)
 	final static int MEEPLE_PLACEMENT_DURATION = 50;
 	final static int MEEPLE_REMOVAL_DURATION = 50;
+	final static int SHOW_SCORE_DURATION = 50;
 	
 	final static int LG_GRADIENT_BEGIN_START = 0;
 	final static int LG_GRADIENT_BEGIN_END = 30;
@@ -30,24 +32,30 @@ public class Animator {
 	final static float MEEPLE_REMOVAL_FINAL_OFFSET = -500; //pixel
 	final static float MEEPLE_REMOVAL_INITIAL_OPACITY = 1;
 	final static float MEEPLE_REMOVAL_FINAL_OPACITY = 0;
+	final static float SHOW_SCORE_INITIAL_OFFSET = 0; //pixel
+	final static float SHOW_SCORE_FINAL_OFFSET = -300; //pixel
+	final static float SHOW_SCORE_INITIAL_OPACITY = 1;
+	final static float SHOW_SCORE_FINAL_OPACITY = 0;
 	
 	int tilePlacementFrame;
 	int landscapeGlowFrame;
 	int tileProbeGlowFrame;
 	int meeplePlacementFrame;
 	int meepleRemovalFrame;
+	int showScoreFrame;
 	
 	boolean tilePlacementOn;
 	boolean landscapeGlowOn;
 	boolean tileProbeGlowOn;
 	boolean meeplePlacementOn;
 	boolean meepleRemovalOn;
+	boolean showScoreOn;
 	
 	Image blue;
 	
 	public Animator() throws SlickException{
-		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = false;
-		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = 0;
+		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = false;
+		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = 0;
 		blue = new Image("res/misc/blue.png");
 	}
 	
@@ -106,6 +114,24 @@ public class Animator {
 			return ((((MEEPLE_REMOVAL_FINAL_OPACITY - MEEPLE_REMOVAL_INITIAL_OPACITY) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OPACITY);
 		}
 		return 0;
+	}
+	
+	private int getShowScoreYOffset(){
+		if(meepleRemovalOn){
+			return (int) ((((SHOW_SCORE_FINAL_OFFSET - SHOW_SCORE_INITIAL_OFFSET) / SHOW_SCORE_DURATION) * showScoreFrame) + SHOW_SCORE_INITIAL_OFFSET);
+		}
+		return 0;
+	}
+	
+	private float getShowScoreAlpha(){
+		if(meepleRemovalOn){
+			return ((((SHOW_SCORE_FINAL_OPACITY - SHOW_SCORE_INITIAL_OPACITY) / SHOW_SCORE_DURATION) * showScoreFrame) + SHOW_SCORE_INITIAL_OPACITY);
+		}
+		return 0;
+	}
+	
+	public void drawShowScore(Graphics g, int value, int x, int y){
+		//TODO: draw the string in a supersmart way
 	}
 	
 	public void drawLandscapeGlowingTile(GraphicalTile tile, boolean zoomOutView, float scale){
@@ -168,6 +194,11 @@ public class Animator {
 				meepleRemovalOn = false;
 			}
 		}
+		if(showScoreOn){
+			showScoreFrame++;
+			if(showScoreFrame > SHOW_SCORE_DURATION)
+				showScoreOn = false;
+		}
 	}
 	
 	public boolean isTilePlacementOn(){
@@ -190,8 +221,12 @@ public class Animator {
 		return meepleRemovalOn;
 	}
 	
+	public boolean isShowScoreOn(){
+		return showScoreOn;
+	}
+	
 	public boolean automaticAnimationsEnded(){
-		return !meeplePlacementOn && !meepleRemovalOn && !tilePlacementOn && !landscapeGlowOn;
+		return !meeplePlacementOn && !meepleRemovalOn && !tilePlacementOn && !landscapeGlowOn && !showScoreOn;
 	}
 	
 	public void enableTilePlacement(){
@@ -217,5 +252,10 @@ public class Animator {
 	public void enableMeepleRemoval(){
 		meepleRemovalFrame = 0;
 		meepleRemovalOn = true;
+	}
+	
+	public void enableShowScore(){
+		showScoreFrame = 0;
+		showScoreOn = true;
 	}
 }

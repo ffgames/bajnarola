@@ -140,6 +140,10 @@ public class ViewController {
 		}
 	}
 	
+	public int getMeeplesInHand(){
+		return player.getMeepleCount();
+	}
+	
 	public ViewUpdate dequeueViewUpdate() {
 		if (this.viewUpdatesQueue.size() > 0)
 			return this.viewUpdatesQueue.remove(0);
