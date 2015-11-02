@@ -122,6 +122,18 @@ public class GraphicalElement extends Image {
 		}
 	}
 	
+	public void draw(boolean small, float scaleFactor, Image overlay){
+		if(small){
+			setScaledVals(scaleFactor);
+			dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+			overlay.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+		}
+		else{
+			dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+			overlay.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+		}
+	}
+	
 	public void draw(boolean small, float scaleFactor){
 		if(small){
 			setScaledVals(scaleFactor);

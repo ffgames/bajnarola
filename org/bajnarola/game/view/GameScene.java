@@ -224,6 +224,7 @@ public class GameScene extends IScene {
 	public void meeplePlaced(){
 		if(meepleToPlace != null){
 			placedMeeples.put(meepleToPlace.coords, meepleToPlace);
+			meepleToPlace.setAlpha(1f);
 			meepleToPlace = null;
 		}
 	}
@@ -316,6 +317,7 @@ public class GameScene extends IScene {
 	
 	public void endTurn(){
 		turnTile = null;
+		probingTile = null;
 		confirmButton.disable();
 		possibleMeeples = null;
 		dimscreen = false;
@@ -330,37 +332,39 @@ public class GameScene extends IScene {
 				zoomButton.activate();
 			zoomOutView = !zoomOutView;
 		}
-		if(confirmButton.isEnabled() && confirmButton.isClicked(x, y)){
-			if(!dimscreen){
-				possibleMeeples = guiManager.controller.place(probedX, probedY);
-				dimscreen = true;
-			} else {
-				guiManager.controller.placeMeeple(turnMeepleSide);
-				endTurn();
+		if(turnTile != null){
+			if(confirmButton.isEnabled() && confirmButton.isClicked(x, y)){
+				if(!dimscreen){
+					possibleMeeples = guiManager.controller.place(probedX, probedY);
+					dimscreen = true;
+				} else {
+					guiManager.controller.placeMeeple(turnMeepleSide);
+					endTurn();
+				}
+			} else if(mouseOverOn && !dimscreen){
+				probing = true;
+				probedX = getLogicalCoordX(holeOver.hitbox.getCenterX());
+				probedY = getLogicalCoordY(holeOver.hitbox.getCenterY());
+				if(!guiManager.controller.probe(probedX, probedY)){
+					probingTile = null;
+					probeSquare.setCoordinates(holeOver.hitbox);
+					guiManager.animator.enableTileProbeGlow();
+					confirmButton.disable();
+				} else {
+					probingTile = turnTile.copy(probedX+";"+probedY, getGlobalCoordX(probedX), getGlobalCoordY(probedY), tileSize);
+					probingTile.setAlpha(0.5f);
+					confirmButton.enable();
+				}
 			}
-		} else if(mouseOverOn && !dimscreen){
-			probing = true;
-			probedX = getLogicalCoordX(holeOver.hitbox.getCenterX());
-			probedY = getLogicalCoordY(holeOver.hitbox.getCenterY());
-			if(!guiManager.controller.probe(probedX, probedY)){
-				probingTile = null;
-				probeSquare.setCoordinates(holeOver.hitbox);
-				guiManager.animator.enableTileProbeGlow();
-				confirmButton.disable();
-			} else {
-				probingTile = turnTile.copy(probedX+";"+probedY, getGlobalCoordX(probedX), getGlobalCoordY(probedY), tileSize);
-				probingTile.setAlpha(0.5f);
-				confirmButton.enable();
-			}
-		}
-		if(dimscreen){
-			for(int i = 0; i < possibleMeeples.length; i ++){
-				if(possibleMeeples[i] && tmpMeeples[i].isClicked(x, y, 0, 0)){
-					if(turnMeepleSide != i){
-						turnMeepleSide = (short) i;
-						currentPlayerMeeple.setCoordinates(tmpMeeples[i].hitbox);
-					} else
-						turnMeepleSide = -1;
+			if(dimscreen){
+				for(int i = 0; i < possibleMeeples.length; i ++){
+					if(possibleMeeples[i] && tmpMeeples[i].isClicked(x, y, 0, 0)){
+						if(turnMeepleSide != i){
+							turnMeepleSide = (short) i;
+							currentPlayerMeeple.setCoordinates(tmpMeeples[i].hitbox);
+						} else
+							turnMeepleSide = -1;
+					}
 				}
 			}
 		}
@@ -431,20 +435,21 @@ public class GameScene extends IScene {
 			shiftView(Tile.SIDE_BOTTOM);
 		}
 		
-		if(!dimscreen){
-			mouseOverOn = false;
-			if(!holes.isEmpty()){
-				for(HitBox h : holes){
-					if(h.hits(newx, newy, xOff, yOff)){
-						holeOver.setCoordinates(h);
-						mouseOverOn = true;
+		if(turnTile != null){
+			confirmButton.isClicked(newx, newy);
+			
+			if(!dimscreen){
+				mouseOverOn = false;
+				if(!holes.isEmpty()){
+					for(HitBox h : holes){
+						if(h.hits(newx, newy, xOff, yOff)){
+							holeOver.setCoordinates(h);
+							mouseOverOn = true;
+						}
 					}
 				}
 			}
 		}
-		
-		if(turnTile != null)
-			confirmButton.isClicked(newx, newy);
 	}
 	
 	private static final int getLogicalX(String coords){
