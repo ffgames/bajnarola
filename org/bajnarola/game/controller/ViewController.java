@@ -20,7 +20,7 @@ import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui;
-import org.bajnarola.game.view.LobbyScene.UnlockCause;
+import org.bajnarola.game.view.LobbyScene.JoinStatus;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
@@ -123,6 +123,14 @@ public class ViewController {
 			GuiThread guiThread = new GuiThread(appgc);
 			
 			Thread thread = new Thread(guiThread);
+			
+			thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+
+		        public void uncaughtException(Thread t, Throwable e) {
+		            System.out.println("exception " + e + " from thread " + t);
+		            System.exit(1);
+		        }
+		    });
 			
 			thread.start();
 
@@ -228,7 +236,7 @@ public class ViewController {
 		guiLock.unlock();
 	}
 	
-	public void unlockView(UnlockCause cause) {
-		this.bajnarolaGui.unlockLobbyScene(cause);
+	public void joinSignalView(JoinStatus cause) {
+		this.bajnarolaGui.joinSignalLobbyScene(cause);
 	}
 }

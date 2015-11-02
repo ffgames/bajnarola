@@ -26,7 +26,6 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import org.bajnarola.game.UserExistsException;
 import org.bajnarola.lobby.LobbyController;
 import org.bajnarola.lobby.LobbyServer;
 import org.bajnarola.networking.NetPlayer;
@@ -46,7 +45,7 @@ public class LobbyClient {
 		
 	}
 	
-	public Map<String,NetPlayer> join(NetPlayer p, String room) throws UserExistsException, RemoteException {
+	public Map<String,NetPlayer> join(NetPlayer p, String room) throws RemoteException {
 		Map<String,NetPlayer> omap = null;
 		
 		omap = this.lobbyCallback.join(p, room);
@@ -55,7 +54,7 @@ public class LobbyClient {
 		return omap;
 	}
 
-	public Map<String,NetPlayer> join(NetPlayer p) throws UserExistsException, RemoteException {
+	public Map<String,NetPlayer> join(NetPlayer p) throws RemoteException {
 		return this.join(p, "");
 	}
 }

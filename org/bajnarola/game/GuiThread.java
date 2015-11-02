@@ -12,11 +12,15 @@ public class GuiThread implements Runnable {
 	}
 	
 	@Override
-	public void run() {		
+	public void run() throws RuntimeException {		
+		
 		try {
 			this.gameContainer.start();
 		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
+		
 	}
 }

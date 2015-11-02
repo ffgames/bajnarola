@@ -38,12 +38,12 @@ public class LobbyScene extends IScene {
 	
 	int textAreaWidth;
 	
-	public static enum UnlockCause {
-		userOk,
-		userExists,
-		gameStarted,
-		lobbyNotFound,
-		lobbyError
+	public static enum JoinStatus {
+		LOBBY_OK,
+		USER_EXISTS,
+		GAME_STARTED,
+		LOBBY_NOT_FOUND,
+		LOBBY_ERROR
 	}
 	
 	public LobbyScene(Gui guiManager, Image background, 
@@ -130,23 +130,23 @@ public class LobbyScene extends IScene {
 
 	
 	
-	public void unlock(UnlockCause cause) {
+	public void joinCallback(JoinStatus status) {
 		joinButton.enable();
 
-		switch (cause) {
-		case gameStarted:
+		switch (status) {
+		case GAME_STARTED:
 			setJoinMessage(errorGameStarted);
 			break;
-		case userExists:
+		case USER_EXISTS:
 			setJoinMessage(errorUsernameExists);
 			break;
-		case lobbyError:
+		case LOBBY_ERROR:
 			setJoinMessage(errorLobby);
 			break;
-		case lobbyNotFound:
+		case LOBBY_NOT_FOUND:
 			setJoinMessage(errorLobbyNotFound);
 			break;
-		case userOk:
+		case LOBBY_OK:
 			joinMessage = "";
 			guiManager.switchScene(scene_type.SCENE_GAME);
 			break;

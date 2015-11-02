@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.game.controller.GameController;
-import org.bajnarola.game.view.LobbyScene.UnlockCause;
+import org.bajnarola.game.view.LobbyScene.JoinStatus;
 import org.bajnarola.lobby.LobbyClient;
 import org.bajnarola.networking.NetPlayer;
 
@@ -28,7 +28,6 @@ public class MainClass {
 		String lobbyserver;
 		
 		Map<String, NetPlayer> players = null;
-		UnlockCause cause;
 		
 		try {
 			System.out.println("Bajnarola starting up.");
@@ -63,7 +62,7 @@ public class MainClass {
 				} catch (Exception e1) {
 					iLobby = null;
 					iServer = null;
-					gBoard.viewCtl.unlockView(UnlockCause.lobbyNotFound);
+					gBoard.viewCtl.joinSignalView(JoinStatus.LOBBY_NOT_FOUND);
 					System.err.println("Can't reach the lobby");
 					continue;
 				}
@@ -71,24 +70,25 @@ public class MainClass {
 				
 				System.out.print("Joining the default room...");
 				try {
-					/* Join the lobby and set neighbors list.
+					/* Join the lobby and set neighbours list.
 					 * If there is any error, try again. */
 					players = iLobby.join(iServer.getPlayer());
 					okLobby = true;
 				} catch (RemoteException e) {
+					iServer = null;
+					iLobby = null;
+					iClient = null;
+					gBoard.clearGameOptions();
+					
 					if (e.getMessage().contains("User")) {
-						iServer = null;
+						/* XXX: players do not communicate in game */
+						gBoard.viewCtl.joinSignalView(JoinStatus.USER_EXISTS);
 						System.err.println("User already exists");
-						cause = UnlockCause.userExists;
-						gBoard.viewCtl.unlockView(cause);
 					} else if (e.getMessage().contains("Game")){
+						gBoard.viewCtl.joinSignalView(JoinStatus.GAME_STARTED);
 						System.err.println("Game already started");
-						cause = UnlockCause.gameStarted;
-						gBoard.viewCtl.unlockView(cause);
 					} else {
-						iLobby = null;
-						iServer = null;
-						gBoard.viewCtl.unlockView(UnlockCause.lobbyError);
+						gBoard.viewCtl.joinSignalView(JoinStatus.LOBBY_ERROR);
 						System.err.println("Can't connect to the lobby");
 						e.printStackTrace();
 					}
@@ -98,8 +98,7 @@ public class MainClass {
 			iClient.getPlayers(players);
 			
 			System.out.println("OK!");
-			cause = UnlockCause.userOk;
-			gBoard.viewCtl.unlockView(cause);
+			gBoard.viewCtl.joinSignalView(JoinStatus.LOBBY_OK);
 			
 			System.out.println("Beginning game with " + iClient.players.size() + " players.");
 			

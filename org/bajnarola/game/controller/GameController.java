@@ -91,9 +91,14 @@ public class GameController extends UnicastRemoteObject implements
 		return this.goptions;
 	}
 	
+	public void clearGameOptions() {
+		this.goptions = null;
+	}
+	
 	public void waitOptionsFromUser() {
 		viewCtl.waitOptionsFromView();
 	}
+
 
 	@Override
 	public Integer getDiceValue() throws RemoteException {
