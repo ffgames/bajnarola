@@ -11,7 +11,7 @@ public class Animator {
 	final static int TILE_PROBE_GLOW_DURATION = 60; // (<2sec)
 	final static int MEEPLE_PLACEMENT_DURATION = 50;
 	final static int MEEPLE_REMOVAL_DURATION = 50;
-	final static int SHOW_SCORE_DURATION = 50;
+	final static int SHOW_SCORE_DURATION = 80;
 	
 	final static int LG_GRADIENT_BEGIN_START = 0;
 	final static int LG_GRADIENT_BEGIN_END = 30;
@@ -33,7 +33,7 @@ public class Animator {
 	final static float MEEPLE_REMOVAL_INITIAL_OPACITY = 1;
 	final static float MEEPLE_REMOVAL_FINAL_OPACITY = 0;
 	final static float SHOW_SCORE_INITIAL_OFFSET = 0; //pixel
-	final static float SHOW_SCORE_FINAL_OFFSET = -300; //pixel
+	final static float SHOW_SCORE_FINAL_OFFSET = -100; //pixel
 	final static float SHOW_SCORE_INITIAL_OPACITY = 1;
 	final static float SHOW_SCORE_FINAL_OPACITY = 0;
 	
@@ -131,7 +131,9 @@ public class Animator {
 	}
 	
 	public void drawShowScore(Graphics g, int value, int x, int y){
-		//TODO: draw the string in a supersmart way
+		//TODO: fix the color alpha
+		//Color textCol = new Color(1, 1, 1, getShowScoreAlpha());
+		g.getFont().drawString(x, y+getShowScoreYOffset(), "+"+value);//, textCol);
 	}
 	
 	public void drawLandscapeGlowingTile(GraphicalTile tile, boolean zoomOutView, float scale){

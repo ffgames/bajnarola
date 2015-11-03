@@ -39,7 +39,7 @@ public class Board {
 	List<String> holes;
 	Shuffler random;
 	Map<String, Boolean> points;
-	Map<String, Integer> scores;
+	List<String> scores;
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
@@ -54,7 +54,7 @@ public class Board {
 		this.players = new ArrayList<Player>();
 		this.holes = new ArrayList<String>();
 		this.points = new Hashtable<String, Boolean>();
-		this.scores = new Hashtable<String, Integer>();
+		this.scores = new ArrayList<String>();
 	}
 	
 	public Tile initBoard(List<String> playerNames, boolean shuffle, int seed) {
@@ -153,7 +153,7 @@ public class Board {
 		return newTile;
 	}
 	
-	public Map<String, Integer> getScoreUpdates(){
+	public List<String> getScoreUpdates(){
 		return scores;
 	}
 	
@@ -426,28 +426,31 @@ public class Board {
 	
 	/* If the exists landscape exists and it is completed (or if it exists and the game is ended) 
 	 * assign the current landscape score to its owner(s). */
-	private static final Map<String, Boolean> checkScores(LandscapeElement ls, boolean endGame, Map<String, Integer> scores) {
+	private static final Map<String, Boolean> checkScores(LandscapeElement ls, boolean endGame, List<String> scores) {
 		if (ls != null && (ls.isCompleted() || endGame)){	
 			List<Player> owners = ls.getScoreOwners();
 			short score = ls.getValue();
 			
-			for(Player o : owners){	
+			for(Player o : owners){
 				o.setScore((short)(o.getScore() + score));
 			}
-			scores.put(ls.getElementRoot().getX()+";"+ls.getElementRoot().getY(), (int)score);
+			if(!owners.isEmpty())
+				scores.add(Board.getKey(ls.getElementRoot().getX(),ls.getElementRoot().getY())+":"+(int)score);
+			
+			List<Tile> removedTiles = new ArrayList<Tile>();
+			removedTiles.addAll(ls.tiles);
+			
 			ls.clear();
 			
 			/* Add the points of a landscape to the set.
 			 * Duplicated points are not added in the set. */
 			Map<String,Boolean> points = new Hashtable<String, Boolean>();
 			short x, y;
-			String key;
-			for (Tile t : ls.getTiles()) {
+			for (Tile t : removedTiles){
 				x = t.getX();
 				y = t.getY();
-				key = Board.getKey(x, y);
 				
-				points.put(key, t.hasMeeple());
+				points.put(Board.getKey(x, y), t.hasMeeple());
 			}
 			
 			return points;

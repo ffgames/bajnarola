@@ -176,10 +176,15 @@ public class Gui extends BasicGame implements InputProviderListener {
 			myTurn = false;
 			gameScene.beginTurn(holes, newTile);
 		}
+		if(playerId > -1){
+			gameScene.initPlayerMeeple(playerId);
+			playerId = -1;
+		}
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
 					updateEndgameScene();
+					return; //XXX: right??
 				} else {
 					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
 						animator.enableMeeplePlacement();
@@ -188,8 +193,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 				}
 			}
 		}
-		if(currentUpdate != null){
-			if(!animator.isTilePlacementOn() && !animator.isMeeplePlacementOn() && currentUpdate.points != null){
+		if(currentUpdate != null && !animator.isTilePlacementOn() && !animator.isMeeplePlacementOn()){
+			if(currentUpdate.points != null){
 				gameScene.tilePlaced();
 				gameScene.meeplePlaced();
 				if(!currentUpdate.points.isEmpty()){
@@ -199,24 +204,20 @@ public class Gui extends BasicGame implements InputProviderListener {
 				}
 				currentUpdate.points = null;
 			}
+			if(!animator.isShowScoreOn()){
+				gameScene.scoreDrawed();
+				if(currentUpdate.scores != null && !currentUpdate.scores.isEmpty()){
+					gameScene.drawScoreUpdate(currentUpdate.scores.remove(0));
+					animator.enableShowScore();
+				}
+			}
 			if(!animator.isLandscapeGlowOn())
 				gameScene.landscapesSet();
 			if(!animator.isMeepleRemovalOn())
 				gameScene.meeplesRemoved(controller.getMeeplesInHand());
-			if(!animator.isShowScoreOn()){
-				if(!currentUpdate.scores.isEmpty()){
-					String pos = (String)(currentUpdate.scores.keySet().toArray())[0];
-					gameScene.drawScoreUpdate(pos, currentUpdate.scores.remove(pos));
-					animator.enableShowScore();
-				}
-			}
 			
 			if(animator.automaticAnimationsEnded())
 				currentUpdate = null;
-		}
-		if(playerId > -1){
-			gameScene.initPlayerMeeple(playerId);
-			playerId = -1;
 		}
 	}
 

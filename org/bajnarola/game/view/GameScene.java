@@ -26,6 +26,7 @@ public class GameScene extends IScene {
 	public GraphicalMeeple meepleToPlace;
 	public GraphicalTile tileToPlace;
 	private int tileSize, meepleSize;
+	private int currentScoreGlobalX, currentScoreGlobalY, currentScoreVal;
 	
 	//HUD
 		//graphical elements
@@ -85,6 +86,8 @@ public class GameScene extends IScene {
 		curtain.setAlpha(0.8f);
 		
 		logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
+		
+		currentScoreGlobalX = currentScoreGlobalY = currentScoreVal = -1;
 		
 		currentScenario = new Hashtable<String, GraphicalTile>();
 		currentLanscape = null;
@@ -185,7 +188,11 @@ public class GameScene extends IScene {
 		
 		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
-				
+		
+		if(currentScoreGlobalX > -1 && currentScoreGlobalY > -1 && currentScoreVal > -1 && 
+		   isStringInView(xOff, yOff, guiManager.windowWidth, guiManager.windowHeight, currentScoreGlobalX, currentScoreGlobalY)){
+			guiManager.animator.drawShowScore(g, currentScoreVal, currentScoreGlobalX-xOff, currentScoreGlobalY-yOff);
+		}	
 	}
 	
 	private void hudRender(GameContainer gc, Graphics g){
@@ -242,10 +249,17 @@ public class GameScene extends IScene {
 		return ret;
 	}
 	
-	public void drawScoreUpdate(String position, int value){
-		
+	public void drawScoreUpdate(String score){
+		//score is in the format "[x];[y]:[score]"
+		currentScoreGlobalX = getGlobalCoordX(Integer.parseInt(score.split(";")[0]));
+		currentScoreGlobalY = getGlobalCoordY(Integer.parseInt(score.split(";")[1].split(":")[0]));
+		currentScoreVal = Integer.parseInt(score.split(":")[1]);
 	}
 
+	public void scoreDrawed(){
+		currentScoreGlobalX = currentScoreGlobalY = currentScoreVal = -1;
+	}
+	
 	public void meeplesRemoved(int meeplesInHand){
 		meeplesToRemove.clear();
 
@@ -481,6 +495,12 @@ public class GameScene extends IScene {
 				
 				break;
 		}
+	}
+	
+	private static boolean isStringInView(int xOff, int yOff, int windowWidth, int windowHeight, int stringX, int stringY){
+		if(stringX > xOff && stringX < (xOff + windowWidth) && stringY > yOff && stringY < (yOff + windowHeight))
+			return true;
+		return false;
 	}
 	
 	// ##  COORDINATES MANAGEMENT  ##

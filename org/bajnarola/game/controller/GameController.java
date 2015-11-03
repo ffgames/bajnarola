@@ -2,6 +2,7 @@ package org.bajnarola.game.controller;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
-
 
 import sun.misc.Lock;
 
@@ -189,8 +189,8 @@ public class GameController extends UnicastRemoteObject implements
 
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
 		points.putAll(board.endTurn(tile));
-		Map<String, Integer> scores = new Hashtable<String, Integer>();
-		//scores.putAll(board.getScoreUpdates());
+		List<String> scores = new ArrayList<String>();
+		scores.addAll(board.getScoreUpdates());
 
 		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
 	}
@@ -209,8 +209,8 @@ public class GameController extends UnicastRemoteObject implements
 
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
 		points.putAll(board.endTurn(tile));
-		Map<String, Integer> scores = new Hashtable<String, Integer>();
-		//scores.putAll(board.getScoreUpdates());
+		List<String> scores = new ArrayList<String>();
+		scores.addAll(board.getScoreUpdates());
 
 		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
 		
@@ -254,7 +254,7 @@ public class GameController extends UnicastRemoteObject implements
 	public void initBoard(String playerName, List<String> playerNames, int seed) {
 		Tile initialTile = board.initBoard(playerNames, seed);
 		viewCtl.setPlayer(playerName);
-		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile, new Hashtable<String, Integer>());
+		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile, null);
 		viewCtl.enqueueViewUpdate(firstupdate);
 	}
 	
