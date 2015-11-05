@@ -16,6 +16,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String SERVER = "localhost";
+	//private static final String SERVER = "mimi.cs.unibo.it";
 	private static final String SERVICE = "rmi";
 	
 	Map<String,NetPlayer> players = new Hashtable<String,NetPlayer>();
@@ -41,7 +42,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 			this.lpath = SERVICE + "://" + server + "/" + this.getClass().getName();
 			System.out.print("Listening on " + lpath + " ...");
 			//Naming.rebind(lpath, this);
-			BajnarolaRegistry.getLocalRegisrty().rebind(lpath, this);
+			BajnarolaRegistry.getLocalRegistry().rebind(lpath, this);
 			
 			System.out.println("OK!");
 			
@@ -101,7 +102,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		System.out.println("Get ready to play!");
 		/* Lobby Shutdown */
 		try {
-			BajnarolaRegistry.getLocalRegisrty().unbind(this.lpath);
+			BajnarolaRegistry.getLocalRegistry().unbind(this.lpath);
 			UnicastRemoteObject.unexportObject(this, true);
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
