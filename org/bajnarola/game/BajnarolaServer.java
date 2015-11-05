@@ -49,6 +49,7 @@ public class BajnarolaServer {
 	}
 	
 	private void CommonConstruct(String server, String basepath, GameController myBoard) {
+		/* TODO: Remove the server from the uri (useless). */
 		String path = server + "/" + basepath;
 		this.player = new NetPlayer(basepath, path);
 				
