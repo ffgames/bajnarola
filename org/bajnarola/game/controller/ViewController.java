@@ -31,7 +31,7 @@ public class ViewController {
 	static final int defaultResX = 1200;
 	static final int defaultResY = 700;
 	static final boolean defaultFullscreen = false; 
-	static final String optFileName = "options.conf";
+	static final String optFileName = ".bajnarola.conf";
 	static String optFilePath;
 	
 	/* A queue of updates. Each update contains: 
@@ -74,19 +74,16 @@ public class ViewController {
 			boolean fullscreen = defaultFullscreen;
 			
 			try {
-				File cwd = new File(MainClass.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+				File cwd = new File(System.getProperty("user.home"));
 				File optFile = new File(cwd, optFileName);
 				optFilePath = optFile.getAbsolutePath();
 				if (!optFile.exists()) {
 					System.out.println("Config file not found. Creating it...");
 					optFile.createNewFile();
 				}
-				
-			} catch (URISyntaxException e) {
-				System.err.println("Can't access to executable current work directory");
 			} catch (IOException e) {
 				System.err.println("Can't create the config file");
-			}
+			} 
 			
 			Properties prop = new Properties();
 			

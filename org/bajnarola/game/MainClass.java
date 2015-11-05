@@ -1,5 +1,6 @@
 package org.bajnarola.game;
 
+import java.lang.reflect.Field;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class MainClass {
 	private static final String SERVICE = "rmi";
 	private static int seed = -1; 
 	
-	public static void main(String[] argv) {
+	public static void main(String[] argv) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		LobbyClient     iLobby  = null;
 		BajnarolaServer iServer = null;
 		BajnarolaClient iClient = null;
@@ -28,6 +29,12 @@ public class MainClass {
 		String lobbyserver;
 		
 		Map<String, NetPlayer> players = null;
+		
+		System.setProperty( "java.library.path", "lib/native:lib/native" );
+		 
+		Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+		fieldSysPath.setAccessible( true );
+		fieldSysPath.set( null, null );
 		
 		try {
 			System.out.println("Bajnarola starting up.");

@@ -1,0 +1,2 @@
+Main-Class: org.bajnarola.game.MainClass
+Class-Path: lib/jinput.jar lib/lwjgl.jar lib/lwjgl_util.jar lib/slick.jar
