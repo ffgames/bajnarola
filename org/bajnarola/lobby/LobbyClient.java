@@ -38,7 +38,7 @@ public class LobbyClient {
 	
 	public LobbyClient(String server) throws Exception {
 		
-		String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
+		String lookupString = SERVICE + "://" + LobbyServer.DEFAULT_LOBBY + "/" + LobbyServer.class.getName();
 				
 		System.out.print("\n\tLookup on: " + lookupString + " ...");
 		if (server.equals("localhost"))
