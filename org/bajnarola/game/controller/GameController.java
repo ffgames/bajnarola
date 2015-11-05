@@ -2,6 +2,7 @@ package org.bajnarola.game.controller;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
-
 
 import sun.misc.Lock;
 
@@ -189,8 +189,10 @@ public class GameController extends UnicastRemoteObject implements
 
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
 		points.putAll(board.endTurn(tile));
+		List<String> scores = new ArrayList<String>();
+		scores.addAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
 	}
 
 	public void localPlay(String me) {
@@ -199,15 +201,19 @@ public class GameController extends UnicastRemoteObject implements
 		System.out.print("Playing...");
 
 		Tile tile = board.beginTurn();
+		Tile drawTile;
 		/* XXX: It should never reaches this point if the deck is empty
 		if (tile == null) 
 			return true; */
 
-		viewCtl.waitViewChange(tile);
+		drawTile = viewCtl.waitViewChange(tile);
 
-		Map<String, Boolean> points = board.endTurn(tile);
+		Map<String, Boolean> points = new Hashtable<String, Boolean>();
+		points.putAll(board.endTurn(drawTile));
+		List<String> scores = new ArrayList<String>();
+		scores.addAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, drawTile, scores));
 		
 		short meepleTileSide = -1;
 		if (tile.getMeeple() != null)
@@ -242,14 +248,14 @@ public class GameController extends UnicastRemoteObject implements
 		this.finalScores = scores;
 		this.winner = winner;
 		
-		this.viewCtl.enqueueViewUpdate(new ViewUpdate(null, null));
+		this.viewCtl.enqueueViewUpdate(new ViewUpdate(null, null, null));
 	}
 
 
 	public void initBoard(String playerName, List<String> playerNames, int seed) {
 		Tile initialTile = board.initBoard(playerNames, seed);
 		viewCtl.setPlayer(playerName);
-		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile);
+		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile, null);
 		viewCtl.enqueueViewUpdate(firstupdate);
 	}
 	

@@ -6,6 +6,7 @@ import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
+import org.bajnarola.game.view.RelativeSizes.Resolutions;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -62,7 +63,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	private GameContainer container;
 	
-	private boolean myTurn = false;
+	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
 	private List<String> holes;
 	private Tile newTile;
 	
@@ -82,6 +83,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
 		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
 		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
+		 
+		 //TODO: if fixed resolution is set through options avoid using fullscreen here
+		 RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
 		 
 		 rawInput = new Input(gc.getScreenHeight());
 		 
@@ -172,38 +176,60 @@ public class Gui extends BasicGame implements InputProviderListener {
 			myTurn = false;
 			gameScene.beginTurn(holes, newTile);
 		}
+		if(playerId > -1){
+			gameScene.initPlayerMeeple(playerId);
+			playerId = -1;
+		}
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
+					currentUpdate = null;
 					updateEndgameScene();
+					return; //XXX: right??
 				} else {
+					animator.enableTilePlacement();
 					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
 						animator.enableMeeplePlacement();
-					animator.enableTilePlacement();
 					currentUpdate.placedTile = null;
 				}
 			}
 		}
-		if(currentUpdate != null){
-			if(!animator.isTilePlacementOn() && !animator.isMeeplePlacementOn() && currentUpdate.points != null){
+		if(currentUpdate != null && !animator.isTilePlacementOn() && !animator.isMeeplePlacementOn()){
+			if(currentUpdate.points != null){
 				gameScene.tilePlaced();
 				gameScene.meeplePlaced();
 				if(!currentUpdate.points.isEmpty()){
 					animator.enableLandscapeGlow();
-					if(gameScene.setCurrentLandscape(currentUpdate.points))
+					landscapeGlowOn = true;
+					if(gameScene.setCurrentLandscape(currentUpdate.points)){
 						animator.enableMeepleRemoval();
+						meepleRemovalOn = true;
+					}
 				}
 				currentUpdate.points = null;
 			}
-			if(animator.automaticAnimationsEnded()){
-				gameScene.landscapesSet();
-				gameScene.meeplesRemoved();
-				currentUpdate = null;
+			if(showScoreOn && !animator.isShowScoreOn()){
+				gameScene.scoreDrawed();
+				showScoreOn = false;
 			}
-		}
-		if(playerId > -1){
-			gameScene.initPlayerMeeple(playerId);
-			playerId = -1;
+			if(landscapeGlowOn && !animator.isLandscapeGlowOn()){
+				gameScene.landscapesSet();
+				landscapeGlowOn = false;
+			}
+			if(meepleRemovalOn && !animator.isMeepleRemovalOn()){
+				gameScene.meeplesRemoved(controller.getMeeplesInHand());
+				meepleRemovalOn = false;
+			}
+			
+
+			if(!showScoreOn && currentUpdate.scores != null && !currentUpdate.scores.isEmpty()){
+				gameScene.drawScoreUpdate(currentUpdate.scores.remove(0));
+				animator.enableShowScore();
+				showScoreOn = true;
+			}
+			
+			if(animator.automaticAnimationsEnded())
+				currentUpdate = null;
 		}
 	}
 

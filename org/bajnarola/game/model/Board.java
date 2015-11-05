@@ -39,6 +39,7 @@ public class Board {
 	List<String> holes;
 	Shuffler random;
 	Map<String, Boolean> points;
+	List<String> scores;
 	
 	/* TODO:
 	 * - negotiate random seed for deck shuffling
@@ -53,6 +54,7 @@ public class Board {
 		this.players = new ArrayList<Player>();
 		this.holes = new ArrayList<String>();
 		this.points = new Hashtable<String, Boolean>();
+		this.scores = new ArrayList<String>();
 	}
 	
 	public Tile initBoard(List<String> playerNames, boolean shuffle, int seed) {
@@ -146,13 +148,18 @@ public class Board {
 		}
 		
 		points.clear();
+		scores.clear();
 		
 		return newTile;
 	}
 	
+	public List<String> getScoreUpdates(){
+		return scores;
+	}
+	
 	public Map<String, Boolean> endTurn(Tile tile){
 		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
-			points.putAll(checkScores(tile.getLSElement(i), false));
+			points.putAll(checkScores(tile.getLSElement(i), false, scores));
 		}
 		return points;
 	}
@@ -372,7 +379,7 @@ public class Board {
 					if (neighbour != null && neighbour.getElements()[Tile.SIDE_CENTER] == Tile.ELTYPE_CLOISTER){
 						el = neighbour.getLSElement(Tile.SIDE_CENTER);
 						el.addTile(tile, (short)-1);
-						points.putAll(checkScores(el, false));
+						points.putAll(checkScores(el, false, scores));
 					}
 					
 				}
@@ -419,29 +426,31 @@ public class Board {
 	
 	/* If the exists landscape exists and it is completed (or if it exists and the game is ended) 
 	 * assign the current landscape score to its owner(s). */
-	private static final Map<String, Boolean> checkScores(LandscapeElement ls, boolean endGame) {
+	private static final Map<String, Boolean> checkScores(LandscapeElement ls, boolean endGame, List<String> scores) {
 		if (ls != null && (ls.isCompleted() || endGame)){	
-			short score;
-			
 			List<Player> owners = ls.getScoreOwners();
+			short score = ls.getValue();
 			
 			for(Player o : owners){
-				score = ls.getValue();
 				o.setScore((short)(o.getScore() + score));
 			}
+			if(!owners.isEmpty())
+				scores.add(Board.getKey(ls.getElementRoot().getX(),ls.getElementRoot().getY())+":"+(int)score);
+			
+			List<Tile> removedTiles = new ArrayList<Tile>();
+			removedTiles.addAll(ls.tiles);
+			
 			ls.clear();
 			
 			/* Add the points of a landscape to the set.
 			 * Duplicated points are not added in the set. */
 			Map<String,Boolean> points = new Hashtable<String, Boolean>();
 			short x, y;
-			String key;
-			for (Tile t : ls.getTiles()) {
+			for (Tile t : removedTiles){
 				x = t.getX();
 				y = t.getY();
-				key = Board.getKey(x, y);
 				
-				points.put(key, t.hasMeeple());
+				points.put(Board.getKey(x, y), t.hasMeeple());
 			}
 			
 			return points;
@@ -458,7 +467,7 @@ public class Board {
 		for (Tile t : scenario.values()) {
 			for (short side = 0; side < Tile.SIDE_COUNT; side++) {
 				ls = t.getLSElement(side);
-				checkScores(ls, true);
+				checkScores(ls, true, scores);
 			}
 		}
 	}

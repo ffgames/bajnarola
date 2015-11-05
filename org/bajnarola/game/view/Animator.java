@@ -1,18 +1,22 @@
 package org.bajnarola.game.view;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 
 public class Animator {
 	final static int TILE_PLACEMENT_DURATION = 50; //in frames (~2sec)
-	final static int LANDSCAPE_GLOW_DURATION = 120; // (~5sec)
+	final static int LANDSCAPE_GLOW_DURATION = 80; // (~5sec)
 	final static int TILE_PROBE_GLOW_DURATION = 60; // (<2sec)
 	final static int MEEPLE_PLACEMENT_DURATION = 50;
 	final static int MEEPLE_REMOVAL_DURATION = 50;
+	final static int SHOW_SCORE_DURATION = 50;
 	
 	final static int LG_GRADIENT_BEGIN_START = 0;
-	final static int LG_GRADIENT_BEGIN_END = 40;
-	final static int LG_GRADIENT_FINISH_START = 80;
-	final static int LG_GRADIENT_FINISH_END = 120;
+	final static int LG_GRADIENT_BEGIN_END = 30;
+	final static int LG_GRADIENT_FINISH_START = 50;
+	final static int LG_GRADIENT_FINISH_END = 80;
 	
 	final static float TILE_PLACEMENT_INITIAL_SCALE = (float)1.7;
 	final static float TILE_PLACEMENT_FINAL_SCALE = (float)1;
@@ -20,7 +24,7 @@ public class Animator {
 	final static float LANDSCAPE_GLOW_FINAL_GRADIENT = (float)0.3;
 	final static float TILE_PROBE_GLOW_INITIAL_OPACITY = (float)0;
 	final static float TILE_PROBE_GLOW_FINAL_OPACITY = (float)1;
-	final static float MEEPLE_PLACEMENT_INITIAL_OFFSET = -200; //pixel
+	final static float MEEPLE_PLACEMENT_INITIAL_OFFSET = -300; //pixel
 	final static float MEEPLE_PLACEMENT_FINAL_OFFSET = 0; //pixel
 	final static float MEEPLE_PLACEMENT_INITIAL_OPACITY = 0; 
 	final static float MEEPLE_PLACEMENT_FINAL_OPACITY = 1;
@@ -28,22 +32,31 @@ public class Animator {
 	final static float MEEPLE_REMOVAL_FINAL_OFFSET = -500; //pixel
 	final static float MEEPLE_REMOVAL_INITIAL_OPACITY = 1;
 	final static float MEEPLE_REMOVAL_FINAL_OPACITY = 0;
+	final static float SHOW_SCORE_INITIAL_OFFSET = 0; //pixel
+	final static float SHOW_SCORE_FINAL_OFFSET = -100; //pixel
+	final static float SHOW_SCORE_INITIAL_OPACITY = 2;
+	final static float SHOW_SCORE_FINAL_OPACITY = 0;
 	
 	int tilePlacementFrame;
 	int landscapeGlowFrame;
 	int tileProbeGlowFrame;
 	int meeplePlacementFrame;
 	int meepleRemovalFrame;
+	int showScoreFrame;
 	
 	boolean tilePlacementOn;
 	boolean landscapeGlowOn;
 	boolean tileProbeGlowOn;
 	boolean meeplePlacementOn;
 	boolean meepleRemovalOn;
+	boolean showScoreOn;
 	
-	public Animator(){
-		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = false;
-		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = 0;
+	Image blue;
+	
+	public Animator() throws SlickException{
+		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = false;
+		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = 0;
+		blue = new Image("res/misc/blue.png");
 	}
 	
 	private float getTilePlacementScale(){
@@ -82,9 +95,9 @@ public class Animator {
 		return 0;
 	}
 	
-	private int getMeeplePlacementAlpha(){
+	private float getMeeplePlacementAlpha(){
 		if(meeplePlacementOn){
-			return (int) ((((MEEPLE_PLACEMENT_FINAL_OPACITY - MEEPLE_PLACEMENT_INITIAL_OPACITY) / MEEPLE_PLACEMENT_DURATION) * meeplePlacementFrame) + MEEPLE_PLACEMENT_INITIAL_OPACITY);
+			return ((((MEEPLE_PLACEMENT_FINAL_OPACITY - MEEPLE_PLACEMENT_INITIAL_OPACITY) / MEEPLE_PLACEMENT_DURATION) * meeplePlacementFrame) + MEEPLE_PLACEMENT_INITIAL_OPACITY);
 		}
 		return 0;
 	}
@@ -96,16 +109,34 @@ public class Animator {
 		return 0;
 	}
 	
-	private int getMeepleRemovalAlpha(){
+	private float getMeepleRemovalAlpha(){
 		if(meepleRemovalOn){
-			return (int) ((((MEEPLE_REMOVAL_FINAL_OPACITY - MEEPLE_REMOVAL_INITIAL_OPACITY) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OPACITY);
+			return Math.min(Math.max(((((MEEPLE_REMOVAL_FINAL_OPACITY - MEEPLE_REMOVAL_INITIAL_OPACITY) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OPACITY), 0), 1);
 		}
 		return 0;
 	}
 	
+	private int getShowScoreYOffset(){
+		if(showScoreOn){
+			return (int) ((((SHOW_SCORE_FINAL_OFFSET - SHOW_SCORE_INITIAL_OFFSET) / SHOW_SCORE_DURATION) * showScoreFrame) + SHOW_SCORE_INITIAL_OFFSET);
+		}
+		return 0;
+	}
+	
+	private float getShowScoreAlpha(){
+		if(showScoreOn){
+			return ((((SHOW_SCORE_FINAL_OPACITY - SHOW_SCORE_INITIAL_OPACITY) / SHOW_SCORE_DURATION) * showScoreFrame) + SHOW_SCORE_INITIAL_OPACITY);
+		}
+		return 0;
+	}
+	
+	public void drawShowScore(Graphics g, int value, int x, int y){
+		Color textCol = new Color(1, 1, 1, getShowScoreAlpha());
+		g.getFont().drawString(x, y+getShowScoreYOffset(), "+"+value, textCol);
+	}
+	
 	public void drawLandscapeGlowingTile(GraphicalTile tile, boolean zoomOutView, float scale){
-		Color blue = new Color(Color.blue);
-		blue.a = getLandscapeGlowGradient();
+		blue.setAlpha(getLandscapeGlowGradient());
 		tile.draw(zoomOutView, scale, blue);
 	}
 	
@@ -164,6 +195,11 @@ public class Animator {
 				meepleRemovalOn = false;
 			}
 		}
+		if(showScoreOn){
+			showScoreFrame++;
+			if(showScoreFrame > SHOW_SCORE_DURATION)
+				showScoreOn = false;
+		}
 	}
 	
 	public boolean isTilePlacementOn(){
@@ -186,8 +222,12 @@ public class Animator {
 		return meepleRemovalOn;
 	}
 	
+	public boolean isShowScoreOn(){
+		return showScoreOn;
+	}
+	
 	public boolean automaticAnimationsEnded(){
-		return !meeplePlacementOn && !meepleRemovalOn && !tilePlacementOn && !landscapeGlowOn;
+		return !meeplePlacementOn && !meepleRemovalOn && !tilePlacementOn && !landscapeGlowOn && !showScoreOn;
 	}
 	
 	public void enableTilePlacement(){
@@ -213,5 +253,10 @@ public class Animator {
 	public void enableMeepleRemoval(){
 		meepleRemovalFrame = 0;
 		meepleRemovalOn = true;
+	}
+	
+	public void enableShowScore(){
+		showScoreFrame = 0;
+		showScoreOn = true;
 	}
 }
