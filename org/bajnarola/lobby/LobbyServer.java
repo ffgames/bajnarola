@@ -1,7 +1,4 @@
 package org.bajnarola.lobby;
-
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -9,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.bajnarola.networking.NetPlayer;
+import org.bajnarola.utils.BajnarolaRegistry;
 
 import sun.misc.Lock;
 
@@ -42,7 +40,9 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		try{
 			this.lpath = SERVICE + "://" + server + "/" + this.getClass().getName();
 			System.out.print("Listening on " + lpath + " ...");
-			Naming.rebind(lpath, this);
+			//Naming.rebind(lpath, this);
+			BajnarolaRegistry.getLocalRegisrty().rebind(lpath, this);
+			
 			System.out.println("OK!");
 			
 			i = 0;
@@ -101,9 +101,9 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		System.out.println("Get ready to play!");
 		/* Lobby Shutdown */
 		try {
-			Naming.unbind(this.lpath);
+			BajnarolaRegistry.getLocalRegisrty().unbind(this.lpath);
 			UnicastRemoteObject.unexportObject(this, true);
-		} catch (RemoteException | NotBoundException | MalformedURLException e) {
+		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
 	}

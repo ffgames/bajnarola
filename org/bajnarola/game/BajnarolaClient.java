@@ -22,7 +22,6 @@
 
 package org.bajnarola.game;
 
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -33,13 +32,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 
 import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.game.controller.GameController;
 import org.bajnarola.game.controller.TurnDiff;
 import org.bajnarola.networking.NetPlayer;
+import org.bajnarola.utils.BajnarolaRegistry;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,9 +55,9 @@ public class BajnarolaClient {
 			GameControllerRemote bc;
 			try {
 				String uriBoard = playersStrings.get(user).rmiUriBoard;
-				bc = (GameControllerRemote) Naming.lookup(uriBoard);
+				bc = (GameControllerRemote) BajnarolaRegistry.getLocalRegisrty().lookup(uriBoard);
 				this.players.put(user, bc);
-			} catch (NotBoundException | MalformedURLException e) {
+			} catch (NotBoundException e) {
 				e.printStackTrace();
 			} catch (RemoteException e) {
 				/* crash! */

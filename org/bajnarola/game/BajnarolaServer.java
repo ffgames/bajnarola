@@ -21,13 +21,12 @@
 /*****************************************************************************/
 
 package org.bajnarola.game;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import org.bajnarola.game.controller.GameController;
 import org.bajnarola.networking.NetPlayer;
+import org.bajnarola.utils.BajnarolaRegistry;
 import org.bajnarola.utils.RandomString;
 
 public class BajnarolaServer {
@@ -41,8 +40,8 @@ public class BajnarolaServer {
 	private void setRebind(String path, Remote o) {
 		String npath = path + "/" + o.getClass().getName();
 		try {
-			Naming.rebind(npath, o);
-		} catch (RemoteException | MalformedURLException e) {
+			BajnarolaRegistry.getLocalRegisrty().rebind(npath, o);
+		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		

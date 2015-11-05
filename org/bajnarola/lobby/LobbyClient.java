@@ -22,13 +22,13 @@
 
 package org.bajnarola.lobby;
 
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Map;
 
 import org.bajnarola.lobby.LobbyController;
 import org.bajnarola.lobby.LobbyServer;
 import org.bajnarola.networking.NetPlayer;
+import org.bajnarola.utils.BajnarolaRegistry;
 
 public class LobbyClient {
 	private final String SERVICE = "rmi";
@@ -41,7 +41,7 @@ public class LobbyClient {
 		String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
 				
 		System.out.print("\n\tLookup on: " + lookupString + " ...");
-		this.lobbyCallback = (LobbyController) Naming.lookup(lookupString);
+		this.lobbyCallback = (LobbyController)BajnarolaRegistry.getLocalRegisrty().lookup(lookupString);
 		
 	}
 	
