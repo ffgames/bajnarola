@@ -41,8 +41,11 @@ public class LobbyClient {
 		String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
 				
 		System.out.print("\n\tLookup on: " + lookupString + " ...");
-		this.lobbyCallback = (LobbyController)BajnarolaRegistry.getLocalRegisrty().lookup(lookupString);
-		
+		if (server.equals("localhost"))
+			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getLocalRegistry().lookup(lookupString);
+		else 
+			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRemoteRegistry(server).lookup(lookupString);		
+
 	}
 	
 	public Map<String,NetPlayer> join(NetPlayer p, String room) throws RemoteException {

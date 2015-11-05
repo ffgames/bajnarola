@@ -40,7 +40,7 @@ public class BajnarolaServer {
 	private void setRebind(String path, Remote o) {
 		String npath = path + "/" + o.getClass().getName();
 		try {
-			BajnarolaRegistry.getLocalRegisrty().rebind(npath, o);
+			BajnarolaRegistry.getLocalRegistry().rebind(npath, o);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

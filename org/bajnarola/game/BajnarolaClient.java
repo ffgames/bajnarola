@@ -55,7 +55,7 @@ public class BajnarolaClient {
 			GameControllerRemote bc;
 			try {
 				String uriBoard = playersStrings.get(user).rmiUriBoard;
-				bc = (GameControllerRemote) BajnarolaRegistry.getLocalRegisrty().lookup(uriBoard);
+				bc = (GameControllerRemote) BajnarolaRegistry.getLocalRegistry().lookup(uriBoard);
 				this.players.put(user, bc);
 			} catch (NotBoundException e) {
 				e.printStackTrace();

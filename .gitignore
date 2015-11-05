@@ -13,3 +13,5 @@ hs_err_pid*
 #game configuration
 options.conf
 
+build/*/lib/*
+build/*/res/*

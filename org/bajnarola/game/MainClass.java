@@ -65,12 +65,14 @@ public class MainClass {
 				
 				System.out.print("Registering to lobby... ");
 				try {
+					System.out.println(lobbyserver);
 					iLobby = new LobbyClient(lobbyserver);
 				} catch (Exception e1) {
 					iLobby = null;
 					iServer = null;
 					gBoard.viewCtl.joinSignalView(JoinStatus.LOBBY_NOT_FOUND);
 					System.err.println("Can't reach the lobby");
+					e1.printStackTrace();
 					continue;
 				}
 				System.out.println("OK!");
