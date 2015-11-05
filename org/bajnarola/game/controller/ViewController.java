@@ -198,7 +198,7 @@ public class ViewController {
 	}
 
 	
-	public void waitViewChange(Tile drawnTile) {
+	public Tile waitViewChange(Tile drawnTile) {
 		this.drawnTile = drawnTile;
 		
 		this.bajnarolaGui.viewPlayTurn(board.getHoles(), drawnTile);
@@ -208,6 +208,8 @@ public class ViewController {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		return this.drawnTile;
 	}
 	
 	public endGameCause getEndCause() {

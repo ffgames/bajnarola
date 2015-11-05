@@ -30,28 +30,28 @@ public class OptionsScene extends IScene {
 		buttonRes1 = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
                 guiManager.windowWidth/2,
-                (int)containerPosX + 20,
+                (int) containerPosY + (int)(containerHeight / 5),
                 new Image("res/menu/res1Inactive.png"),
                 new Image("res/menu/res1Active.png"));
 		
 		buttonRes2 = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
                 guiManager.windowWidth/2,
-                (int)containerPosX + 120,
+                (int) containerPosY + (int)(containerHeight / 5 * 2),
                 new Image("res/menu/res2Inactive.png"),
                 new Image("res/menu/res2Active.png"));
 		
 		buttonRes3 = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
                 guiManager.windowWidth/2,
-                (int)containerPosX + 220,
+                (int) containerPosY + (int)(containerHeight / 5 * 3),
                 new Image("res/menu/res3Inactive.png"),
                 new Image("res/menu/res3Active.png"));
 		
 		buttonFullScreen = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
                 guiManager.windowWidth/2,
-                (int)containerPosX + 320,
+                (int) containerPosY + (int)(containerHeight / 5 * 4),
                 new Image("res/menu/fullscreenInactive.png"),
                 new Image("res/menu/fullscreenActive.png"));
 		

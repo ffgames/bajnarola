@@ -11,7 +11,7 @@ public class Animator {
 	final static int TILE_PROBE_GLOW_DURATION = 60; // (<2sec)
 	final static int MEEPLE_PLACEMENT_DURATION = 50;
 	final static int MEEPLE_REMOVAL_DURATION = 50;
-	final static int SHOW_SCORE_DURATION = 80;
+	final static int SHOW_SCORE_DURATION = 50;
 	
 	final static int LG_GRADIENT_BEGIN_START = 0;
 	final static int LG_GRADIENT_BEGIN_END = 30;
@@ -34,7 +34,7 @@ public class Animator {
 	final static float MEEPLE_REMOVAL_FINAL_OPACITY = 0;
 	final static float SHOW_SCORE_INITIAL_OFFSET = 0; //pixel
 	final static float SHOW_SCORE_FINAL_OFFSET = -100; //pixel
-	final static float SHOW_SCORE_INITIAL_OPACITY = 1;
+	final static float SHOW_SCORE_INITIAL_OPACITY = 2;
 	final static float SHOW_SCORE_FINAL_OPACITY = 0;
 	
 	int tilePlacementFrame;
@@ -111,29 +111,28 @@ public class Animator {
 	
 	private float getMeepleRemovalAlpha(){
 		if(meepleRemovalOn){
-			return ((((MEEPLE_REMOVAL_FINAL_OPACITY - MEEPLE_REMOVAL_INITIAL_OPACITY) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OPACITY);
+			return Math.min(Math.max(((((MEEPLE_REMOVAL_FINAL_OPACITY - MEEPLE_REMOVAL_INITIAL_OPACITY) / MEEPLE_REMOVAL_DURATION) * meepleRemovalFrame) + MEEPLE_REMOVAL_INITIAL_OPACITY), 0), 1);
 		}
 		return 0;
 	}
 	
 	private int getShowScoreYOffset(){
-		if(meepleRemovalOn){
+		if(showScoreOn){
 			return (int) ((((SHOW_SCORE_FINAL_OFFSET - SHOW_SCORE_INITIAL_OFFSET) / SHOW_SCORE_DURATION) * showScoreFrame) + SHOW_SCORE_INITIAL_OFFSET);
 		}
 		return 0;
 	}
 	
 	private float getShowScoreAlpha(){
-		if(meepleRemovalOn){
+		if(showScoreOn){
 			return ((((SHOW_SCORE_FINAL_OPACITY - SHOW_SCORE_INITIAL_OPACITY) / SHOW_SCORE_DURATION) * showScoreFrame) + SHOW_SCORE_INITIAL_OPACITY);
 		}
 		return 0;
 	}
 	
 	public void drawShowScore(Graphics g, int value, int x, int y){
-		//TODO: fix the color alpha
-		//Color textCol = new Color(1, 1, 1, getShowScoreAlpha());
-		g.getFont().drawString(x, y+getShowScoreYOffset(), "+"+value);//, textCol);
+		Color textCol = new Color(1, 1, 1, getShowScoreAlpha());
+		g.getFont().drawString(x, y+getShowScoreYOffset(), "+"+value, textCol);
 	}
 	
 	public void drawLandscapeGlowingTile(GraphicalTile tile, boolean zoomOutView, float scale){

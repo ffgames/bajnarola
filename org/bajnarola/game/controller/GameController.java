@@ -201,18 +201,19 @@ public class GameController extends UnicastRemoteObject implements
 		System.out.print("Playing...");
 
 		Tile tile = board.beginTurn();
+		Tile drawTile;
 		/* XXX: It should never reaches this point if the deck is empty
 		if (tile == null) 
 			return true; */
 
-		viewCtl.waitViewChange(tile);
+		drawTile = viewCtl.waitViewChange(tile);
 
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
-		points.putAll(board.endTurn(tile));
+		points.putAll(board.endTurn(drawTile));
 		List<String> scores = new ArrayList<String>();
 		scores.addAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, drawTile, scores));
 		
 		short meepleTileSide = -1;
 		if (tile.getMeeple() != null)

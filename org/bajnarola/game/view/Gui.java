@@ -63,7 +63,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	private GameContainer container;
 	
-	private boolean myTurn = false;
+	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
 	private List<String> holes;
 	private Tile newTile;
 	
@@ -183,12 +183,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
+					currentUpdate = null;
 					updateEndgameScene();
 					return; //XXX: right??
 				} else {
+					animator.enableTilePlacement();
 					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
 						animator.enableMeeplePlacement();
-					animator.enableTilePlacement();
 					currentUpdate.placedTile = null;
 				}
 			}
@@ -199,22 +200,33 @@ public class Gui extends BasicGame implements InputProviderListener {
 				gameScene.meeplePlaced();
 				if(!currentUpdate.points.isEmpty()){
 					animator.enableLandscapeGlow();
-					if(gameScene.setCurrentLandscape(currentUpdate.points))
+					landscapeGlowOn = true;
+					if(gameScene.setCurrentLandscape(currentUpdate.points)){
 						animator.enableMeepleRemoval();
+						meepleRemovalOn = true;
+					}
 				}
 				currentUpdate.points = null;
 			}
-			if(!animator.isShowScoreOn()){
+			if(showScoreOn && !animator.isShowScoreOn()){
 				gameScene.scoreDrawed();
-				if(currentUpdate.scores != null && !currentUpdate.scores.isEmpty()){
-					gameScene.drawScoreUpdate(currentUpdate.scores.remove(0));
-					animator.enableShowScore();
-				}
+				showScoreOn = false;
 			}
-			if(!animator.isLandscapeGlowOn())
+			if(landscapeGlowOn && !animator.isLandscapeGlowOn()){
 				gameScene.landscapesSet();
-			if(!animator.isMeepleRemovalOn())
+				landscapeGlowOn = false;
+			}
+			if(meepleRemovalOn && !animator.isMeepleRemovalOn()){
 				gameScene.meeplesRemoved(controller.getMeeplesInHand());
+				meepleRemovalOn = false;
+			}
+			
+
+			if(!showScoreOn && currentUpdate.scores != null && !currentUpdate.scores.isEmpty()){
+				gameScene.drawScoreUpdate(currentUpdate.scores.remove(0));
+				animator.enableShowScore();
+				showScoreOn = true;
+			}
 			
 			if(animator.automaticAnimationsEnded())
 				currentUpdate = null;

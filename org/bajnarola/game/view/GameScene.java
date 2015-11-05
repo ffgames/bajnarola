@@ -274,7 +274,6 @@ public class GameScene extends IScene {
 	public void meeplePlaced(){
 		if(meepleToPlace != null){
 			placedMeeples.put(meepleToPlace.coords, meepleToPlace);
-			meepleToPlace.setAlpha(1f);
 			meepleToPlace = null;
 		}
 	}
