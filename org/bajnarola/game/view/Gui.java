@@ -120,7 +120,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 
 		 container = gc;
 		 gc.setShowFPS(false);
-		 //TODO: option for this parameter0
+		 gc.setTargetFrameRate(30);
 		 gc.setUpdateOnlyWhenVisible(false);
 	}
 	
