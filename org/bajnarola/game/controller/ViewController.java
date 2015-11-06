@@ -147,6 +147,23 @@ public class ViewController {
 			return null;
 	}
 	
+	public String getCurrentPlayerScore(){
+		return player.getId()+"-"+player.getName() + ": "+player.getScore();
+	}
+	
+	public String[] getScores(){
+		String[] scores = new String[8];
+		Player pl;
+		for(int i = 0; i < scores.length; i++){
+			pl = gameCtl.board.getPlayers().get(i);
+			if(pl != null)
+				scores[i] = pl.getId()+"-"+pl.getName()+": "+pl.getScore();
+			else
+				scores[i] = "";
+		}
+		return scores;
+	}
+	
 	public void enqueueViewUpdate(ViewUpdate update) {
 		this.viewUpdatesQueue.add(update);
 	}

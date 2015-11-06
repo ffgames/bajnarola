@@ -103,7 +103,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 			 boardBackground = new Image("res/backgrounds/Craggy_Rock_512.jpg");
 		 } else
 			 boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
-		 gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED);
+		 
+		 gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, controller.getScores(), controller.getCurrentPlayerScore());
 
 		 pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
 
@@ -223,7 +224,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 			
 
 			if(!showScoreOn && currentUpdate.scores != null && !currentUpdate.scores.isEmpty()){
-				gameScene.drawScoreUpdate(currentUpdate.scores.remove(0));
+				gameScene.drawScoreUpdate(currentUpdate.scores.remove(0), controller.getScores(), controller.getCurrentPlayerScore());
 				animator.enableShowScore();
 				showScoreOn = true;
 			}

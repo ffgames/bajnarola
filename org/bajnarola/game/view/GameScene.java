@@ -36,6 +36,8 @@ public class GameScene extends IScene {
 	private GraphicalMeeple tmpMeeples[], currentPlayerMeeple;
 	private Button zoomButton, confirmButton;
 	private Image curtain;
+	private String[] scores;
+	private String currentPlScore;
 		//logical elements
 	private List<HitBox> holes;
 	private boolean possibleMeeples[];
@@ -57,7 +59,7 @@ public class GameScene extends IScene {
 	
 	// ##  INIT  ##
 	
-	public GameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
+	public GameScene(Gui guiManager, Image background, bg_type backgroundType, String[] scores, String currentPlScore) throws SlickException {
 		super(guiManager, background, backgroundType);
 		sceneType = scene_type.SCENE_GAME;
 		int minWindowSize = (guiManager.windowHeight < guiManager.windowWidth ? guiManager.windowHeight : guiManager.windowWidth); 
@@ -102,6 +104,9 @@ public class GameScene extends IScene {
 		turnTileCx = guiManager.windowWidth -tileSize;
 		turnTileCy = guiManager.windowHeight - tileSize;
 		turnTileSize = tileSize * 2;
+		
+		this.scores = scores.clone();
+		this.currentPlScore = currentPlScore;
 		
 		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
 		for(short i = 0; i < Tile.SIDE_COUNT; i++)
@@ -229,6 +234,10 @@ public class GameScene extends IScene {
 			confirmButton.draw();
 	}
 	
+	private void drawScore(int x, int y, String score){
+		
+	}
+	
 	// ##  ANIMATOR CONTROLS  ##
 	
 	//returns true if at least one meeple has been removed
@@ -249,11 +258,13 @@ public class GameScene extends IScene {
 		return ret;
 	}
 	
-	public void drawScoreUpdate(String score){
+	public void drawScoreUpdate(String score, String[] plScores, String curPlScore){
 		//score is in the format "[x];[y]:[score]"
 		currentScoreGlobalX = getGlobalCoordX(Integer.parseInt(score.split(";")[0]));
 		currentScoreGlobalY = getGlobalCoordY(Integer.parseInt(score.split(";")[1].split(":")[0]));
 		currentScoreVal = Integer.parseInt(score.split(":")[1]);
+		currentPlScore = curPlScore;
+		scores = plScores.clone();
 	}
 
 	public void scoreDrawed(){

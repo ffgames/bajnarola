@@ -25,7 +25,7 @@ public class OptionsScene extends IScene {
 		super(guiManager, background, backgroundType);
 		prevScene = null;
 		
-		buttons = new ArrayList();
+		buttons = new ArrayList<Button>();
 		
 		containerWidth = (float)((float)guiManager.windowWidth *(float) 0.7);
 		containerHeight = (float)((float)guiManager.windowHeight * (float)0.8);

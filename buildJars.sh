@@ -15,5 +15,5 @@ mkdir -p "$DEST_DIR"
 
 mv lobby.jar "$DEST_DIR"
 mv game.jar "$DEST_DIR"
-ln -s ../../lib "$DEST_DIR" 2> /dev/null
-ln -s ../../res "$DEST_DIR" 2> /dev/null
+ln -sf ../../lib "$DEST_DIR" 2> /dev/null
+ln -sf ../../res "$DEST_DIR" 2> /dev/null
