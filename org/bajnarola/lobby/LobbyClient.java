@@ -36,15 +36,31 @@ public class LobbyClient {
 	private LobbyController lobbyCallback = null;
 
 	
-	public LobbyClient(String server) throws Exception {
+	public LobbyClient(String serverURI) throws Exception {
+		/* ServerURI format example: hostname.com/lobbyName 
+		 * If lobbyName is not provided then the default lobby name should be considered*/
 		
-		String lookupString = SERVICE + "://" + server + "/" + LobbyServer.class.getName();
+		System.out.println("<< " + serverURI + " >>");
+		
+		String lookupString, serverHost; 
+		String splittedURI[] = serverURI.split("/");
+		
+		if (splittedURI.length < 1 || splittedURI.length > 2)
+			throw new RemoteException("Malformed URI");
+		
+		serverHost = splittedURI[0];
+			
+		if (splittedURI.length == 1)
+			lookupString = SERVICE + "://" + LobbyServer.DEFAULT_LOBBY + "/" + LobbyServer.class.getName();
+		else //lobbyName is present (splittedURI[1])
+			lookupString = SERVICE + "://" + splittedURI[1] + "/" + LobbyServer.class.getName();
+		
 				
-		System.out.print("\n\tLookup on: " + lookupString + " ...");
-		if (server.equals("localhost"))
+		System.out.println("\n\tLookup on: " + lookupString + " ... at " + serverHost);
+		if (serverHost.equals("localhost"))
 			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getLocalRegistry().lookup(lookupString);
 		else 
-			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRemoteRegistry(server).lookup(lookupString);		
+			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRemoteRegistry(serverHost).lookup(lookupString);		
 
 	}
 	

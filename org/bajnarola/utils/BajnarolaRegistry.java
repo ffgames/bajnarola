@@ -3,7 +3,7 @@ package org.bajnarola.utils;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.ExportException;
+import java.rmi.server.ExportException; 
 
 public class BajnarolaRegistry {
 	
@@ -13,7 +13,7 @@ public class BajnarolaRegistry {
 		return getLocalRegistry(DEFAULT_PORT);
 	}
 	
-	public static Registry getLocalRegistry(int port) throws RemoteException{
+	public static Registry getLocalRegistry(int port) throws RemoteException {
 		java.rmi.registry.Registry rmiregisrty;
 		
 		rmiregisrty = null;
@@ -27,7 +27,7 @@ public class BajnarolaRegistry {
 		return rmiregisrty;
 	}
 
-	public static Registry getRemoteRegistry(String server) throws RemoteException{
+	public static Registry getRemoteRegistry(String server) throws RemoteException {
 		return getRemoteRegistry(server, DEFAULT_PORT);
 	}
 	

@@ -1,5 +1,8 @@
 package org.bajnarola.game.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
 import org.newdawn.slick.GameContainer;
@@ -11,6 +14,7 @@ public class OptionsScene extends IScene {
 
 	public scene_type prevScene;
 	
+	List<Button> buttons;
 	Button buttonFullScreen, buttonRes1, buttonRes2, buttonRes3;
 	
 	Image container;
@@ -20,6 +24,8 @@ public class OptionsScene extends IScene {
 	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
 		prevScene = null;
+		
+		buttons = new ArrayList();
 		
 		containerWidth = (float)((float)guiManager.windowWidth *(float) 0.7);
 		containerHeight = (float)((float)guiManager.windowHeight * (float)0.8);
@@ -33,6 +39,7 @@ public class OptionsScene extends IScene {
                 (int) containerPosY + (int)(containerHeight / 5),
                 new Image("res/menu/res1Inactive.png"),
                 new Image("res/menu/res1Active.png"));
+		buttons.add(buttonRes1);
 		
 		buttonRes2 = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
@@ -40,6 +47,8 @@ public class OptionsScene extends IScene {
                 (int) containerPosY + (int)(containerHeight / 5 * 2),
                 new Image("res/menu/res2Inactive.png"),
                 new Image("res/menu/res2Active.png"));
+		buttons.add(buttonRes2);
+
 		
 		buttonRes3 = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
@@ -47,6 +56,8 @@ public class OptionsScene extends IScene {
                 (int) containerPosY + (int)(containerHeight / 5 * 3),
                 new Image("res/menu/res3Inactive.png"),
                 new Image("res/menu/res3Active.png"));
+		buttons.add(buttonRes3);
+
 		
 		buttonFullScreen = new Button(guiManager.windowWidth/4,
                 guiManager.windowHeight/10,
@@ -54,36 +65,22 @@ public class OptionsScene extends IScene {
                 (int) containerPosY + (int)(containerHeight / 5 * 4),
                 new Image("res/menu/fullscreenInactive.png"),
                 new Image("res/menu/fullscreenActive.png"));
-		
+		buttons.add(buttonFullScreen);
+
 		container = new Image("res/menu/optionsContainer.png");
 	}
 
 	@Override
 	public void leftClick(int x, int y) {
-		if (buttonFullScreen.hits(x, y)) {
-			if (buttonFullScreen.isActive())
-				buttonFullScreen.deactivate();
-			else
-				buttonFullScreen.activate();
-		}
-		if (buttonRes1.hits(x, y)) {
-			if (buttonRes1.isActive())
-				buttonRes1.deactivate();
-			else
-				buttonRes1.activate();
-		}
-		if (buttonRes2.hits(x, y)) {
-			if (buttonRes2.isActive())
-				buttonRes2.deactivate();
-			else
-				buttonRes2.activate();
-		}
-		
-		if (buttonRes3.hits(x, y)) {
-			if (buttonRes3.isActive())
-				buttonRes3.deactivate();
-			else
-				buttonRes3.activate();
+		for (Button b : this.buttons) {
+			if (b.hits(x, y)) {
+				b.activate();
+				for (Button b2: this.buttons) {
+					if (!b2.equals(b))
+						b2.deactivate();
+				}
+				break;
+			}
 		}
 	}
 
@@ -128,10 +125,8 @@ public class OptionsScene extends IScene {
 		container.draw(containerPosX, containerPosY,
 		               containerWidth, containerHeight);
 		
-		buttonRes1.draw();
-		buttonRes2.draw();
-		buttonRes3.draw();
-		buttonFullScreen.draw();		
+		for (Button b : this.buttons)
+			b.draw();
 	}
 
 	@Override

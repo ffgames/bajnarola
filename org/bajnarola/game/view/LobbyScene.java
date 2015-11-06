@@ -197,8 +197,10 @@ public class LobbyScene extends IScene {
 					selectedInputBox = unameInputBox;
 				
 				selectedInputBox.initialize();
-			} else if (key == Input.KEY_ENTER) {
+			} else if (key == Input.KEY_ENTER || key == Input.KEY_NUMPADENTER) {
 				join();
+				leftRelease(guiManager.windowWidth/2 + 10,
+				            guiManager.windowHeight/4*2 + 60);
 			} else {
 				if (!selectedInputBox.initialized)
 					selectedInputBox.initialize();

@@ -15,8 +15,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String SERVER = "localhost";
-	//private static final String SERVER = "mimi.cs.unibo.it";
+	public static final String DEFAULT_LOBBY = "deflobby";
 	private static final String SERVICE = "rmi";
 	
 	Map<String,NetPlayer> players = new Hashtable<String,NetPlayer>();
@@ -73,6 +72,8 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		this.players.put(p.username, p);
 		System.out.println("Got a new player: " + p.username + " (" +p.rmiUriBoard + ")");
 		
+		/* TODO: find netplayer IP and add to its instance */
+		
 		if (this.players.size() < this.maxPlayers) {
 			try {
 				this.plock.lock();
@@ -112,19 +113,19 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	public static void main(String[] args) {
 		Integer players = 2;
 		Integer timeout = 10;
-		String server = "";
+		String lobby = "";
 		
 		if (args.length > 0)
 			players = Integer.decode(args[0]);
 		if (args.length > 1)
 			timeout = Integer.decode(args[1]);
 		if (args.length > 2)
-			server = args[2];
+			lobby = args[2];
 		else
-			server = SERVER;
+			lobby = DEFAULT_LOBBY;
 		
 		try {
-			new LobbyServer(server, players, timeout);
+			new LobbyServer(lobby, players, timeout);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
