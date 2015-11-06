@@ -148,19 +148,17 @@ public class ViewController {
 	}
 	
 	public String getCurrentPlayerScore(){
-		return player.getId()+"-"+player.getName() + ": "+player.getScore();
+		if(player != null)
+			return player.getId()+"-"+player.getName() + ": "+player.getScore();
+		return "";
 	}
 	
-	public String[] getScores(){
-		String[] scores = new String[8];
-		Player pl;
-		for(int i = 0; i < scores.length; i++){
-			pl = gameCtl.board.getPlayers().get(i);
-			if(pl != null)
-				scores[i] = pl.getId()+"-"+pl.getName()+": "+pl.getScore();
-			else
-				scores[i] = "";
-		}
+	public List<String> getScores(){
+		List<String> scores = new ArrayList<String>();
+		if(gameCtl.board.getPlayers() != null)
+			for(Player pl : gameCtl.board.getPlayers()){
+				scores.add(pl.getId()+"-"+pl.getName()+": "+pl.getScore());
+			}
 		return scores;
 	}
 	

@@ -37,7 +37,7 @@ public class GameScene extends IScene {
 	private GraphicalMeeple tmpMeeples[], currentPlayerMeeple;
 	private Button zoomButton, confirmButton;
 	private Image curtain;
-	private String[] scores;
+	private List<String> scores;
 	private String currentPlScore;
 	private Color[] playerColors;
 		//logical elements
@@ -60,7 +60,7 @@ public class GameScene extends IScene {
 	
 	// ##  INIT  ##
 	
-	public GameScene(Gui guiManager, Image background, bg_type backgroundType, String[] scores, String currentPlScore) throws SlickException {
+	public GameScene(Gui guiManager, Image background, bg_type backgroundType, List<String> scores, String currentPlScore) throws SlickException {
 		super(guiManager, background, backgroundType);
 		sceneType = scene_type.SCENE_GAME;
 		int minWindowSize = (guiManager.windowHeight < guiManager.windowWidth ? guiManager.windowHeight : guiManager.windowWidth); 
@@ -106,8 +106,7 @@ public class GameScene extends IScene {
 		turnTileCy = guiManager.windowHeight - tileSize;
 		turnTileSize = tileSize * 2;
 		
-		this.scores = new String[8];
-		this.scores = scores.clone();
+		this.scores = scores;
 		this.currentPlScore = currentPlScore;
 		playerColors = new Color[8];
 		playerColors[0] = new Color(0xEA, 0x3F, 0x1B);
@@ -272,13 +271,13 @@ public class GameScene extends IScene {
 		return ret;
 	}
 	
-	public void drawScoreUpdate(String score, String[] plScores, String curPlScore){
+	public void drawScoreUpdate(String score, List<String> plScores, String curPlScore){
 		//score is in the format "[x];[y]:[score]"
 		currentScoreGlobalX = getGlobalCoordX(Integer.parseInt(score.split(";")[0]));
 		currentScoreGlobalY = getGlobalCoordY(Integer.parseInt(score.split(";")[1].split(":")[0]));
 		currentScoreVal = Integer.parseInt(score.split(":")[1]);
 		currentPlScore = curPlScore;
-		scores = plScores.clone();
+		scores = plScores;
 	}
 
 	public void scoreDrawed(){
