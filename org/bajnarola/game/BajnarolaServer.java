@@ -29,7 +29,7 @@ import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.BajnarolaRegistry;
 import org.bajnarola.utils.RandomString;
 
-public class BajnarolaServer {
+public class BajnarolaServer implements Remote {
 
 	NetPlayer player = null;
 	
@@ -48,9 +48,8 @@ public class BajnarolaServer {
 		System.out.print("\n\tListening on '" + npath + "' ...");
 	}
 	
-	private void CommonConstruct(String server, String basepath, GameController myBoard) {
-		/* TODO: Remove the server from the uri (useless). */
-		String path = server + "/" + basepath;
+	private void CommonConstruct(String lobbyName, String basepath, GameController myBoard) {
+		String path = lobbyName + "/" + basepath;
 		this.player = new NetPlayer(basepath, path);
 				
 		this.setRebind(path, myBoard);

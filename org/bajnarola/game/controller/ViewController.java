@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +13,6 @@ import java.util.Properties;
 
 import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.GuiThread;
-import org.bajnarola.game.MainClass;
 import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
@@ -234,7 +233,7 @@ public class ViewController {
 		bajnarolaGui.setPlayerMeepleColor(player.getId());
 	}
 	
-	public void setGameOptions(String playerName, String lobbyURI) {
+	public void setGameOptions(String playerName, String lobbyURI) throws MalformedURLException {
 		this.gameCtl.setGameOptions(new GameOptions(playerName, lobbyURI));
 		guiLock.unlock();
 	}

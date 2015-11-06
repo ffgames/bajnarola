@@ -31,36 +31,19 @@ import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.BajnarolaRegistry;
 
 public class LobbyClient {
-	private final String SERVICE = "rmi";
 	
 	private LobbyController lobbyCallback = null;
 
 	
-	public LobbyClient(String serverURI) throws Exception {
+	public LobbyClient(String serverHost, String lobbyName) throws Exception {
 		/* ServerURI format example: hostname.com/lobbyName 
-		 * If lobbyName is not provided then the default lobby name should be considered*/
+		 * If lobbyName is not provided then the default lobby name should be already set */
 		
-		System.out.println("<< " + serverURI + " >>");
-		
-		String lookupString, serverHost; 
-		String splittedURI[] = serverURI.split("/");
-		
-		if (splittedURI.length < 1 || splittedURI.length > 2)
-			throw new RemoteException("Malformed URI");
-		
-		serverHost = splittedURI[0];
-			
-		if (splittedURI.length == 1)
-			lookupString = SERVICE + "://" + LobbyServer.DEFAULT_LOBBY + "/" + LobbyServer.class.getName();
-		else //lobbyName is present (splittedURI[1])
-			lookupString = SERVICE + "://" + splittedURI[1] + "/" + LobbyServer.class.getName();
-		
-				
+		String lookupString = lobbyName + "/" + LobbyServer.class.getName();
+					
 		System.out.println("\n\tLookup on: " + lookupString + " ... at " + serverHost);
-		if (serverHost.equals("localhost"))
-			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getLocalRegistry().lookup(lookupString);
-		else 
-			this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRemoteRegistry(serverHost).lookup(lookupString);		
+	
+		this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRemoteRegistry(serverHost).lookup(lookupString);		
 
 	}
 	

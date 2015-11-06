@@ -13,7 +13,7 @@ import org.bajnarola.lobby.LobbyClient;
 import org.bajnarola.networking.NetPlayer;
 
 public class MainClass {
-	private static final String SERVICE = "rmi";
+	
 	private static int seed = -1; 
 	
 	public static void main(String[] argv) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -26,7 +26,7 @@ public class MainClass {
 		
 		String username = "";
 		String server   = "";
-		String lobbyserver;
+		String lobbyHost, lobbyName;
 		
 		Map<String, NetPlayer> players = null;
 		
@@ -49,29 +49,30 @@ public class MainClass {
 				goptions = gBoard.getGameOptions();
 				
 				username = goptions.getPlayerName();
-				server = goptions.getLocalServerName();
-				lobbyserver = goptions.getLobbyServerURI();
+				
+				lobbyHost = goptions.getLobbyHost();
+				
+				lobbyName = goptions.getLobbyName();
 	
 				System.out.print("Server start up:");
 				if (!username.isEmpty())
-					iServer = new BajnarolaServer(SERVICE + "://" + server, username, gBoard);
+					iServer = new BajnarolaServer(lobbyName, username, gBoard);
 				else
-					iServer = new BajnarolaServer(SERVICE + "://" + server, gBoard);
+					iServer = new BajnarolaServer(lobbyName, gBoard);
 				System.out.println("OK!");
 							
 				System.out.print("Client module initilization:");
 				iClient = new BajnarolaClient();
 				System.out.println("OK!");
 				
-				System.out.print("Registering to lobby... ");
+				System.out.println("Registering to lobby at " + lobbyHost + "...");
 				try {
-					System.out.println(lobbyserver);
-					iLobby = new LobbyClient(lobbyserver);
+					iLobby = new LobbyClient(lobbyHost, lobbyName);
 				} catch (Exception e1) {
 					iLobby = null;
 					iServer = null;
 					gBoard.viewCtl.joinSignalView(JoinStatus.LOBBY_NOT_FOUND);
-					System.err.println("Can't reach the lobby");
+					System.err.println("Can't reach the lobby server");
 					e1.printStackTrace();
 					continue;
 				}

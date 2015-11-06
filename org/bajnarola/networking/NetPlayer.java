@@ -11,10 +11,11 @@ public class NetPlayer implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public String username;
 	public String rmiUriBoard;
-	/* TODO server ip */
+	public String playerHost; /* Ip or Hostname */
 	
 	public NetPlayer(String uname, String uri) {
 		this.username = uname;
 		this.rmiUriBoard = uri + "/" + GameController.class.getName();
 	}
+
 }

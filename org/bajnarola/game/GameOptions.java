@@ -1,31 +1,39 @@
 package org.bajnarola.game;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.MalformedURLException;
+
+import org.bajnarola.lobby.LobbyServer;
 
 public class GameOptions {
-
-	String lobbyServerURI, playerName, localServerName;
+	String lobbyHost, lobbyName, playerName;
 	
-	public GameOptions(String playerName, String lobbyServerURI) {
-		try {
-			this.localServerName = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+	public GameOptions(String playerName, String lobbyServerURI) throws MalformedURLException {
 		this.playerName = playerName;
-		this.lobbyServerURI = lobbyServerURI;
+		System.out.println("<< " + lobbyServerURI + " >>");
+		
+		String splittedURI[] = lobbyServerURI.split("/");
+		
+		if (splittedURI.length < 1 || splittedURI.length > 2)
+			throw new MalformedURLException("Malformed Lobby URI");
+		
+		this.lobbyHost = splittedURI[0];
+		
+		if (splittedURI.length == 1) 
+			this.lobbyName = LobbyServer.DEFAULT_LOBBY_NAME;
+		else
+			this.lobbyName = splittedURI[1];
+		
 	}
 
-	public String getLobbyServerURI() {
-		return lobbyServerURI;
+	public String getLobbyHost() {
+		return this.lobbyHost;
 	}
 
+	public String getLobbyName() {
+		return this.lobbyName;
+	}
+	
 	public String getPlayerName() {
 		return playerName;
-	}
-
-	public String getLocalServerName() {
-		return localServerName;
 	}
 }

@@ -1,5 +1,7 @@
 package org.bajnarola.game.view;
 
+import java.net.MalformedURLException;
+
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
 import org.newdawn.slick.Font;
@@ -27,6 +29,7 @@ public class LobbyScene extends IScene {
 	static final String errorUsernameExists = "Your username already exists";
 	static final String errorLobby = "Can't connect to the specified lobby";
 	static final String errorLobbyNotFound = "Lobby not found";
+	static final String errorMalformedLobby = "Malformed lobby URI";
 	static final String infoJoining = "Joining, please wait...";
 	
 	static int labelUsernamePosX, labelLobbyPosX, 
@@ -109,8 +112,12 @@ public class LobbyScene extends IScene {
 		setJoinMessage(infoJoining);
 		joinButton.disable();
 		
-		/* TODO: check strings, join and check if the username is free */
-		guiManager.controller.setGameOptions(uname, lobbyURI);
+		try {
+			guiManager.controller.setGameOptions(uname, lobbyURI);
+		} catch (MalformedURLException e) {
+			joinButton.enable();
+			setJoinMessage(errorMalformedLobby);
+		}
 	}
 	
 	@Override

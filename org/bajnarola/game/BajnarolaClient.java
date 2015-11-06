@@ -51,13 +51,16 @@ public class BajnarolaClient {
 	}
 	
 	public void getPlayers(Map<String,NetPlayer> playersStrings) {
+		NetPlayer p;
 		for (String user : playersStrings.keySet()) {
 			GameControllerRemote bc;
 			try {
-				String uriBoard = playersStrings.get(user).rmiUriBoard;
-				/* TODO Get the IP from the NetPlayer (filled by the lobby server at the join invocation) and
-				 * get the RemoteRegistry by that IP.*/
-				bc = (GameControllerRemote) BajnarolaRegistry.getLocalRegistry().lookup(uriBoard);
+				p = playersStrings.get(user);
+				/* Get the IP from the NetPlayer (filled by the lobby server 
+				 * at the join invocation) and get the RemoteRegistry by that IP.*/ 
+				
+				bc = (GameControllerRemote) BajnarolaRegistry.getRemoteRegistry(p.playerHost).lookup(p.rmiUriBoard);
+
 				this.players.put(user, bc);
 			} catch (NotBoundException e) {
 				e.printStackTrace();

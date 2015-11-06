@@ -1,6 +1,8 @@
 package org.bajnarola.lobby;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
+import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 import java.util.Map;
@@ -15,8 +17,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final String DEFAULT_LOBBY = "deflobby";
-	private static final String SERVICE = "rmi";
+	public static final String DEFAULT_LOBBY_NAME = "deflobby";
 	
 	Map<String,NetPlayer> players = new Hashtable<String,NetPlayer>();
 	Integer maxPlayers = 0;
@@ -25,7 +26,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 
 	private Boolean done;
 	
-	public LobbyServer(String server, int playersNo, int timeout) throws RemoteException {
+	public LobbyServer(String lobbyName, int playersNo, int timeout) throws Exception {
 		this.done = new Boolean(false);
 		this.maxPlayers = playersNo;
 		this.plock = new Lock();
@@ -37,25 +38,29 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		}
 		int i;
 
-		try{
-			this.lpath = SERVICE + "://" + server + "/" + this.getClass().getName();
-			System.out.print("Listening on " + lpath + " ...");
-			//Naming.rebind(lpath, this);
-			BajnarolaRegistry.getLocalRegistry().rebind(lpath, this);
-			
-			System.out.println("OK!");
-			
-			i = 0;
-			while (!this.done && i < timeout) {
-				Thread.sleep(1000);
-				i++;
-			}
-
-			if (!this.done)
-				this.fireTimeout();
-		} catch (Exception e) {
-			e.printStackTrace();
+		
+		this.lpath = lobbyName + "/" + this.getClass().getName();
+		System.out.print("Listening on " + lpath + " ...");
+		//Naming.rebind(lpath, this);
+		Registry localRegistry = BajnarolaRegistry.getLocalRegistry();
+		try {
+			localRegistry.lookup(lpath);
+			throw new Exception("Lobby already bound");
+		} catch (NotBoundException e) {
+			localRegistry.rebind(lpath, this);
 		}
+		
+		System.out.println("OK!");
+		
+		i = 0;
+		while (!this.done && i < timeout) {
+			Thread.sleep(1000);
+			i++;
+		}
+
+		if (!this.done)
+			this.fireTimeout();
+		
 	}
 
 	public Map<String,NetPlayer> join(NetPlayer p) throws RemoteException {
@@ -70,9 +75,15 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 			throw new RemoteException("Game already started");
 		
 		this.players.put(p.username, p);
+		
+		
 		System.out.println("Got a new player: " + p.username + " (" +p.rmiUriBoard + ")");
 		
-		/* TODO: find netplayer IP and add to its instance */
+		try {
+			p.playerHost = getClientHost();
+		} catch (ServerNotActiveException e1) {
+			e1.printStackTrace();
+		}
 		
 		if (this.players.size() < this.maxPlayers) {
 			try {
@@ -104,7 +115,8 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		/* Lobby Shutdown */
 		try {
 			BajnarolaRegistry.getLocalRegistry().unbind(this.lpath);
-			UnicastRemoteObject.unexportObject(this, true);
+			//UnicastRemoteObject.unexportObject(this, true); TODO: we can't do this or other lobbies won't work
+			
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
@@ -113,21 +125,21 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	public static void main(String[] args) {
 		Integer players = 2;
 		Integer timeout = 10;
-		String lobby = "";
-		
+		String lobbyName = DEFAULT_LOBBY_NAME;
+
 		if (args.length > 0)
 			players = Integer.decode(args[0]);
-		if (args.length > 1)
-			timeout = Integer.decode(args[1]);
+		if (args.length > 1 && !args[1].isEmpty())
+			lobbyName = args[1];
 		if (args.length > 2)
-			lobby = args[2];
-		else
-			lobby = DEFAULT_LOBBY;
+			timeout = Integer.decode(args[2]);
+
 		
 		try {
-			new LobbyServer(lobby, players, timeout);
+			new LobbyServer(lobbyName, players, timeout);
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
