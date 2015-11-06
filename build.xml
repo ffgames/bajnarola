@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="bajnarola">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <path id="bajnarolaSlick.userclasspath">
+        <pathelement location="../../../../bajnarola/lib/jinput.jar"/>
+        <pathelement location="../../../../bajnarola/lib/lwjgl_util.jar"/>
+        <pathelement location="../../../../bajnarola/lib/lwjgl.jar"/>
+        <pathelement location="../../../../bajnarola/lib/slick.jar"/>
+    </path>
+    <path id="bajnarola.classpath">
+        <pathelement location="."/>
+        <path refid="bajnarolaSlick.userclasspath"/>
+    </path>
+    <target name="init">
+        <copy includeemptydirs="false" todir=".">
+            <fileset dir=".">
+                <exclude name="**/*.java"/>
+                <exclude name="build/"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete>
+            <fileset dir="." includes="**/*.class"/>
+        </delete>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="." includeantruntime="false" source="${source}" target="${target}">
+            <src path="."/>
+            <exclude name="build/"/>
+            <classpath refid="bajnarola.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="BoardTest1">
+        <java classname="org.bajnarola.tests.BoardTest1" failonerror="true" fork="yes">
+            <classpath refid="bajnarola.classpath"/>
+        </java>
+    </target>
+    <target name="GuiTest">
+        <java classname="org.bajnarola.tests.GuiTest" failonerror="true" fork="yes">
+            <classpath refid="bajnarola.classpath"/>
+        </java>
+    </target>
+    <target name="BajnarolaClient">
+        <java classname="org.bajnarola.game.BajnarolaClient" failonerror="true" fork="yes">
+            <classpath refid="bajnarola.classpath"/>
+        </java>
+    </target>
+    <target name="BajnarolaServer">
+        <java classname="org.bajnarola.game.BajnarolaServer" failonerror="true" fork="yes">
+            <classpath refid="bajnarola.classpath"/>
+        </java>
+    </target>
+    <target name="MainClass">
+        <java classname="org.bajnarola.game.MainClass" failonerror="true" fork="yes">
+            <classpath refid="bajnarola.classpath"/>
+        </java>
+    </target>
+    <target name="LobbyServer">
+        <java classname="org.bajnarola.lobby.LobbyServer" failonerror="true" fork="yes">
+            <classpath refid="bajnarola.classpath"/>
+        </java>
+    </target>
+</project>
