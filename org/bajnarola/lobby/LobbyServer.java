@@ -91,6 +91,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		
 		try {
 			p.host = getClientHost();
+			System.out.println("host: " + p.host);
 		} catch (ServerNotActiveException e1) {
 			e1.printStackTrace();
 		}
