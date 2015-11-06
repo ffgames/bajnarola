@@ -145,6 +145,11 @@ public class GameScene extends IScene {
 		meeplesInHand = 7;
 	}
 	
+	public void initScores(String currentPlayerScore, List<String> scores){
+		this.currentPlScore = currentPlayerScore;
+		this.scores = scores;
+	}
+	
 	// ##  RENDERING ##
 	
 	@Override
@@ -239,6 +244,10 @@ public class GameScene extends IScene {
 		for(int i = 0; i < meeplesToDraw; i++){
 			if(handMeeples[i] != null)
 				handMeeples[i].drawAbsolute();
+		}
+		
+		for(int i = 0; i < scores.size(); i++){
+			drawScore(RelativeSizes.getInstance().scoresXOffset(), RelativeSizes.getInstance().scoresYOffset()*(i+1), scores.get(i), g);
 		}
 		
 		if(turnTile != null)

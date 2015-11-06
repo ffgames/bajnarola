@@ -61,6 +61,30 @@ public class RelativeSizes {
 	
 	//TODO: implement and fix relative offsets
 	
+	public int scoresXOffset(){
+		switch(activeResolution){
+			case R_800x600:
+				return 10;
+			case R_1920x1080:
+				return 30;
+			case R_1280x720:
+			default:
+				return 20;
+		}
+	}
+	
+	public int scoresYOffset(){
+		switch(activeResolution){
+			case R_800x600:
+				return 10;
+			case R_1920x1080:
+				return 30;
+			case R_1280x720:
+			default:
+				return 20;
+		}
+	}
+	
 	public int handMeepleXOffset(){
 		switch(activeResolution){
 			case R_800x600:

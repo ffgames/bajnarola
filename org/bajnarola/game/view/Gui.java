@@ -121,7 +121,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 
 		 container = gc;
 		 gc.setShowFPS(false);
-		 gc.setTargetFrameRate(30);
+		 gc.setTargetFrameRate(60);
 		 gc.setUpdateOnlyWhenVisible(false);
 	}
 	
@@ -341,6 +341,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public void setPlayerMeepleColor(int playerId){
 		this.playerId = playerId;
+	}
+	
+	public void initScores(String currentPlayerScore, List<String> scores){
+		gameScene.initScores(currentPlayerScore, scores);
 	}
 	
 	@Override
