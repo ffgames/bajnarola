@@ -1,36 +1,33 @@
 package org.bajnarola.game;
 
 import java.net.MalformedURLException;
-
-import org.bajnarola.lobby.LobbyServer;
+import org.bajnarola.utils.BajnarolaRegistry;
 
 public class GameOptions {
-	String lobbyHost, lobbyName, playerName;
+	String lobbyHost, playerName;
+	int lobbyPort = BajnarolaRegistry.DEFAULT_LOBBY_PORT;
 	
 	public GameOptions(String playerName, String lobbyServerURI) throws MalformedURLException {
 		this.playerName = playerName;
 		System.out.println("<< " + lobbyServerURI + " >>");
 		
-		String splittedURI[] = lobbyServerURI.split("/");
+		String splittedURI[] = lobbyServerURI.split(":");
 		
 		if (splittedURI.length < 1 || splittedURI.length > 2)
 			throw new MalformedURLException("Malformed Lobby URI");
 		
 		this.lobbyHost = splittedURI[0];
 		
-		if (splittedURI.length == 1) 
-			this.lobbyName = LobbyServer.DEFAULT_LOBBY_NAME;
-		else
-			this.lobbyName = splittedURI[1];
-		
+		if (splittedURI.length == 2) 
+			lobbyPort = Integer.parseInt(splittedURI[1]);	
 	}
 
 	public String getLobbyHost() {
 		return this.lobbyHost;
 	}
 
-	public String getLobbyName() {
-		return this.lobbyName;
+	public int getLobbyPort() {
+		return this.lobbyPort;
 	}
 	
 	public String getPlayerName() {

@@ -25,8 +25,8 @@ public class MainClass {
 		GameOptions goptions = null;
 		
 		String username = "";
-		String server   = "";
-		String lobbyHost, lobbyName;
+		String lobbyHost;
+		int lobbyPort;
 		
 		Map<String, NetPlayer> players = null;
 		
@@ -51,14 +51,13 @@ public class MainClass {
 				username = goptions.getPlayerName();
 				
 				lobbyHost = goptions.getLobbyHost();
-				
-				lobbyName = goptions.getLobbyName();
-	
+				lobbyPort = goptions.getLobbyPort();
+;				
 				System.out.print("Server start up:");
 				if (!username.isEmpty())
-					iServer = new BajnarolaServer(lobbyName, username, gBoard);
+					iServer = new BajnarolaServer(username, gBoard);
 				else
-					iServer = new BajnarolaServer(lobbyName, gBoard);
+					iServer = new BajnarolaServer(gBoard);
 				System.out.println("OK!");
 							
 				System.out.print("Client module initilization:");
@@ -67,7 +66,7 @@ public class MainClass {
 				
 				System.out.println("Registering to lobby at " + lobbyHost + "...");
 				try {
-					iLobby = new LobbyClient(lobbyHost, lobbyName);
+					iLobby = new LobbyClient(lobbyHost, lobbyPort);
 				} catch (Exception e1) {
 					iLobby = null;
 					iServer = null;

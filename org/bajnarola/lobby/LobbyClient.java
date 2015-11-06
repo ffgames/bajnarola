@@ -35,15 +35,15 @@ public class LobbyClient {
 	private LobbyController lobbyCallback = null;
 
 	
-	public LobbyClient(String serverHost, String lobbyName) throws Exception {
+	public LobbyClient(String lobbyHost, int lobbyPort) throws Exception {
 		/* ServerURI format example: hostname.com/lobbyName 
 		 * If lobbyName is not provided then the default lobby name should be already set */
 		
-		String lookupString = lobbyName + "/" + LobbyServer.class.getName();
+		String lookupString = LobbyServer.class.getName();
 					
-		System.out.println("\n\tLookup on: " + lookupString + " ... at " + serverHost);
+		System.out.println("\n\tLookup on: " + lookupString + " ... at " + lobbyHost + ":" + lobbyPort);
 	
-		this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRemoteRegistry(serverHost).lookup(lookupString);		
+		this.lobbyCallback = (LobbyController)BajnarolaRegistry.getRegistry(lobbyHost, lobbyPort).lookup(lookupString);		
 
 	}
 	
@@ -51,7 +51,6 @@ public class LobbyClient {
 		Map<String,NetPlayer> omap = null;
 		
 		omap = this.lobbyCallback.join(p, room);
-		
 		
 		return omap;
 	}

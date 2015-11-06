@@ -23,6 +23,8 @@
 package org.bajnarola.game;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
+import java.util.Random;
 
 import org.bajnarola.game.controller.GameController;
 import org.bajnarola.networking.NetPlayer;
@@ -31,35 +33,50 @@ import org.bajnarola.utils.RandomString;
 
 public class BajnarolaServer implements Remote {
 
+	private static final int BIND_ATTEMPTS = 50;
+	
 	NetPlayer player = null;
 	
 	public NetPlayer getPlayer() {
 		return this.player;
 	}
 	
-	private void setRebind(String path, Remote o) {
+	private int setRebind(String path, Remote o) throws Exception {
 		String npath = path + "/" + o.getClass().getName();
-		try {
-			BajnarolaRegistry.getLocalRegistry().rebind(npath, o);
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		int port = BajnarolaRegistry.DEFAULT_PLAYER_PORT;
+		Registry r = null;
+		for (int i = 0; i < BIND_ATTEMPTS; i++) {
+			try {
+				r = BajnarolaRegistry.createRegistry(port);
+				r.rebind(npath, o);
+				break;
+			} catch (RemoteException e) {
+				System.err.println("Registry already bound on this port, trying with another port");
+				port = 49152 + new Random().nextInt(65535 - 49152);
+				if (i == BIND_ATTEMPTS - 1)
+					throw new Exception("Too many bind attempts");
+			}
 		}
 		
 		System.out.print("\n\tListening on '" + npath + "' ...");
+		return port;
 	}
 	
-	private void CommonConstruct(String lobbyName, String basepath, GameController myBoard) {
-		String path = lobbyName + "/" + basepath;
-		this.player = new NetPlayer(basepath, path);
-				
-		this.setRebind(path, myBoard);
+	private void CommonConstruct(String basepath, GameController myBoard) {
+		int bindPort;
+		try {
+			bindPort = this.setRebind(basepath, myBoard);
+			this.player = new NetPlayer(basepath, bindPort);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 
-	public BajnarolaServer(String server, String basepath, GameController myBoard) {
-		this.CommonConstruct(server, basepath, myBoard);
+	public BajnarolaServer(String basepath, GameController myBoard) {
+		this.CommonConstruct(basepath, myBoard);
 	}
-	public BajnarolaServer(String server, GameController myBoard) {
+	public BajnarolaServer(GameController myBoard) {
 		String s = RandomString.generateAsciiString();
-		this.CommonConstruct(server, s, myBoard);
+		this.CommonConstruct(s, myBoard);
 	}
 }
