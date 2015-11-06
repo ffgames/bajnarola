@@ -9,6 +9,7 @@ import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -38,6 +39,7 @@ public class GameScene extends IScene {
 	private Image curtain;
 	private String[] scores;
 	private String currentPlScore;
+	private Color[] playerColors;
 		//logical elements
 	private List<HitBox> holes;
 	private boolean possibleMeeples[];
@@ -47,7 +49,6 @@ public class GameScene extends IScene {
 	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private int probedX, probedY;
 	private short turnMeepleSide;
-	
 	
 	//view area controll
 	private int globalCenterOffset;
@@ -105,8 +106,19 @@ public class GameScene extends IScene {
 		turnTileCy = guiManager.windowHeight - tileSize;
 		turnTileSize = tileSize * 2;
 		
+		this.scores = new String[8];
 		this.scores = scores.clone();
 		this.currentPlScore = currentPlScore;
+		playerColors = new Color[8];
+		playerColors[0] = new Color(0xEA, 0x3F, 0x1B);
+		playerColors[1] = new Color(0x3E, 0x3F, 0xD8);
+		playerColors[2] = new Color(0xE6, 0xBD, 0x4A);
+		playerColors[3] = new Color(0x27, 0xA1, 0xDE);
+		playerColors[4] = new Color(0xB2, 0x70, 0x49);
+		playerColors[5] = new Color(0xFF, 0xFF, 0xFF);
+		playerColors[6] = new Color(0x93, 0x41, 0xD2);
+		playerColors[7] = new Color(0x73, 0xCB, 0x49);
+		
 		
 		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
 		for(short i = 0; i < Tile.SIDE_COUNT; i++)
@@ -234,8 +246,10 @@ public class GameScene extends IScene {
 			confirmButton.draw();
 	}
 	
-	private void drawScore(int x, int y, String score){
-		
+	private void drawScore(int x, int y, String score, Graphics g){
+		int player = Integer.parseInt(score.split("-")[0]);
+		String scoreStr = score.split("-")[1];
+		g.getFont().drawString(x, y, scoreStr, playerColors[player]);
 	}
 	
 	// ##  ANIMATOR CONTROLS  ##
