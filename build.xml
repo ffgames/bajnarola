@@ -9,10 +9,10 @@
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
     <path id="bajnarolaSlick.userclasspath">
-        <pathelement location="../../../../bajnarola/lib/jinput.jar"/>
-        <pathelement location="../../../../bajnarola/lib/lwjgl_util.jar"/>
-        <pathelement location="../../../../bajnarola/lib/lwjgl.jar"/>
-        <pathelement location="../../../../bajnarola/lib/slick.jar"/>
+        <pathelement location="lib/jinput.jar"/>
+        <pathelement location="lib/lwjgl_util.jar"/>
+        <pathelement location="lib/lwjgl.jar"/>
+        <pathelement location="lib/slick.jar"/>
     </path>
     <path id="bajnarola.classpath">
         <pathelement location="."/>
