@@ -257,6 +257,7 @@ public class GameController extends UnicastRemoteObject implements
 		viewCtl.setPlayer(playerName);
 		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile, null);
 		viewCtl.enqueueViewUpdate(firstupdate);
+		viewCtl.setScores();
 	}
 	
 }

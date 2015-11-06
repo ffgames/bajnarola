@@ -248,6 +248,10 @@ public class ViewController {
 		bajnarolaGui.setPlayerMeepleColor(player.getId());
 	}
 	
+	public void setScores(){
+		bajnarolaGui.initScores(getCurrentPlayerScore(), getScores());
+	}
+	
 	public void setGameOptions(String playerName, String lobbyURI) throws MalformedURLException {
 		this.gameCtl.setGameOptions(new GameOptions(playerName, lobbyURI));
 		guiLock.unlock();
