@@ -61,6 +61,8 @@ public class BajnarolaClient {
 				
 				bc = (GameControllerRemote) BajnarolaRegistry.getRegistry(p.host, p.bindPort).lookup(p.rmiUriBoard);
 
+				System.out.println("user: " + user + " host: " + p.host + " bindPort: " + p.bindPort);
+				
 				this.players.put(user, bc);
 			} catch (NotBoundException e) {
 				e.printStackTrace();
