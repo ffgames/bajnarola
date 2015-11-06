@@ -59,7 +59,7 @@ public class BajnarolaClient {
 				/* Get the IP from the NetPlayer (filled by the lobby server 
 				 * at the join invocation) and get the RemoteRegistry by that IP.*/ 
 				
-				bc = (GameControllerRemote) BajnarolaRegistry.getRemoteRegistry(p.playerHost).lookup(p.rmiUriBoard);
+				bc = (GameControllerRemote) BajnarolaRegistry.getRegistry(p.host, p.bindPort).lookup(p.rmiUriBoard);
 
 				this.players.put(user, bc);
 			} catch (NotBoundException e) {
