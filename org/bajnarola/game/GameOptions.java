@@ -22,6 +22,10 @@ public class GameOptions {
 			lobbyPort = Integer.parseInt(splittedURI[1]);	
 	}
 
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+	}
+	
 	public String getLobbyHost() {
 		return this.lobbyHost;
 	}

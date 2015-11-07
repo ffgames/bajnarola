@@ -120,6 +120,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 currentUpdate = null;
 		 
 		 container = gc;
+		 
 		 gc.setShowFPS(false);
 		 gc.setTargetFrameRate(60);
 		 gc.setUpdateOnlyWhenVisible(false);
@@ -357,6 +358,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 	
 	public void exit(){
+		System.out.println("Exit");
+		controller.cleanRegistry();
 		container.exit();
 	}
 }

@@ -21,9 +21,12 @@
 /*****************************************************************************/
 
 package org.bajnarola.game;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 
 import org.bajnarola.game.controller.GameController;
@@ -36,6 +39,8 @@ public class BajnarolaServer implements Remote {
 	private static final int BIND_ATTEMPTS = 50;
 	
 	NetPlayer player = null;
+	Registry registry = null;
+	
 	
 	public NetPlayer getPlayer() {
 		return this.player;
@@ -58,6 +63,7 @@ public class BajnarolaServer implements Remote {
 			}
 		}
 		
+		this.registry = r;
 		System.out.print("\n\tListening on '" + npath + "' ...");
 		return port;
 	}
@@ -78,5 +84,15 @@ public class BajnarolaServer implements Remote {
 	public BajnarolaServer(GameController myBoard) {
 		String s = RandomString.generateAsciiString();
 		this.CommonConstruct(s, myBoard);
+	}
+	
+	public void cleanRegistry(){
+		try {
+			this.registry.unbind(this.player.rmiUriBoard);
+			UnicastRemoteObject.unexportObject(this.registry, true);
+		} catch (RemoteException | NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

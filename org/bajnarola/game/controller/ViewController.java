@@ -114,16 +114,19 @@ public class ViewController {
 				resy =  screenSize.height;
 			}
 			
-			appgc = new AppGameContainer(bajnarolaGui, resx, resy, fullscreen);
+		//	appgc = new AppGameContainer(bajnarolaGui, resx, resy, fullscreen);
 			
-			GuiThread guiThread = new GuiThread(appgc);
+		//	GuiThread guiThread = new GuiThread(appgc);
 			
-			Thread thread = new Thread(guiThread);
+			GuiThread gt = new GuiThread(bajnarolaGui, resx, resy, fullscreen);
+			
+			Thread thread = new Thread(gt);
 			
 			thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 
 		        public void uncaughtException(Thread t, Throwable e) {
 		            System.out.println("exception " + e + " from thread " + t);
+		            cleanRegistry();
 		            System.exit(1);
 		        }
 		    });
@@ -259,5 +262,9 @@ public class ViewController {
 	
 	public void joinSignalView(JoinStatus cause) {
 		this.bajnarolaGui.joinSignalLobbyScene(cause);
+	}
+	
+	public void cleanRegistry() {
+		this.gameCtl.cleanRegistry();
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bajnarola.game.BajnarolaServer;
 import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
@@ -36,7 +37,7 @@ public class GameController extends UnicastRemoteObject implements
 	Map<String, Integer> finalScores;
 	boolean winner;
 	GameOptions goptions;
-
+	BajnarolaServer myServer;
 	
 	Board board;
 	Lock diceLock;
@@ -83,6 +84,10 @@ public class GameController extends UnicastRemoteObject implements
 		/* XXX spareggi */
 	}
 
+	public void setMyServer(BajnarolaServer s) {
+		this.myServer = s;
+	}
+	
 	public void setGameOptions(GameOptions goptions) {
 		this.goptions = goptions;
 	}
@@ -258,6 +263,10 @@ public class GameController extends UnicastRemoteObject implements
 		ViewUpdate firstupdate = new ViewUpdate(new Hashtable<String, Boolean>(), initialTile, null);
 		viewCtl.enqueueViewUpdate(firstupdate);
 		viewCtl.setScores();
+	}
+	
+	public void cleanRegistry() {
+		this.myServer.cleanRegistry();
 	}
 	
 }

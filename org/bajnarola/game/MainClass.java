@@ -11,6 +11,7 @@ import org.bajnarola.game.controller.GameController;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
 import org.bajnarola.lobby.LobbyClient;
 import org.bajnarola.networking.NetPlayer;
+import org.bajnarola.utils.BajnarolaRegistry;
 
 public class MainClass {
 	
@@ -52,12 +53,15 @@ public class MainClass {
 				
 				lobbyHost = goptions.getLobbyHost();
 				lobbyPort = goptions.getLobbyPort();
-;				
+				
 				System.out.print("Server start up:");
 				if (!username.isEmpty())
 					iServer = new BajnarolaServer(username, gBoard);
 				else
 					iServer = new BajnarolaServer(gBoard);
+				
+				gBoard.setMyServer(iServer);
+				
 				System.out.println("OK!");
 							
 				System.out.print("Client module initilization:");
@@ -133,6 +137,10 @@ public class MainClass {
 			System.out.println("OK");
 			
 			iClient.mainLoop(iServer.getPlayer().username, gBoard);
+			
+			
+			System.out.println("Game ended");
+			System.exit(1);
 			
 		} catch (RemoteException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
