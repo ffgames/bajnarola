@@ -357,6 +357,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 		lobbyScene.joinCallback(status);
 	}
 	
+	public void setResolutionOptions(int resx, int resy, boolean fullscreen) {
+		this.controller.setViewOptions(resx, resy, fullscreen);
+	}
+	
 	public void exit(){
 		System.out.println("Exit");
 		controller.cleanRegistry();

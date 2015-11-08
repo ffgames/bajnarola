@@ -65,6 +65,8 @@ public class GameController extends UnicastRemoteObject implements
 
 		this.board = new Board();
 		
+
+		this.goptions = new GameOptions();
 		this.viewCtl = new ViewController(board, this);
 
 		this.diceLock = new Lock();
@@ -80,6 +82,7 @@ public class GameController extends UnicastRemoteObject implements
 		this.diceValue = null;
 		
 		this.throwDice();
+		
 		
 		/* XXX spareggi */
 	}

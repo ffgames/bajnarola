@@ -1,15 +1,9 @@
 package org.bajnarola.game.controller;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.GuiThread;
@@ -27,11 +21,7 @@ import sun.misc.Lock;
 
 public class ViewController {
 
-	static final int defaultResX = 1200;
-	static final int defaultResY = 700;
-	static final boolean defaultFullscreen = false; 
-	static final String optFileName = ".bajnarola.conf";
-	static String optFilePath;
+	
 	
 	/* A queue of updates. Each update contains: 
 	 *     - a set of points of all the landscape that 
@@ -41,11 +31,12 @@ public class ViewController {
 	
 	
 	AppGameContainer appgc;
-	Gui bajnarolaGui;
+	Gui gui;
 	Lock guiLock;
 	Board board;
 	Player player;
 	GameController gameCtl;
+	GameOptions gameOpt;
 	
 	/* The tile drawn by the local play at the current turn */
 	Tile drawnTile;
@@ -67,58 +58,11 @@ public class ViewController {
 		}
 		
 		try {
-			bajnarolaGui = new Gui(this);
+			gui = new Gui(this);
+
+			gameOpt = gameCtl.getGameOptions();
 			
-			int resx = defaultResX, resy = defaultResY;
-			boolean fullscreen = defaultFullscreen;
-			
-			try {
-				File cwd = new File(System.getProperty("user.home"));
-				File optFile = new File(cwd, optFileName);
-				optFilePath = optFile.getAbsolutePath();
-				if (!optFile.exists()) {
-					System.out.println("Config file not found. Creating it...");
-					optFile.createNewFile();
-				}
-			} catch (IOException e) {
-				System.err.println("Can't create the config file");
-			} 
-			
-			Properties prop = new Properties();
-			
-			try {
-				prop.load(new FileInputStream(optFilePath));
-				if (prop.isEmpty()) {
-					prop.setProperty("resx", Integer.toString(resx));
-					prop.setProperty("resy", Integer.toString(resy));
-					prop.setProperty("fullscreen", Boolean.toString(fullscreen));
-					prop.store(new FileOutputStream(optFilePath), "game options");
-				} else {
-					String tmp;
-					
-					if ((tmp = prop.getProperty("resx")) != null)
-							resx = Integer.parseInt(tmp);
-					if ((tmp = prop.getProperty("resy")) != null)
-						resy = Integer.parseInt(tmp);
-					if ((tmp = prop.getProperty("fullscreen")) != null)
-						fullscreen = Boolean.parseBoolean(tmp);
-				}
-			} catch (IOException|NullPointerException e) {
-				e.printStackTrace();
-				System.err.println("Can't access to the config file");
-			}
-			
-			Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-			if (fullscreen) {
-				resx = screenSize.width;
-				resy =  screenSize.height;
-			}
-			
-		//	appgc = new AppGameContainer(bajnarolaGui, resx, resy, fullscreen);
-			
-		//	GuiThread guiThread = new GuiThread(appgc);
-			
-			GuiThread gt = new GuiThread(bajnarolaGui, resx, resy, fullscreen);
+			GuiThread gt = new GuiThread(gui, gameOpt.getResx(), gameOpt.getResy(), gameOpt.isFullscreen());
 			
 			Thread thread = new Thread(gt);
 			
@@ -215,7 +159,7 @@ public class ViewController {
 	public Tile waitViewChange(Tile drawnTile) {
 		this.drawnTile = drawnTile;
 		
-		this.bajnarolaGui.viewPlayTurn(board.getHoles(), drawnTile);
+		this.gui.viewPlayTurn(board.getHoles(), drawnTile);
 		
 		try {
 			guiLock.lock();
@@ -248,20 +192,25 @@ public class ViewController {
 	
 	public void setPlayer(String playerName) {
 		this.player = board.getPlayerByName(playerName);
-		bajnarolaGui.setPlayerMeepleColor(player.getId());
+		gui.setPlayerMeepleColor(player.getId());
 	}
 	
 	public void setScores(){
-		bajnarolaGui.initScores(getCurrentPlayerScore(), getScores());
+		gui.initScores(getCurrentPlayerScore(), getScores());
 	}
 	
 	public void setGameOptions(String playerName, String lobbyURI) throws MalformedURLException {
-		this.gameCtl.setGameOptions(new GameOptions(playerName, lobbyURI));
+		this.gameCtl.getGameOptions().setPlayerName(playerName);
+		this.gameCtl.getGameOptions().setLobbyHostPort(lobbyURI);
 		guiLock.unlock();
 	}
 	
+	public void setViewOptions(int resx, int resy, boolean fullscreen) {
+		this.gameCtl.getGameOptions().setViewOptions(resx, resy, fullscreen);
+	}
+	
 	public void joinSignalView(JoinStatus cause) {
-		this.bajnarolaGui.joinSignalLobbyScene(cause);
+		this.gui.joinSignalLobbyScene(cause);
 	}
 	
 	public void cleanRegistry() {

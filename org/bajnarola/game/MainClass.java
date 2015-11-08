@@ -11,7 +11,6 @@ import org.bajnarola.game.controller.GameController;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
 import org.bajnarola.lobby.LobbyClient;
 import org.bajnarola.networking.NetPlayer;
-import org.bajnarola.utils.BajnarolaRegistry;
 
 public class MainClass {
 	

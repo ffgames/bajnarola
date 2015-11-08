@@ -20,6 +20,7 @@ public class OptionsScene extends IScene {
 	Image container;
 	float containerWidth, containerHeight;
 	float containerPosX, containerPosY;
+
 	
 	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
@@ -75,6 +76,9 @@ public class OptionsScene extends IScene {
 		for (Button b : this.buttons) {
 			if (b.hits(x, y)) {
 				b.activate();
+				if (b.equals(buttonFullScreen)) {
+					guiManager.setResolutionOptions(0, 0, true);
+				} //TODO: other cases
 				for (Button b2: this.buttons) {
 					if (!b2.equals(b))
 						b2.deactivate();

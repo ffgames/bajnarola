@@ -1,14 +1,71 @@
 package org.bajnarola.game;
 
+import java.awt.Dimension;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Properties;
+
 import org.bajnarola.utils.BajnarolaRegistry;
 
 public class GameOptions {
 	String lobbyHost, playerName;
+	
+	
+	static final boolean defaultFullscreen = false; 
+	static final String optFileName = ".bajnarola.conf";
+	static String optFilePath;
+	static final int defaultResX = 1200;
+	static final int defaultResY = 700;
+	
+	int resx = defaultResX, resy = defaultResY;
+	boolean fullscreen = defaultFullscreen;
+	
 	int lobbyPort = BajnarolaRegistry.DEFAULT_LOBBY_PORT;
 	
-	public GameOptions(String playerName, String lobbyServerURI) throws MalformedURLException {
+	public GameOptions()  {
+		
+		try {
+			File cwd = new File(System.getProperty("user.home"));
+			File optFile = new File(cwd, optFileName);
+			optFilePath = optFile.getAbsolutePath();
+			if (!optFile.exists()) {
+				System.out.println("Config file not found. Creating it...");
+				optFile.createNewFile();
+			}
+		} catch (IOException e) {
+			System.err.println("Can't create the config file");
+		} 
+		
+		Properties prop = new Properties();
+		
+		try {
+			prop.load(new FileInputStream(optFilePath));
+			if (prop.isEmpty()) {
+				storeConfig(prop);
+			} else {
+				loadConfig(prop);
+			}
+		} catch (IOException|NullPointerException e) {
+			e.printStackTrace();
+			System.err.println("Can't access to the config file");
+		}
+		
+		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		if (fullscreen) {
+			resx = screenSize.width;
+			resy =  screenSize.height;
+		}
+	}
+
+	public void setPlayerName(String playerName) {
 		this.playerName = playerName;
+	}
+	
+	public void setLobbyHostPort(String lobbyServerURI) throws MalformedURLException {
+
 		System.out.println("<< " + lobbyServerURI + " >>");
 		
 		String splittedURI[] = lobbyServerURI.split(":");
@@ -21,10 +78,71 @@ public class GameOptions {
 		if (splittedURI.length == 2) 
 			lobbyPort = Integer.parseInt(splittedURI[1]);	
 	}
-
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	
+	
+	public int getResx() {
+		return resx;
 	}
+
+
+	public int getResy() {
+		return resy;
+	}
+
+	public boolean isFullscreen() {
+		return fullscreen;
+	}
+
+	public void setViewOptions(int resx, int resy, boolean fullscreen) {
+		this.resx = resx;
+		this.resy = resy;
+		this.fullscreen = fullscreen;
+		storeConfig();
+	}
+	
+	private void storeConfig(Properties prop) throws IOException {
+
+		prop.setProperty("resx", Integer.toString(resx));
+		prop.setProperty("resy", Integer.toString(resy));
+		prop.setProperty("fullscreen", Boolean.toString(fullscreen));
+		prop.store(new FileOutputStream(optFilePath), "game options");
+
+	}
+	
+	public void storeConfig() {
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileInputStream(optFilePath));
+			storeConfig(prop);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Can't access to the config file");
+		}
+	}
+	
+	private void loadConfig(Properties prop) {
+		String tmp;
+		if ((tmp = prop.getProperty("resx")) != null)
+				resx = Integer.parseInt(tmp);
+		if ((tmp = prop.getProperty("resy")) != null)
+			resy = Integer.parseInt(tmp);
+		if ((tmp = prop.getProperty("fullscreen")) != null)
+			fullscreen = Boolean.parseBoolean(tmp);
+	}
+	
+	public void loadConfig() {
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileInputStream(optFilePath));
+			if (!prop.isEmpty())
+				loadConfig(prop);
+			
+		} catch (IOException|NullPointerException e) {
+			e.printStackTrace();
+			System.err.println("Can't access to the config file");
+		}
+	}
+	
 	
 	public String getLobbyHost() {
 		return this.lobbyHost;
