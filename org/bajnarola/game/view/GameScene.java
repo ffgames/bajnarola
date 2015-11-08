@@ -49,19 +49,26 @@ public class GameScene extends IScene {
 	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private int probedX, probedY;
 	private short turnMeepleSide;
+	private boolean isScoreHovered;
+	private HitBox scoreHitbox;
 	
 	//view area controll
 	private int globalCenterOffset;
 	private float scaleFactor;
 	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
-	public int xOff, yOff, maxX, maxY;
+	public int xOff, yOff;
 	private int logicalMaxX, logicalMinX, logicalMaxY, logicalMinY;
+	private int minXOff, maxXOff, minYOff, maxYOff;
+	private boolean hudHovered;
+	private short udDir, lrDir;
 	
+	private RelativeSizes resizer;
 	
 	// ##  INIT  ##
 	
 	public GameScene(Gui guiManager, Image background, bg_type backgroundType, List<String> scores, String currentPlScore) throws SlickException {
 		super(guiManager, background, backgroundType);
+		resizer = RelativeSizes.getInstance();
 		sceneType = scene_type.SCENE_GAME;
 		int minWindowSize = (guiManager.windowHeight < guiManager.windowWidth ? guiManager.windowHeight : guiManager.windowWidth); 
 		
@@ -73,14 +80,13 @@ public class GameScene extends IScene {
 		tileSize = minWindowSize / 8;
 		tileSize = (tileSize < GraphicalTile.TILE_SIZE ? tileSize : GraphicalTile.TILE_SIZE);
 		meepleSize = tileSize/4;
-		maxX = maxY = GraphicalTile.TILE_SIZE * (Board.TOTAL_TILES_COUNT * 2);
-		globalCenterOffset = maxX / 2;
+		globalCenterOffset = (tileSize * (Board.TOTAL_TILES_COUNT * 2)) / 2;
 		scaleFactor = 1;
 		zoomOutView = zoomable = false;
 		xOff = globalCenterOffset - (guiManager.windowWidth/2);
 		yOff = globalCenterOffset - (guiManager.windowHeight/2);
 		
-		zoomButton = new Button(minWindowSize/10, minWindowSize/10, minWindowSize/10, guiManager.windowHeight-(minWindowSize/10), new Image("res/misc/zoomIn.png"), new Image("res/misc/zoomOut.png"));
+		zoomButton = new Button(minWindowSize/10, minWindowSize/10, guiManager.windowWidth-(minWindowSize/10), minWindowSize/10, new Image("res/misc/zoomOut.png"), new Image("res/misc/zoomIn.png"));
 		confirmButton = new Button(minWindowSize/4, minWindowSize/10, guiManager.windowWidth/2, guiManager.windowHeight-(minWindowSize/20),
 				 new Image("res/menu/confirmInactive.png"), new Image("res/menu/confirmActive.png"), new Image("res/menu/confirmDisabled.png"));
 		confirmButton.deactivate();
@@ -89,6 +95,10 @@ public class GameScene extends IScene {
 		curtain.setAlpha(0.8f);
 		
 		logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
+		minXOff = maxXOff = xOff;
+		minYOff = maxYOff = yOff;
+		
+		udDir = lrDir = Tile.SIDE_CENTER;
 		
 		currentScoreGlobalX = currentScoreGlobalY = currentScoreVal = -1;
 		
@@ -106,8 +116,9 @@ public class GameScene extends IScene {
 		turnTileCy = guiManager.windowHeight - tileSize;
 		turnTileSize = tileSize * 2;
 		
-		this.scores = scores;
-		this.currentPlScore = currentPlScore;
+		isScoreHovered = false;
+		scoreHitbox = new HitBox(resizer.scoresXOffset(), resizer.scoresYOffset(), 0, 0);
+		setScores(currentPlScore, scores);
 		playerColors = new Color[8];
 		playerColors[0] = new Color(0xEA, 0x3F, 0x1B);
 		playerColors[1] = new Color(0x3E, 0x3F, 0xD8);
@@ -133,21 +144,15 @@ public class GameScene extends IScene {
 		int handMeepleSize = confirmButton.hitbox.ulx/9;
 		if(handMeepleSize > GraphicalMeeple.MEEPLE_SIZE)
 			handMeepleSize = GraphicalMeeple.MEEPLE_SIZE;
-		RelativeSizes rs = RelativeSizes.getInstance();
-		int nextCenterX = (handMeepleSize/2)+rs.handMeepleXOffset();
-		int nextCenterY = guiManager.windowHeight - (handMeepleSize/2)-rs.handMeepleYOffset();
+		int nextCenterX = (handMeepleSize/2)+resizer.handMeepleXOffset();
+		int nextCenterY = guiManager.windowHeight - (handMeepleSize/2)-resizer.handMeepleYOffset();
 		
 		for(int i = 0; i < 7; i++){
 			handMeeples[i] = currentPlayerMeeple.copy("", nextCenterX, nextCenterY, handMeepleSize);
-			nextCenterX += handMeepleSize+rs.handMeepleXOffset();
+			nextCenterX += handMeepleSize+resizer.handMeepleXOffset();
 		}
 		
 		meeplesInHand = 7;
-	}
-	
-	public void initScores(String currentPlayerScore, List<String> scores){
-		this.currentPlScore = currentPlayerScore;
-		this.scores = scores;
 	}
 	
 	// ##  RENDERING ##
@@ -156,10 +161,15 @@ public class GameScene extends IScene {
 	public void render(GameContainer gc, Graphics g) {
 		guiManager.drawBackground(background, backgroundType);
 		
+		shiftView();
+		
 		boardRender(gc, g);
 		
 		hudRender(gc, g);
 		
+		g.drawString(String.format("lmx: %d, lMx: %d, lmy: %d, lMy: %d", logicalMinX, logicalMaxX, logicalMinY, logicalMaxY), 400, 10);
+		g.drawString(String.format("mxo: %d, Mxo: %d, myo: %d, Myo: %d", minXOff, maxXOff, minYOff, maxYOff), 400, 30);
+		g.drawString(String.format("xOff: %d, yOff: %d, hh: %s, zm: %s", xOff, yOff, (hudHovered ? "true" : "false"), (zoomable ? "true" : "false")), 400, 50);
 		/*for(GraphicalTile t : currentScenario.values()){
 			g.drawString(t.getCoordinates(), t.globalCenterX-xOff, t.globalCenterY-yOff);
 		}*/
@@ -246,8 +256,12 @@ public class GameScene extends IScene {
 				handMeeples[i].drawAbsolute();
 		}
 		
-		for(int i = 0; i < scores.size(); i++){
-			drawScore(RelativeSizes.getInstance().scoresXOffset(), RelativeSizes.getInstance().scoresYOffset()*(i+1), scores.get(i), g);
+		if(isScoreHovered){
+			for(int i = 0; i < scores.size(); i++){
+				drawScore(resizer.scoresXOffset(), resizer.scoresYOffset()*(i+1), scores.get(i), g);
+			}
+		} else {
+			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset(), currentPlScore, g);
 		}
 		
 		if(turnTile != null)
@@ -255,9 +269,11 @@ public class GameScene extends IScene {
 	}
 	
 	private void drawScore(int x, int y, String score, Graphics g){
-		int player = Integer.parseInt(score.split("-")[0]);
-		String scoreStr = score.split("-")[1];
-		g.getFont().drawString(x, y, scoreStr, playerColors[player]);
+		if(score != null && !score.isEmpty()){
+			int player = Integer.parseInt(score.split("-")[0]);
+			String scoreStr = score.split("-")[1];
+			g.getFont().drawString(x, y, scoreStr, playerColors[player]);
+		}
 	}
 	
 	// ##  ANIMATOR CONTROLS  ##
@@ -285,8 +301,7 @@ public class GameScene extends IScene {
 		currentScoreGlobalX = getGlobalCoordX(Integer.parseInt(score.split(";")[0]));
 		currentScoreGlobalY = getGlobalCoordY(Integer.parseInt(score.split(";")[1].split(":")[0]));
 		currentScoreVal = Integer.parseInt(score.split(":")[1]);
-		currentPlScore = curPlScore;
-		scores = plScores;
+		setScores(curPlScore, plScores);
 	}
 
 	public void scoreDrawed(){
@@ -360,6 +375,15 @@ public class GameScene extends IScene {
 		dimscreen = false;
 	}
 
+	public void setScores(String currentPlayerScore, List<String> scores){
+		this.currentPlScore = currentPlayerScore;
+		this.scores = scores;
+		if(currentPlayerScore != null && !currentPlayerScore.isEmpty())
+			scoreHitbox.reset(resizer.scoresXOffset(), resizer.scoresYOffset(), 
+					resizer.scoresXOffset()+guiManager.container.getGraphics().getFont().getWidth(currentPlayerScore), 
+					resizer.scoresYOffset()+guiManager.container.getGraphics().getFont().getHeight(currentPlayerScore));
+	}
+	
 	// ##  INPUT HANDLERS  ##
 	
 	@Override
@@ -446,19 +470,12 @@ public class GameScene extends IScene {
 	
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
-		if(newx < leftBorderX && newx > 2){
-			shiftView(Tile.SIDE_LEFT);
-		} else if (newx > rightBorderX && newx < guiManager.windowWidth-3){
-			shiftView(Tile.SIDE_RIGHT);
-		}
-		if(newy < upperBorderY && newy > 2){
-			shiftView(Tile.SIDE_TOP);
-		} else if (newy > lowerBorderY && newy < guiManager.windowHeight-3){
-			shiftView(Tile.SIDE_BOTTOM);
-		}
+		//view should not shift if someone is trying to interuct with the hud
+		hudHovered = false;
+		hudHovered |= isScoreHovered = scoreHitbox.hits(newx, newy);
 		
 		if(turnTile != null){
-			confirmButton.isClicked(newx, newy);
+			hudHovered |= confirmButton.isClicked(newx, newy);
 			
 			if(!dimscreen){
 				mouseOverOn = false;
@@ -470,6 +487,26 @@ public class GameScene extends IScene {
 						}
 					}
 				}
+			} else
+				hudHovered = true;
+		}
+		
+		hudHovered |= zoomButton.hits(newx, newy);
+		
+		if(!hudHovered){
+			if(newx < leftBorderX && newx > 2){
+				lrDir = Tile.SIDE_LEFT;
+			} else if (newx > rightBorderX && newx < guiManager.windowWidth-3){
+				lrDir = Tile.SIDE_RIGHT;
+			} else {
+				lrDir = Tile.SIDE_CENTER;
+			}
+			if(newy < upperBorderY && newy > 2){
+				udDir = Tile.SIDE_TOP;
+			} else if (newy > lowerBorderY && newy < guiManager.windowHeight-3){
+				udDir = Tile.SIDE_BOTTOM;
+			} else {
+				udDir = Tile.SIDE_CENTER;
 			}
 		}
 	}
@@ -483,14 +520,30 @@ public class GameScene extends IScene {
 	// ##  VIEW AREA CONTROL  ##
 		
 	private void setViewScaleValues(int lx, int ly){
-		if(lx < logicalMinX)
-			logicalMinX = lx;
-		if(lx > logicalMaxX)
-			logicalMaxX = lx;
-		if(ly < logicalMinY)
-			logicalMinY = ly;
-		if(ly > logicalMaxY)
-			logicalMaxY = ly;
+		if(lx-2 < logicalMinX){
+			logicalMinX = lx-2;
+			minXOff = Math.min(minXOff, (logicalMinX*tileSize)+globalCenterOffset);
+			if(lrDir == Tile.SIDE_CENTER)
+				lrDir = Tile.SIDE_LEFT;
+		}
+		if(lx+2 > logicalMaxX){
+			logicalMaxX = lx+2;
+			maxXOff = Math.max(maxXOff, (logicalMaxX*tileSize)+globalCenterOffset-guiManager.windowWidth);
+			if(lrDir == Tile.SIDE_CENTER)
+				lrDir = Tile.SIDE_RIGHT;
+		}
+		if(ly-2 < logicalMinY){
+			logicalMinY = ly-2;
+			maxYOff = Math.max(maxYOff, globalCenterOffset-(logicalMinY*tileSize)-guiManager.windowHeight);
+			if(udDir == Tile.SIDE_CENTER)
+				udDir = Tile.SIDE_BOTTOM;
+		}
+		if(ly+2 > logicalMaxY){
+			logicalMaxY = ly+2;
+			minYOff = Math.min(minYOff, globalCenterOffset-(logicalMaxY*tileSize));
+			if(udDir == Tile.SIDE_CENTER)
+				udDir = Tile.SIDE_TOP;
+		}
 		
 		int tw, th;
 		tw = (logicalMaxX - logicalMinX) * tileSize;
@@ -499,8 +552,7 @@ public class GameScene extends IScene {
 		if(tw <= guiManager.windowWidth && th <= guiManager.windowHeight){
 			scaleFactor = 1;
 			//zoomable = false; should be implicit
-		}
-		else {
+		} else {
 			float hscale, vscale;
 			
 			hscale = guiManager.windowHeight / th;
@@ -512,21 +564,18 @@ public class GameScene extends IScene {
 		}
 	}
 
-	private void shiftView(int direction){
-		switch(direction){
-			case Tile.SIDE_LEFT:
-				
-				break;
-			case Tile.SIDE_RIGHT:
-				
-				break;
-			case Tile.SIDE_BOTTOM:
-				
-				break;
-			case Tile.SIDE_TOP:
-				
-				break;
-		}
+	private void shiftView(){
+		//if(zoomable){
+			int offset = guiManager.animator.getViewShiftOffset();
+			if(lrDir == Tile.SIDE_LEFT && xOff > minXOff)
+				xOff -= offset;
+			else if(lrDir == Tile.SIDE_RIGHT && xOff < maxXOff)
+				xOff += offset;
+			if(udDir == Tile.SIDE_BOTTOM && yOff < maxYOff)
+				yOff += offset;
+			else if(udDir == Tile.SIDE_TOP && yOff > minYOff)
+				yOff -= offset;
+		//}
 	}
 	
 	private static boolean isStringInView(int xOff, int yOff, int windowWidth, int windowHeight, int stringX, int stringY){

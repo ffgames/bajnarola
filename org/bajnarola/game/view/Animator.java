@@ -44,6 +44,8 @@ public class Animator {
 	int meepleRemovalFrame;
 	int showScoreFrame;
 	
+	int viewShiftOffset;
+	
 	boolean tilePlacementOn;
 	boolean landscapeGlowOn;
 	boolean tileProbeGlowOn;
@@ -56,6 +58,7 @@ public class Animator {
 	public Animator() throws SlickException{
 		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = false;
 		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = 0;
+		viewShiftOffset = RelativeSizes.getInstance().viewShiftOffset();
 		blue = new Image("res/misc/blue.png");
 	}
 	
@@ -164,6 +167,12 @@ public class Animator {
 		meeple.draw(zoomOutView, scale);
 	}
 	
+	public int getViewShiftOffset(){
+		int off = viewShiftOffset;
+		viewShiftOffset = 0;
+		return off;
+	}
+	
 	public void step(){
 		if(tilePlacementOn){
 			tilePlacementFrame++;
@@ -200,6 +209,7 @@ public class Animator {
 			if(showScoreFrame > SHOW_SCORE_DURATION)
 				showScoreOn = false;
 		}
+		viewShiftOffset = RelativeSizes.getInstance().viewShiftOffset();
 	}
 	
 	public boolean isTilePlacementOn(){

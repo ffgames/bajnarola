@@ -97,6 +97,18 @@ public class RelativeSizes {
 		}
 	}
 	
+	public int viewShiftOffset(){
+		switch(activeResolution){
+			case R_800x600:
+				return 2;
+			case R_1920x1080:
+				return 10;
+			case R_1280x720:
+			default:
+				return 4;
+		}
+	}
+	
 	public int handMeepleYOffset(){
 		switch(activeResolution){
 			case R_800x600:

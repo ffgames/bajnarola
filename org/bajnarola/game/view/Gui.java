@@ -61,7 +61,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public ViewUpdate currentUpdate;
 	
-	private GameContainer container;
+	public GameContainer container;
 	
 	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
 	private List<String> holes;
@@ -345,7 +345,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 	
 	public void initScores(String currentPlayerScore, List<String> scores){
-		gameScene.initScores(currentPlayerScore, scores);
+		gameScene.setScores(currentPlayerScore, scores);
 	}
 	
 	@Override
