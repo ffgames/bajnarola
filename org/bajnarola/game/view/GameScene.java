@@ -61,6 +61,7 @@ public class GameScene extends IScene {
 	private int minXOff, maxXOff, minYOff, maxYOff;
 	private boolean hudHovered;
 	private short udDir, lrDir;
+	private int hudTotalHeight, hudTotalWidth;
 	
 	private RelativeSizes resizer;
 	
@@ -135,6 +136,9 @@ public class GameScene extends IScene {
 			tmpMeeples[i] = new GraphicalMeeple(this, 42, "", getMeepleCoordX(turnTileCx, turnTileSize, i), getMeepleCoordY(turnTileCy, turnTileSize, i), turnTileSize/4);
 		
 		currentPlayerMeeple = null;
+		
+		hudTotalHeight = 0;
+		hudTotalWidth = guiManager.windowWidth - (turnTileCx+(turnTileSize/2));
 	}
 
 	public void initPlayerMeeple(int playerId) throws SlickException{
@@ -153,6 +157,8 @@ public class GameScene extends IScene {
 		}
 		
 		meeplesInHand = 7;
+		
+		hudTotalHeight = guiManager.windowHeight - Math.min(handMeeples[0].hitbox.uly, Math.min(confirmButton.hitbox.uly, (turnTileCy - (turnTileSize/2))));
 	}
 	
 	// ##  RENDERING ##
@@ -378,10 +384,11 @@ public class GameScene extends IScene {
 	public void setScores(String currentPlayerScore, List<String> scores){
 		this.currentPlScore = currentPlayerScore;
 		this.scores = scores;
-		if(currentPlayerScore != null && !currentPlayerScore.isEmpty())
+		if(currentPlayerScore != null && !currentPlayerScore.isEmpty()){
 			scoreHitbox.reset(resizer.scoresXOffset(), resizer.scoresYOffset(), 
 					resizer.scoresXOffset()+guiManager.container.getGraphics().getFont().getWidth(currentPlayerScore), 
-					resizer.scoresYOffset()+guiManager.container.getGraphics().getFont().getHeight(currentPlayerScore));
+					resizer.scoresYOffset()+guiManager.container.getGraphics().getFont().getHeight(currentPlayerScore)+resizer.scoreOverHeight());
+		}
 	}
 	
 	// ##  INPUT HANDLERS  ##
@@ -528,13 +535,13 @@ public class GameScene extends IScene {
 		}
 		if(lx+2 > logicalMaxX){
 			logicalMaxX = lx+2;
-			maxXOff = Math.max(maxXOff, (logicalMaxX*tileSize)+globalCenterOffset-guiManager.windowWidth);
+			maxXOff = Math.max(maxXOff, (logicalMaxX*tileSize)+globalCenterOffset-(guiManager.windowWidth-hudTotalWidth));
 			if(lrDir == Tile.SIDE_CENTER)
 				lrDir = Tile.SIDE_RIGHT;
 		}
 		if(ly-2 < logicalMinY){
 			logicalMinY = ly-2;
-			maxYOff = Math.max(maxYOff, globalCenterOffset-(logicalMinY*tileSize)-guiManager.windowHeight);
+			maxYOff = Math.max(maxYOff, globalCenterOffset-(logicalMinY*tileSize)-(guiManager.windowHeight-hudTotalHeight));
 			if(udDir == Tile.SIDE_CENTER)
 				udDir = Tile.SIDE_BOTTOM;
 		}
@@ -549,7 +556,7 @@ public class GameScene extends IScene {
 		tw = (logicalMaxX - logicalMinX) * tileSize;
 		th = (logicalMaxY - logicalMinY) * tileSize;
 		
-		if(tw <= guiManager.windowWidth && th <= guiManager.windowHeight){
+		if(tw <= (guiManager.windowWidth - hudTotalWidth) && th <= (guiManager.windowHeight - hudTotalHeight)){
 			scaleFactor = 1;
 			//zoomable = false; should be implicit
 		} else {
@@ -562,19 +569,34 @@ public class GameScene extends IScene {
 			
 			zoomable = true;
 		}
+		
+		//one tile could have been placed near the screen edges but the board still fits the window.. in case shift bound values
+		if(tw <= (guiManager.windowWidth - hudTotalWidth) && minXOff != maxXOff){
+			if(minXOff < xOff)
+				maxXOff = minXOff;
+			else if(maxXOff > xOff)
+				minXOff = maxXOff;
+		}
+		
+		if(th <= (guiManager.windowHeight - hudTotalHeight) && minYOff != maxYOff){
+			if(minYOff < yOff)
+				maxYOff = minYOff;
+			else if(maxYOff > yOff)
+				minYOff = maxYOff;
+		}
 	}
 
 	private void shiftView(){
 		//if(zoomable){
 			int offset = guiManager.animator.getViewShiftOffset();
 			if(lrDir == Tile.SIDE_LEFT && xOff > minXOff)
-				xOff -= offset;
+				xOff -= Math.min(offset, xOff - minXOff);
 			else if(lrDir == Tile.SIDE_RIGHT && xOff < maxXOff)
-				xOff += offset;
+				xOff += Math.min(offset, maxXOff - xOff);
 			if(udDir == Tile.SIDE_BOTTOM && yOff < maxYOff)
-				yOff += offset;
+				yOff += Math.min(offset, maxYOff - yOff);
 			else if(udDir == Tile.SIDE_TOP && yOff > minYOff)
-				yOff -= offset;
+				yOff -= Math.min(offset, yOff - minYOff);
 		//}
 	}
 	

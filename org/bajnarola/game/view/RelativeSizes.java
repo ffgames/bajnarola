@@ -85,7 +85,31 @@ public class RelativeSizes {
 		}
 	}
 	
+	public int scoreOverHeight(){
+		switch(activeResolution){
+			case R_800x600:
+				return 5;
+			case R_1920x1080:
+				return 10;
+			case R_1280x720:
+			default:
+				return 8;
+		}
+	}
+	
 	public int handMeepleXOffset(){
+		switch(activeResolution){
+			case R_800x600:
+				return 10;
+			case R_1920x1080:
+				return 20;
+			case R_1280x720:
+			default:
+				return 15;
+		}
+	}
+	
+	public int handMeepleYOffset(){
 		switch(activeResolution){
 			case R_800x600:
 				return 10;
@@ -106,18 +130,6 @@ public class RelativeSizes {
 			case R_1280x720:
 			default:
 				return 4;
-		}
-	}
-	
-	public int handMeepleYOffset(){
-		switch(activeResolution){
-			case R_800x600:
-				return 10;
-			case R_1920x1080:
-				return 20;
-			case R_1280x720:
-			default:
-				return 15;
 		}
 	}
 }
