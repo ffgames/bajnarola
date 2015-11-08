@@ -36,17 +36,12 @@ public class InputBox {
 		}
 	}
 	
-	public boolean isClicked(int x, int y){		
-		
-		boolean hitted = hitbox.hits(x, y);
-		
-		if (hitted) 
+	public boolean isClicked(int x, int y){
+		if((selected = hitbox.hits(x, y)))
 			initialize();
 		
-		return hitted;
+		return selected;
 	}
-	
-	
 	
 	public String getText() {
 		return text;
@@ -64,6 +59,6 @@ public class InputBox {
 	
 	public void draw(Graphics g){
 		image.draw(hitbox.ulx, hitbox.uly, width, height);
-		g.drawString(text, hitbox.ulx + 8, hitbox.uly + 1);
+		g.drawString(text + (selected ? "|" : ""), hitbox.ulx + 8, hitbox.uly + 1);
 	}
 }

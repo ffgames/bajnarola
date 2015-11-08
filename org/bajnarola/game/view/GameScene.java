@@ -56,9 +56,9 @@ public class GameScene extends IScene {
 	private int globalCenterOffset;
 	private float scaleFactor;
 	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
-	public int xOff, yOff;
+	public int xOff, yOff, minXOff, minYOff;
 	private int logicalMaxX, logicalMinX, logicalMaxY, logicalMinY;
-	private int minXOff, maxXOff, minYOff, maxYOff;
+	private int maxXOff, maxYOff;
 	private boolean hudHovered;
 	private short udDir, lrDir;
 	private int hudTotalHeight, hudTotalWidth;
@@ -173,9 +173,9 @@ public class GameScene extends IScene {
 		
 		hudRender(gc, g);
 		
-		g.drawString(String.format("lmx: %d, lMx: %d, lmy: %d, lMy: %d", logicalMinX, logicalMaxX, logicalMinY, logicalMaxY), 400, 10);
-		g.drawString(String.format("mxo: %d, Mxo: %d, myo: %d, Myo: %d", minXOff, maxXOff, minYOff, maxYOff), 400, 30);
-		g.drawString(String.format("xOff: %d, yOff: %d, hh: %s, zm: %s", xOff, yOff, (hudHovered ? "true" : "false"), (zoomable ? "true" : "false")), 400, 50);
+		//g.drawString(String.format("lmx: %d, lMx: %d, lmy: %d, lMy: %d", logicalMinX, logicalMaxX, logicalMinY, logicalMaxY), 400, 10);
+		//g.drawString(String.format("mxo: %d, Mxo: %d, myo: %d, Myo: %d", minXOff, maxXOff, minYOff, maxYOff), 400, 30);
+		//g.drawString(String.format("xOff: %d, yOff: %d, hh: %s, zm: %s", xOff, yOff, (hudHovered ? "true" : "false"), (zoomable ? "true" : "false")), 400, 50);
 		/*for(GraphicalTile t : currentScenario.values()){
 			g.drawString(t.getCoordinates(), t.globalCenterX-xOff, t.globalCenterY-yOff);
 		}*/
@@ -185,51 +185,47 @@ public class GameScene extends IScene {
 		//Static scenario elements
 		
 		for(GraphicalTile t : currentScenario.values()){
-			if(t.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth)){
-				if(currentLanscape != null && currentLanscape.containsKey(t.getCoordinates()))
-					guiManager.animator.drawLandscapeGlowingTile(t, zoomOutView, scaleFactor);
-				else
-					t.draw(zoomOutView, scaleFactor);
-			}
+			if(currentLanscape != null && currentLanscape.containsKey(t.getCoordinates()))
+				guiManager.animator.drawLandscapeGlowingTile(t, zoomOutView, scaleFactor);
+			else
+				t.draw(zoomOutView, scaleFactor);
 		}
 		
 		for(GraphicalMeeple m : placedMeeples.values()){
-			if(m.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
-				m.draw(zoomOutView, scaleFactor);
+			m.draw(zoomOutView, scaleFactor);
 		}
 		
 		//User interactions
 		
-		if(mouseOverOn && holeOver.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+		if(mouseOverOn)
 			holeOver.draw(zoomOutView, scaleFactor);
 		
-		if(probing && probeSquare.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth)){
+		if(probing){
 			if(guiManager.animator.isTileProbeGlowOn())
 				guiManager.animator.drawTileProbe(probeSquare, zoomOutView, scaleFactor, probeResult);
 			else
 				probing = false;
 		}
 		
-		if(probingTile != null && probingTile.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+		if(probingTile != null)
 			probingTile.draw(zoomOutView, scaleFactor);
 		
 		//Animations
 		
 		for(GraphicalMeeple m : meeplesToRemove){
-			if(m.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
-				guiManager.animator.drawMeepleRemoval(m, zoomOutView, scaleFactor);
+			guiManager.animator.drawMeepleRemoval(m, zoomOutView, scaleFactor);
 		}
 		
-		if(tileToPlace != null && tileToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+		if(tileToPlace != null)
 			guiManager.animator.drawTilePlacement(tileToPlace, zoomOutView, scaleFactor);
 		
-		if(meepleToPlace != null && meepleToPlace.isInView(xOff, yOff, guiManager.windowWidth, guiManager.windowWidth))
+		if(meepleToPlace != null)
 			guiManager.animator.drawMeeplePlacement(meepleToPlace, zoomOutView, scaleFactor);
 		
 		if(currentScoreGlobalX > -1 && currentScoreGlobalY > -1 && currentScoreVal > -1 && 
 		   isStringInView(xOff, yOff, guiManager.windowWidth, guiManager.windowHeight, currentScoreGlobalX, currentScoreGlobalY)){
 			guiManager.animator.drawShowScore(g, currentScoreVal, currentScoreGlobalX-xOff, currentScoreGlobalY-yOff);
-		}	
+		}
 	}
 	
 	private void hudRender(GameContainer gc, Graphics g){
@@ -484,7 +480,7 @@ public class GameScene extends IScene {
 		if(turnTile != null){
 			hudHovered |= confirmButton.isClicked(newx, newy);
 			
-			if(!dimscreen){
+			if(!dimscreen && !zoomOutView){
 				mouseOverOn = false;
 				if(!holes.isEmpty()){
 					for(HitBox h : holes){
@@ -556,16 +552,13 @@ public class GameScene extends IScene {
 		tw = (logicalMaxX - logicalMinX) * tileSize;
 		th = (logicalMaxY - logicalMinY) * tileSize;
 		
-		if(tw <= (guiManager.windowWidth - hudTotalWidth) && th <= (guiManager.windowHeight - hudTotalHeight)){
-			scaleFactor = 1;
-			//zoomable = false; should be implicit
-		} else {
+		if(tw > (guiManager.windowWidth - hudTotalWidth) || th > (guiManager.windowHeight - hudTotalHeight)){
 			float hscale, vscale;
 			
-			hscale = guiManager.windowHeight / th;
-			vscale = guiManager.windowWidth / tw;
+			hscale = (float)guiManager.windowHeight / th;
+			vscale = (float)guiManager.windowWidth / tw;
 		
-			scaleFactor = (hscale < vscale ? hscale : vscale);
+			scaleFactor = Math.min(1, Math.min(hscale, vscale));
 			
 			zoomable = true;
 		}
@@ -587,17 +580,15 @@ public class GameScene extends IScene {
 	}
 
 	private void shiftView(){
-		//if(zoomable){
-			int offset = guiManager.animator.getViewShiftOffset();
-			if(lrDir == Tile.SIDE_LEFT && xOff > minXOff)
-				xOff -= Math.min(offset, xOff - minXOff);
-			else if(lrDir == Tile.SIDE_RIGHT && xOff < maxXOff)
-				xOff += Math.min(offset, maxXOff - xOff);
-			if(udDir == Tile.SIDE_BOTTOM && yOff < maxYOff)
-				yOff += Math.min(offset, maxYOff - yOff);
-			else if(udDir == Tile.SIDE_TOP && yOff > minYOff)
-				yOff -= Math.min(offset, yOff - minYOff);
-		//}
+		int offset = guiManager.animator.getViewShiftOffset();
+		if(lrDir == Tile.SIDE_LEFT && xOff > minXOff)
+			xOff -= Math.min(offset, xOff - minXOff);
+		else if(lrDir == Tile.SIDE_RIGHT && xOff < maxXOff)
+			xOff += Math.min(offset, maxXOff - xOff);
+		if(udDir == Tile.SIDE_BOTTOM && yOff < maxYOff)
+			yOff += Math.min(offset, maxYOff - yOff);
+		else if(udDir == Tile.SIDE_TOP && yOff > minYOff)
+			yOff -= Math.min(offset, yOff - minYOff);
 	}
 	
 	private static boolean isStringInView(int xOff, int yOff, int windowWidth, int windowHeight, int stringX, int stringY){

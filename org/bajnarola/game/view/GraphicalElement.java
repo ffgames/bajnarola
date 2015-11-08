@@ -101,11 +101,12 @@ public class GraphicalElement extends Image {
 		return hitbox.hits(x, y, viewOffX, viewOffY);
 	}
 	
-	//TODO: fix all this
+	//TODO: calculate scaledx and scaledy starting from scene center
 	private void setScaledVals(float smallScaleFactor){
-		scaledX = globalCenterX - (int)((size * smallScaleFactor) / 2);
-		scaledY = globalCenterY - (int)((size * smallScaleFactor) / 2);
 		scaledSize = (int)(size * smallScaleFactor);
+		scaledX = (int)((hitbox.ulx-scene.minXOff) * smallScaleFactor);
+		scaledY = (int)((hitbox.uly-scene.minYOff) * smallScaleFactor);
+		
 	}
 		
 	public void drawAbsolute(){
@@ -115,41 +116,51 @@ public class GraphicalElement extends Image {
 	public void draw(boolean small, float scaleFactor, Color color){
 		if(small){
 			setScaledVals(scaleFactor);
-			dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize, color);
+			dirImages[direction].draw(scaledX, scaledY, scaledSize, scaledSize, color);
 		}
 		else{
-			dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
+			if(isInView(scene.xOff, scene.yOff, scene.guiManager.windowWidth, scene.guiManager.windowHeight))
+				dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size, color);
 		}
 	}
 	
 	public void draw(boolean small, float scaleFactor, Image overlay){
 		if(small){
 			setScaledVals(scaleFactor);
-			dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
-			overlay.draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+			dirImages[direction].draw(scaledX, scaledY, scaledSize, scaledSize);
+			overlay.draw(scaledX, scaledY, scaledSize, scaledSize);
 		}
 		else{
-			dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
-			overlay.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+			if(isInView(scene.xOff, scene.yOff, scene.guiManager.windowWidth, scene.guiManager.windowHeight)){
+				dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+				overlay.draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+			}
 		}
 	}
 	
 	public void draw(boolean small, float scaleFactor){
 		if(small){
 			setScaledVals(scaleFactor);
-			dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+			dirImages[direction].draw(scaledX, scaledY, scaledSize, scaledSize);
 		}
 		else{
-			dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
+			if(isInView(scene.xOff, scene.yOff, scene.guiManager.windowWidth, scene.guiManager.windowHeight))
+				dirImages[direction].draw(hitbox.ulx-scene.xOff, hitbox.uly-scene.yOff, size, size);
 		}
 	}
 	
 	public void draw(boolean small, float scaleFactor, float animScaleFactor){
-		if(small)
-			setScaledVals(scaleFactor*animScaleFactor);
-		else
-			setScaledVals(animScaleFactor);
-		dirImages[direction].draw(scaledX-scene.xOff, scaledY-scene.yOff, scaledSize, scaledSize);
+		if(small){
+			setScaledVals(scaleFactor);
+			float newsize = scaledSize * animScaleFactor;
+			dirImages[direction].draw(scaledX-((newsize-scaledSize)/2), scaledY-((newsize-scaledSize)/2), newsize, newsize);
+		}
+		else {
+			if(isInView(scene.xOff, scene.yOff, scene.guiManager.windowWidth, scene.guiManager.windowHeight)){
+				float newsize = size*animScaleFactor;
+				dirImages[direction].draw(hitbox.ulx-scene.xOff-((newsize-size)/2), hitbox.uly-scene.yOff-((newsize-size)/2), newsize, newsize);
+			}
+		}	
 	}
 	
 	public boolean isInView(int offX, int offY, int viewWidth, int viewHeight){
