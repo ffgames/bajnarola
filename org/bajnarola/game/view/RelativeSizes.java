@@ -121,6 +121,18 @@ public class RelativeSizes {
 		}
 	}
 	
+	public float scrollAreaRateo(){
+		switch(activeResolution){
+			case R_800x600:
+				return 0.05f;
+			case R_1920x1080:
+				return 0.1f;
+			case R_1280x720:
+			default:
+				return 0.07f;
+		}
+	}
+	
 	public int viewShiftOffset(){
 		switch(activeResolution){
 			case R_800x600:

@@ -13,11 +13,10 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 public class GameScene extends IScene {
-	
-	static final float SCROLL_AREA_RATEO = (float)0.05;
 	
 	//Animations / scenario
 	private Map<String, GraphicalTile> currentScenario;
@@ -58,9 +57,10 @@ public class GameScene extends IScene {
 	private int leftBorderX, rightBorderX, upperBorderY, lowerBorderY;
 	public int xOff, yOff, minXOff, minYOff;
 	private int logicalMaxX, logicalMinX, logicalMaxY, logicalMinY;
+	public int logicalCenterX, logicalCenterY;
 	private int maxXOff, maxYOff;
 	private boolean hudHovered;
-	private short udDir, lrDir;
+	private short udDir, lrDir, kbdUdDir, kbdLrDir;
 	private int hudTotalHeight, hudTotalWidth;
 	
 	private RelativeSizes resizer;
@@ -73,9 +73,9 @@ public class GameScene extends IScene {
 		sceneType = scene_type.SCENE_GAME;
 		int minWindowSize = (guiManager.windowHeight < guiManager.windowWidth ? guiManager.windowHeight : guiManager.windowWidth); 
 		
-		leftBorderX = (int)((float)guiManager.windowWidth * SCROLL_AREA_RATEO);
+		leftBorderX = (int)((float)guiManager.windowWidth * resizer.scrollAreaRateo());
 		rightBorderX = guiManager.windowWidth - leftBorderX;
-		upperBorderY= (int)((float)guiManager.windowHeight * SCROLL_AREA_RATEO);
+		upperBorderY= (int)((float)guiManager.windowHeight * resizer.scrollAreaRateo());
 		lowerBorderY = guiManager.windowHeight - upperBorderY;
 		
 		tileSize = minWindowSize / 8;
@@ -95,11 +95,11 @@ public class GameScene extends IScene {
 		curtain = new Image("res/misc/gray.png");
 		curtain.setAlpha(0.8f);
 		
-		logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
+		logicalCenterX = logicalCenterY = logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
 		minXOff = maxXOff = xOff;
 		minYOff = maxYOff = yOff;
 		
-		udDir = lrDir = Tile.SIDE_CENTER;
+		kbdUdDir = kbdLrDir = udDir = lrDir = Tile.SIDE_CENTER;
 		
 		currentScoreGlobalX = currentScoreGlobalY = currentScoreVal = -1;
 		
@@ -513,16 +513,16 @@ public class GameScene extends IScene {
 		hudHovered |= zoomButton.hits(newx, newy);
 		
 		if(!hudHovered){
-			if(newx < leftBorderX && newx > 2){
+			if(newx < leftBorderX){
 				lrDir = Tile.SIDE_LEFT;
-			} else if (newx > rightBorderX && newx < guiManager.windowWidth-3){
+			} else if (newx > rightBorderX){
 				lrDir = Tile.SIDE_RIGHT;
 			} else {
 				lrDir = Tile.SIDE_CENTER;
 			}
-			if(newy < upperBorderY && newy > 2){
+			if(newy < upperBorderY){
 				udDir = Tile.SIDE_TOP;
-			} else if (newy > lowerBorderY && newy < guiManager.windowHeight-3){
+			} else if (newy > lowerBorderY){
 				udDir = Tile.SIDE_BOTTOM;
 			} else {
 				udDir = Tile.SIDE_CENTER;
@@ -530,6 +530,11 @@ public class GameScene extends IScene {
 		}
 	}
 
+	public void stopScrolling(){
+		udDir = Tile.SIDE_CENTER;
+		lrDir = Tile.SIDE_CENTER;
+	}
+	
 	@Override
 	public void leftRelease(int x, int y) {}
 
@@ -564,6 +569,9 @@ public class GameScene extends IScene {
 				udDir = Tile.SIDE_TOP;
 		}
 		
+		logicalCenterX = (logicalMaxX + logicalMinX)/2;
+		logicalCenterY = (logicalMaxY + logicalMinY)/2;
+		
 		int tw, th;
 		tw = (logicalMaxX - logicalMinX) * tileSize;
 		th = (logicalMaxY - logicalMinY) * tileSize;
@@ -597,13 +605,24 @@ public class GameScene extends IScene {
 
 	private void shiftView(){
 		int offset = guiManager.animator.getViewShiftOffset();
-		if(lrDir == Tile.SIDE_LEFT && xOff > minXOff)
+		short hdir, vdir;
+		
+		if(kbdUdDir != Tile.SIDE_CENTER)
+			hdir = kbdUdDir;
+		else
+			hdir = udDir;
+		if(kbdLrDir != Tile.SIDE_CENTER)
+			vdir = kbdLrDir;
+		else
+			vdir = lrDir;
+		
+		if(vdir == Tile.SIDE_LEFT && xOff > minXOff)
 			xOff -= Math.min(offset, xOff - minXOff);
-		else if(lrDir == Tile.SIDE_RIGHT && xOff < maxXOff)
+		else if(vdir == Tile.SIDE_RIGHT && xOff < maxXOff)
 			xOff += Math.min(offset, maxXOff - xOff);
-		if(udDir == Tile.SIDE_BOTTOM && yOff < maxYOff)
+		if(hdir == Tile.SIDE_BOTTOM && yOff < maxYOff)
 			yOff += Math.min(offset, maxYOff - yOff);
-		else if(udDir == Tile.SIDE_TOP && yOff > minYOff)
+		else if(hdir == Tile.SIDE_TOP && yOff > minYOff)
 			yOff -= Math.min(offset, yOff - minYOff);
 	}
 	
@@ -663,14 +682,22 @@ public class GameScene extends IScene {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		// TODO Auto-generated method stub
-		
+		if(key == Input.KEY_UP || key == Input.KEY_W)
+			kbdUdDir = Tile.SIDE_TOP;
+		if(key == Input.KEY_RIGHT || key == Input.KEY_D)
+			kbdLrDir = Tile.SIDE_RIGHT;
+		if(key == Input.KEY_DOWN || key == Input.KEY_S)
+			kbdUdDir = Tile.SIDE_BOTTOM;
+		if(key == Input.KEY_LEFT || key == Input.KEY_A)
+			kbdLrDir = Tile.SIDE_LEFT;
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
-		// TODO Auto-generated method stub
-		
+		if(key == Input.KEY_UP || key == Input.KEY_W || key == Input.KEY_DOWN || key == Input.KEY_S)
+			kbdUdDir = Tile.SIDE_CENTER;
+		if(key == Input.KEY_RIGHT || key == Input.KEY_D || key == Input.KEY_LEFT || key == Input.KEY_A)
+			kbdLrDir = Tile.SIDE_CENTER;
 	}
 
 }

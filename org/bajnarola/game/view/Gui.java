@@ -128,6 +128,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 gc.setShowFPS(false);
 		 gc.setTargetFrameRate(60);
 		 gc.setUpdateOnlyWhenVisible(false);
+		 //gc.setMouseGrabbed(true);
+		 gc.setMouseCursor("res/misc/pointer.gif", 6, 5);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){
@@ -267,8 +269,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		if(currentScene.sceneType == scene_type.SCENE_LOBBY)
-			lobbyScene.keyPressed(key, c);
+		if(currentScene != null)
+			currentScene.keyPressed(key, c);
 	}
 	
 	@Override
@@ -361,6 +363,12 @@ public class Gui extends BasicGame implements InputProviderListener {
 		
 	}
 
+	@Override
+	public void keyReleased(int key, char c) {
+		if(currentScene != null)
+			currentScene.keyReleased(key, c);
+	}
+	
 	public void joinSignalLobbyScene(JoinStatus status) {
 		lobbyScene.joinCallback(status);
 	}
