@@ -49,7 +49,8 @@ public class Tile {
 		Tile retTile = new Tile(elements[SIDE_CENTER], elements[SIDE_TOP], elements[SIDE_RIGHT], elements[SIDE_BOTTOM], elements[SIDE_LEFT], this.pennant, name);
 		retTile.setCoordinates(x, y);
 		retTile.setDirection(direction);
-		retTile.addMeeple(meeple.clone());
+		if(meeple != null)
+			retTile.addMeeple(meeple.clone());
 		return retTile;
 	}
 	
