@@ -82,15 +82,10 @@ public class GameOptions {
 		
 		if (fullscreen) {
 			//Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-			DisplayMode[] modes;
-			try {
-				modes = Display.getAvailableDisplayModes();
-				
-				resx = modes[0].getWidth();
-				resy = modes[0].getHeight();
-			} catch (LWJGLException e1) {
-				e1.printStackTrace();
-			}
+			DisplayMode mode;
+			mode = Display.getDisplayMode();
+			resx = mode.getWidth();
+			resy = mode.getHeight();
 		}
 	}
 

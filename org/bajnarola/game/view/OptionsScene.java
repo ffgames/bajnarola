@@ -127,7 +127,6 @@ public class OptionsScene extends IScene {
 		for (int i = 0; i < this.buttons.size(); i++) {
 			b = this.buttons.get(i);
 			
-			try {
 			if (b.hits(x, y) && b.isEnabled()) {
 				b.activate();
 				
@@ -148,8 +147,8 @@ public class OptionsScene extends IScene {
 						fullscreen = false;						
 						break;
 					case 3: {
-						resx = Display.getAvailableDisplayModes()[0].getWidth();
-						resy = Display.getAvailableDisplayModes()[0].getHeight();
+						resx = 0;
+						resy = 0;
 						fullscreen = true;
 						break;
 					}
@@ -158,15 +157,8 @@ public class OptionsScene extends IScene {
 					if (!b2.equals(b))
 						b2.deactivate();
 				}
-								
 				guiManager.setResolutionOptions(resx, resy, fullscreen);
-				/*gc.setDisplayMode(resx, resy, fullscreen);
-				gc.reinit();*/
-				
 				break;
-			}
-			} catch (LWJGLException e) {
-				e.printStackTrace();
 			}
 		}
 		
