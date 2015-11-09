@@ -177,7 +177,22 @@ public class GameScene extends IScene {
 		//g.drawString(String.format("mxo: %d, Mxo: %d, myo: %d, Myo: %d", minXOff, maxXOff, minYOff, maxYOff), 400, 30);
 		//g.drawString(String.format("xOff: %d, yOff: %d, hh: %s, zm: %s", xOff, yOff, (hudHovered ? "true" : "false"), (zoomable ? "true" : "false")), 400, 50);
 		/*for(GraphicalTile t : currentScenario.values()){
-			g.drawString(t.getCoordinates(), t.globalCenterX-xOff, t.globalCenterY-yOff);
+			char arrow = '^';
+			switch (t.direction) {
+			case 0:
+				arrow = '^';
+				break;
+			case 1:
+				arrow = '>';
+				break;
+			case 2:
+				arrow = 'v';
+				break;
+			case 3:
+				arrow = '<';
+				break;
+			}
+			g.drawString(t.getCoordinates()+arrow, t.globalCenterX-xOff, t.globalCenterY-yOff);	
 		}*/
 	}
 
