@@ -138,7 +138,7 @@ public class GameScene extends IScene {
 		currentPlayerMeeple = null;
 		
 		hudTotalHeight = 0;
-		hudTotalWidth = guiManager.windowWidth - (turnTileCx+(turnTileSize/2));
+		hudTotalWidth = turnTileSize;
 	}
 
 	public void initPlayerMeeple(int playerId) throws SlickException{
@@ -621,11 +621,11 @@ public class GameScene extends IScene {
 		}
 	}
 	
-	private static final int getLogicalX(String coords){
+	public static final int getLogicalX(String coords){
 		return Integer.parseInt(coords.split(";")[0]);
 	}
 	
-	private static final int getLogicalY(String coords){
+	public static final int getLogicalY(String coords){
 		return Integer.parseInt(coords.split(";")[1]);
 	}
 		
@@ -643,6 +643,18 @@ public class GameScene extends IScene {
 	
 	private int getGlobalCoordY(int lc){
 		return globalCenterOffset + ((-lc) * tileSize);
+	}
+
+	@Override
+	public void keyPressed(int key, char c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(int key, char c) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

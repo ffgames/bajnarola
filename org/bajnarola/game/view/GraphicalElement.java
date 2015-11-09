@@ -101,12 +101,12 @@ public class GraphicalElement extends Image {
 		return hitbox.hits(x, y, viewOffX, viewOffY);
 	}
 	
-	//TODO: calculate scaledx and scaledy starting from scene center
 	private void setScaledVals(float smallScaleFactor){
 		scaledSize = (int)(size * smallScaleFactor);
-		scaledX = (int)((hitbox.ulx-scene.minXOff) * smallScaleFactor);
-		scaledY = (int)((hitbox.uly-scene.minYOff) * smallScaleFactor);
-		
+		int windowCenterX = (int)((float)scene.guiManager.windowWidth/2);
+		int windowCenterY = (int)((float)scene.guiManager.windowHeight/2);
+		scaledX = windowCenterX + (int)((((float)GameScene.getLogicalX(coords))-0.5)*scaledSize);
+		scaledY = windowCenterY - (int)((((float)GameScene.getLogicalY(coords))+0.5)*scaledSize);
 	}
 		
 	public void drawAbsolute(){

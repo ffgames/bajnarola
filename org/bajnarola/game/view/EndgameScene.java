@@ -72,4 +72,16 @@ public class EndgameScene extends IScene {
 		
 	}
 
+	@Override
+	public void keyPressed(int key, char c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(int key, char c) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

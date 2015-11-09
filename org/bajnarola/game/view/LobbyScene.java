@@ -249,4 +249,10 @@ public class LobbyScene extends IScene {
 		
 	}
 
+	@Override
+	public void keyReleased(int key, char c) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -83,6 +83,8 @@ public abstract class LandscapeElement {
 				if (tileTmp.getLSElement(i) != null && tileTmp.getLSElement(i).equals(el)) {
 					tileTmp.popLSElement(i);
 					tileTmp.putLSElement(i, this);
+					if(tileTmp.hasMeeple())
+						addMeeple(tileTmp.getMeeple());
 				}
 				
 			}

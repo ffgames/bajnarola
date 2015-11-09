@@ -28,5 +28,8 @@ public abstract class IScene {
 	public abstract void backspacePressed();
 	public abstract void mouseMoved(int oldx, int oldy, int newx, int newy);
 	
+	public abstract void keyPressed(int key, char c);
+	public abstract void keyReleased(int key, char c);
+	
 	public abstract void render(GameContainer gc, Graphics g);
 }
