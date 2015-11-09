@@ -44,6 +44,19 @@ public class Tile {
 		x = y = -1;
 	}
 	
+	//Warinig! this method only clones fields needed for graphical/remote updates, not entire contents
+	public Tile clone(){
+		Tile retTile = new Tile(elements[SIDE_CENTER], elements[SIDE_TOP], elements[SIDE_RIGHT], elements[SIDE_BOTTOM], elements[SIDE_LEFT], this.pennant, name);
+		retTile.setCoordinates(x, y);
+		retTile.setDirection(direction);
+		retTile.addMeeple(meeple.clone());
+		return retTile;
+	}
+	
+	private void setDirection(int direction){
+		this.direction = direction;
+	}
+	
 	public int getDirection() {
 		return direction;
 	}
@@ -84,6 +97,11 @@ public class Tile {
 		this.meeple = meeple;
 	}
 
+	private void addMeeple(Meeple meeple) {
+		this.meeple = meeple;
+		meeple.tile = this;
+	}
+	
 	public boolean hasPennant() {
 		return this.pennant;
 	}
@@ -143,7 +161,7 @@ public class Tile {
 		for (int i = 0; i < SIDE_COUNT; i++){
 			te = landscapes.get(i);
 			if(el.equals(te)){
-				if(meeple != null && meeple.getTileSide() == i){
+				if(meeple != null && meeple.getTileSide() == fixTileSide((short)i, direction)){
 					removeMeeple();
 				}
 				landscapes.remove(i);

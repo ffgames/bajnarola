@@ -191,12 +191,14 @@ public class GameController extends UnicastRemoteObject implements
 			board.placeMeeple(tile, meeple);
 		}
 
+		Tile updateTile = tile.clone();
+		
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
 		points.putAll(board.endTurn(tile));
 		List<String> scores = new ArrayList<String>();
 		scores.addAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, updateTile, scores));
 	}
 
 	public void localPlay(String me) {
@@ -211,13 +213,14 @@ public class GameController extends UnicastRemoteObject implements
 			return true; */
 
 		drawTile = viewCtl.waitViewChange(tile);
-
+		tile = drawTile.clone();
+		
 		Map<String, Boolean> points = new Hashtable<String, Boolean>();
 		points.putAll(board.endTurn(drawTile));
 		List<String> scores = new ArrayList<String>();
 		scores.addAll(board.getScoreUpdates());
 
-		viewCtl.enqueueViewUpdate(new ViewUpdate(points, drawTile, scores));
+		viewCtl.enqueueViewUpdate(new ViewUpdate(points, tile, scores));
 		
 		short meepleTileSide = -1;
 		if (tile.getMeeple() != null)

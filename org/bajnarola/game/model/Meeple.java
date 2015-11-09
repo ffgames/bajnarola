@@ -12,6 +12,13 @@ public class Meeple {
 		this.tileSide = -1;
 	}
 
+	public Meeple clone(){
+		Meeple retMeeple = new Meeple(owner);
+		retMeeple.setTileSide(tileSide);
+		retMeeple.setTile(tile);
+		return retMeeple;
+	}
+	
 	public short getTileSide() {
 		return tileSide;
 	}

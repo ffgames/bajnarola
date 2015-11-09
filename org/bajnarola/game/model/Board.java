@@ -439,7 +439,7 @@ public class Board {
 			
 			List<Tile> removedTiles = new ArrayList<Tile>();
 			removedTiles.addAll(ls.tiles);
-			
+			;
 			ls.clear();
 			
 			/* Add the points of a landscape to the set.
