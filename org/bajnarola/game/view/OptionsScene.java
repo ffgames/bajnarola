@@ -7,7 +7,6 @@ import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -20,7 +19,7 @@ public class OptionsScene extends IScene {
 	List<Button> buttons;
 	Button buttonFullScreen, buttonRes1, buttonRes2, buttonRes3;
 	Button backButton;
-	Image container;
+	Image container, msgLabel;
 	float containerWidth, containerHeight;
 	float containerPosX, containerPosY;
 
@@ -28,6 +27,7 @@ public class OptionsScene extends IScene {
 	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
 		prevScene = null;
+		sceneType = scene_type.SCENE_OPTIONS;
 		
 		buttons = new ArrayList<Button>();
 		
@@ -36,47 +36,66 @@ public class OptionsScene extends IScene {
 		containerPosX = (guiManager.windowWidth/2) - containerWidth/2;
 		containerPosY = (guiManager.windowHeight/2) - containerHeight/2 - 50;
 		
-		
-		buttonRes1 = new Button(guiManager.windowWidth/4,
-                guiManager.windowHeight/10,
+		buttonRes1 = new Button(guiManager.windowWidth/5,
+                guiManager.windowHeight/11,
                 guiManager.windowWidth/2,
-                (int) containerPosY + (int)(containerHeight / 5),
+                (int) containerPosY + (int)(containerHeight / 6),
                 new Image("res/menu/res1Inactive.png"),
                 new Image("res/menu/res1Active.png"));
 		buttons.add(buttonRes1);
 		
 		if (Display.getDesktopDisplayMode().getHeight() >= 720) {
 
-			buttonRes2 = new Button(guiManager.windowWidth/4,
-	                guiManager.windowHeight/10,
+			buttonRes2 = new Button(guiManager.windowWidth/5,
+	                guiManager.windowHeight/11,
 	                guiManager.windowWidth/2,
-	                (int) containerPosY + (int)(containerHeight / 5 * 2),
+	                (int) containerPosY + (int)(containerHeight / 6 * 2),
 	                new Image("res/menu/res2Inactive.png"),
 	                new Image("res/menu/res2Active.png"));
 			buttons.add(buttonRes2);
+		} else {
+			buttonRes2 = new Button(guiManager.windowWidth/5,
+	                guiManager.windowHeight/11,
+	                guiManager.windowWidth/2,
+	                (int) containerPosY + (int)(containerHeight / 6 * 2),
+	                new Image("res/menu/res2Inactive.png"),
+	                new Image("res/menu/res2Active.png"));
+			buttons.add(buttonRes2);
+			buttonRes2.disable();
 		}
 
 		if (Display.getDesktopDisplayMode().getHeight() >= 1080) {
-			buttonRes3 = new Button(guiManager.windowWidth/4,
-	                guiManager.windowHeight/10,
+			buttonRes3 = new Button(guiManager.windowWidth/5,
+	                guiManager.windowHeight/11,
 	                guiManager.windowWidth/2,
-	                (int) containerPosY + (int)(containerHeight / 5 * 3),
+	                (int) containerPosY + (int)(containerHeight / 6 * 3),
 	                new Image("res/menu/res3Inactive.png"),
 	                new Image("res/menu/res3Active.png"));
 			buttons.add(buttonRes3);
+		} else {
+			buttonRes3 = new Button(guiManager.windowWidth/5,
+	                guiManager.windowHeight/11,
+	                guiManager.windowWidth/2,
+	                (int) containerPosY + (int)(containerHeight / 6 * 3),
+	                new Image("res/menu/res3Inactive.png"),
+	                new Image("res/menu/res3Active.png"),
+	                new Image("res/menu/res3Disabled.png"));
+			buttons.add(buttonRes3);
+			buttonRes3.disable();
 		}
 
 		
-		buttonFullScreen = new Button(guiManager.windowWidth/4,
-                guiManager.windowHeight/10,
+		buttonFullScreen = new Button(guiManager.windowWidth/5,
+                guiManager.windowHeight/11,
                 guiManager.windowWidth/2,
-                (int) containerPosY + (int)(containerHeight / 5 * 4),
+                (int) containerPosY + (int)(containerHeight / 6 * 4),
                 new Image("res/menu/fullscreenInactive.png"),
                 new Image("res/menu/fullscreenActive.png"));
 		buttons.add(buttonFullScreen);
 
 		container = new Image("res/menu/optionsContainer.png");
-		
+		msgLabel = new Image("res/menu/reslabel.png");
+			
 		int resx = guiManager.getResolutionOptions().getResx();
 		int resy = guiManager.getResolutionOptions().getResy();
 		boolean fullscreen = guiManager.getResolutionOptions().isFullscreen();
@@ -101,7 +120,7 @@ public class OptionsScene extends IScene {
 	@Override
 	public void leftClick(int x, int y) {
 		Button b = null;
-		AppGameContainer gc = (AppGameContainer) guiManager.container;
+		//AppGameContainer gc = (AppGameContainer) guiManager.container;
 		int resx = 0, resy = 0;
 		boolean fullscreen = false;
 		
@@ -109,7 +128,7 @@ public class OptionsScene extends IScene {
 			b = this.buttons.get(i);
 			
 			try {
-			if (b.hits(x, y)) {
+			if (b.hits(x, y) && b.isEnabled()) {
 				b.activate();
 				
 				switch (i) {
@@ -141,12 +160,12 @@ public class OptionsScene extends IScene {
 				}
 								
 				guiManager.setResolutionOptions(resx, resy, fullscreen);
-				gc.setDisplayMode(resx, resy, fullscreen);
-				gc.reinit();
+				/*gc.setDisplayMode(resx, resy, fullscreen);
+				gc.reinit();*/
 				
 				break;
 			}
-			} catch (SlickException | LWJGLException e) {
+			} catch (LWJGLException e) {
 				e.printStackTrace();
 			}
 		}
@@ -194,6 +213,12 @@ public class OptionsScene extends IScene {
 		guiManager.drawBackground(background, backgroundType);
 		container.draw(containerPosX, containerPosY,
 		               containerWidth, containerHeight);
+		
+		msgLabel.draw(
+                guiManager.windowWidth/2 - containerWidth / 4,
+                (int) containerPosY + (int)((containerHeight - 50)/ 6 * 5),
+                containerWidth / 2,
+                guiManager.windowHeight/9);
 		
 		for (Button b : this.buttons)
 			b.draw();

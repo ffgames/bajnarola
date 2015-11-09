@@ -52,7 +52,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Command escComm = new BasicCommand("esc");
 	private Command enterComm = new BasicCommand("enter");
 	
-	private IScene currentScene;
+	private IScene currentScene = null;
 	private MenuScene menuScene;
 	private GameScene gameScene;
 	private PauseScene pauseScene;
@@ -116,7 +116,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 		 //TODO: wooden table should be lobby screen background
 		 lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, gc.getGraphics().getFont());
 		 
-		 currentScene = menuScene;
+		 if (currentScene == null)
+			 currentScene = menuScene;
+		 else 
+			 switchScene(currentScene.sceneType);
 		 
 		 currentUpdate = null;
 		 
@@ -328,7 +331,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 			case SCENE_OPTIONS:
 				optionsScene.background = currentScene.background;
 				optionsScene.backgroundType = currentScene.backgroundType;
-				optionsScene.prevScene = currentScene.sceneType;
+				if (currentScene.sceneType != scene_type.SCENE_OPTIONS) {
+					optionsScene.prevScene = currentScene.sceneType;
+				} else {
+					optionsScene.prevScene = ((OptionsScene)currentScene).prevScene;
+				}
 				currentScene = optionsScene;
 				break;
 			case SCENE_LOBBY:
