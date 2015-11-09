@@ -90,7 +90,6 @@ public class MainClass {
 					iServer = null;
 					iLobby = null;
 					iClient = null;
-					gBoard.clearGameOptions();
 					
 					if (e.getMessage().contains("User")) {
 						/* XXX: players do not communicate in game */
@@ -136,10 +135,6 @@ public class MainClass {
 			System.out.println("OK");
 			
 			iClient.mainLoop(iServer.getPlayer().username, gBoard);
-			
-			
-			System.out.println("Game ended");
-			System.exit(1);
 			
 		} catch (RemoteException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();

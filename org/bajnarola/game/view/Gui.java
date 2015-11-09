@@ -2,6 +2,7 @@ package org.bajnarola.game.view;
 
 import java.util.List;
 
+import org.bajnarola.game.GameOptions.ViewOptions;
 import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
 import org.bajnarola.game.model.Tile;
@@ -359,6 +360,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public void setResolutionOptions(int resx, int resy, boolean fullscreen) {
 		this.controller.setViewOptions(resx, resy, fullscreen);
+	}
+	
+	public ViewOptions getResolutionOptions() {
+		return this.controller.getViewOptions();
 	}
 	
 	public void exit(){

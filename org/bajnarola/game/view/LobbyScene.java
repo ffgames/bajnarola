@@ -89,6 +89,7 @@ public class LobbyScene extends IScene {
 		                         new Image("res/menu/backActive.png"));
 		
 		selectedInputBox = unameInputBox;
+		selectedInputBox.selected = true;
 		
 		labelUsernamePosX = (guiManager.windowWidth/2) - (font.getWidth(labelUsername)/2);
 		labelLobbyPosX = (guiManager.windowWidth/2) - (font.getWidth(labelLobby)/2);
@@ -198,12 +199,16 @@ public class LobbyScene extends IScene {
 			if (key == Input.KEY_BACK) {
 				selectedInputBox.delChar();
 			} else if (key == Input.KEY_TAB ) {
-				if (selectedInputBox.equals(unameInputBox))
+				if (selectedInputBox.equals(unameInputBox)) {
 					selectedInputBox = lobbyUriInputBox;
-				else 
+					unameInputBox.selected = false;
+				} else {
 					selectedInputBox = unameInputBox;
+					lobbyUriInputBox.selected = false;
+				}
 				
 				selectedInputBox.initialize();
+				selectedInputBox.selected = true;
 			} else if (key == Input.KEY_ENTER || key == Input.KEY_NUMPADENTER) {
 				join();
 				leftRelease(guiManager.windowWidth/2 + 10,

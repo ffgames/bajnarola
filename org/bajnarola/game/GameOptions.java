@@ -1,6 +1,5 @@
 package org.bajnarola.game;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,8 +8,35 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 
 import org.bajnarola.utils.BajnarolaRegistry;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
 public class GameOptions {
+	public class ViewOptions {
+		private int resx, resy;
+		private boolean fullscreen;
+
+		public ViewOptions(int resx, int resy, boolean fullscreen) {
+			this.resx = resx;
+			this.resy = resy;
+			this.fullscreen = fullscreen;
+		}
+
+		public int getResx() {
+			return resx;
+		}
+
+		public int getResy() {
+			return resy;
+		}
+
+		public boolean isFullscreen() {
+			return fullscreen;
+		}
+		
+		
+	}
 	String lobbyHost, playerName;
 	
 	
@@ -53,10 +79,18 @@ public class GameOptions {
 			System.err.println("Can't access to the config file");
 		}
 		
-		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		
 		if (fullscreen) {
-			resx = screenSize.width;
-			resy =  screenSize.height;
+			//Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+			DisplayMode[] modes;
+			try {
+				modes = Display.getAvailableDisplayModes();
+				
+				resx = modes[0].getWidth();
+				resy = modes[0].getHeight();
+			} catch (LWJGLException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -79,25 +113,16 @@ public class GameOptions {
 			lobbyPort = Integer.parseInt(splittedURI[1]);	
 	}
 	
-	
-	public int getResx() {
-		return resx;
-	}
-
-
-	public int getResy() {
-		return resy;
-	}
-
-	public boolean isFullscreen() {
-		return fullscreen;
-	}
 
 	public void setViewOptions(int resx, int resy, boolean fullscreen) {
 		this.resx = resx;
 		this.resy = resy;
 		this.fullscreen = fullscreen;
 		storeConfig();
+	}
+	
+	public ViewOptions getViewOptions(){
+		return new ViewOptions(resx, resy, fullscreen);
 	}
 	
 	private void storeConfig(Properties prop) throws IOException {

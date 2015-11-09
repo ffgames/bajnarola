@@ -13,7 +13,7 @@ public class InputBox {
 	
 	boolean selected = false;
 	boolean initialized = false;
-	int centerX, centerY, width, height;
+	int centerX, centerY, width, height, framecount = 0;
 	
 	public InputBox(int width, int height, int centerX, int centerY, 
 	                String initText, Image activeImage, Font font){
@@ -58,7 +58,10 @@ public class InputBox {
 	}
 	
 	public void draw(Graphics g){
+		framecount++;
 		image.draw(hitbox.ulx, hitbox.uly, width, height);
-		g.drawString(text + (selected ? "|" : ""), hitbox.ulx + 8, hitbox.uly + 1);
+		g.drawString(text + (selected && framecount < 50 ? "|" : ""), hitbox.ulx + 8, hitbox.uly + 1);
+		if (framecount == 100)
+			framecount = 0;
 	}
 }

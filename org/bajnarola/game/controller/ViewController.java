@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.GuiThread;
+import org.bajnarola.game.GameOptions.ViewOptions;
 import org.bajnarola.game.controller.GameController.endGameCause;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
@@ -61,8 +62,8 @@ public class ViewController {
 			gui = new Gui(this);
 
 			gameOpt = gameCtl.getGameOptions();
-			
-			GuiThread gt = new GuiThread(gui, gameOpt.getResx(), gameOpt.getResy(), gameOpt.isFullscreen());
+			ViewOptions viewOpt = gameOpt.getViewOptions();
+			GuiThread gt = new GuiThread(gui, viewOpt.getResx(), viewOpt.getResy(), viewOpt.isFullscreen());
 			
 			Thread thread = new Thread(gt);
 			
@@ -209,6 +210,9 @@ public class ViewController {
 		this.gameCtl.getGameOptions().setViewOptions(resx, resy, fullscreen);
 	}
 	
+	public ViewOptions getViewOptions() {
+		return this.gameCtl.getGameOptions().getViewOptions();
+	}
 	public void joinSignalView(JoinStatus cause) {
 		this.gui.joinSignalLobbyScene(cause);
 	}

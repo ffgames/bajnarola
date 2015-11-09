@@ -99,10 +99,6 @@ public class GameController extends UnicastRemoteObject implements
 		return this.goptions;
 	}
 	
-	public void clearGameOptions() {
-		this.goptions = null;
-	}
-	
 	public void waitOptionsFromUser() {
 		viewCtl.waitOptionsFromView();
 	}
@@ -269,7 +265,8 @@ public class GameController extends UnicastRemoteObject implements
 	}
 	
 	public void cleanRegistry() {
-		this.myServer.cleanRegistry();
+		if (this.myServer != null)
+			this.myServer.cleanRegistry();
 	}
 	
 }
