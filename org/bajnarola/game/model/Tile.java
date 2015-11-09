@@ -159,13 +159,13 @@ public class Tile {
 	public void unlinkLSElement(LandscapeElement el){
 		LandscapeElement te;
 		
-		for (int i = 0; i < SIDE_COUNT; i++){
-			te = landscapes.get(i);
+		for (short i = 0; i < SIDE_COUNT; i++){
+			te = getLSElement(i);
 			if(el.equals(te)){
-				if(meeple != null && meeple.getTileSide() == fixTileSide((short)i, direction)){
+				if(meeple != null && meeple.getTileSide() == i){
 					removeMeeple();
 				}
-				landscapes.remove(i);
+				popLSElement(i);
 			}
 		}
 	}
@@ -184,6 +184,8 @@ public class Tile {
 	}
 	
 	private static final short fixTileSide(short tileSide, int direction){
-		return (short)((tileSide + 4 - direction) % 4);
+		if(tileSide != SIDE_CENTER)
+			return (short)((tileSide + 4 - direction) % 4);
+		return tileSide;
 	}
 }
