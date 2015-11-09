@@ -492,8 +492,9 @@ public class GameScene extends IScene {
 		hudHovered = false;
 		hudHovered |= isScoreHovered = scoreHitbox.hits(newx, newy);
 		
+		hudHovered |= confirmButton.hits(newx, newy);
 		if(turnTile != null){
-			hudHovered |= confirmButton.isClicked(newx, newy);
+			confirmButton.isClicked(newx, newy);
 			
 			if(!dimscreen && !zoomOutView){
 				mouseOverOn = false;

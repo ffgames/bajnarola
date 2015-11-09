@@ -27,11 +27,7 @@ public abstract class LandscapeElement {
 	
 	public abstract void merge(LandscapeElement el);
 	public abstract void addTile(Tile t, short tileSide);
-	
-	public Map<Player, Integer> getOwners() {
-		return owners;
-	}
-	
+		
 	public Tile getElementRoot() {
 		return elementRoot;
 	}
@@ -83,7 +79,7 @@ public abstract class LandscapeElement {
 				if (tileTmp.getLSElement(i) != null && tileTmp.getLSElement(i).equals(el)) {
 					tileTmp.popLSElement(i);
 					tileTmp.putLSElement(i, this);
-					if(tileTmp.hasMeeple())
+					if(tileTmp.hasMeeple() && tileTmp.getMeeple().getTileSide() == i)
 						addMeeple(tileTmp.getMeeple());
 				}
 				
