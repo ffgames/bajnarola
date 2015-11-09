@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 
 import org.bajnarola.utils.BajnarolaRegistry;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
