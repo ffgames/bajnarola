@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.bajnarola.game.MainClass;
 import org.bajnarola.utils.Shuffler;
 
 public class Board {
@@ -40,6 +41,8 @@ public class Board {
 	Shuffler random;
 	Map<String, Boolean> points;
 	List<String> scores;
+	
+	int debugPlayTiles = 10;
 	
 	public Board() {
 		this.turn = 0;
@@ -126,6 +129,10 @@ public class Board {
 
 		while(!ok){
 			newTile = deck.remove(0);
+			//TODO: removeme
+			if(MainClass.debugPlay && debugPlayTiles-- <= 0)
+				newTile = null;
+			
 			if(newTile == null)
 				break;
 			for(int i = 0; i < 4; i++){
@@ -140,7 +147,7 @@ public class Board {
 				newTile.rotate(true);
 			}
 		}
-		
+				
 		points.clear();
 		scores.clear();
 		
