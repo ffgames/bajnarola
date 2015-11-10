@@ -1,7 +1,6 @@
 package org.bajnarola.game.view;
 
 import org.newdawn.slick.Font;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 
@@ -57,10 +56,10 @@ public class InputBox {
 			this.text = this.text.substring(0, text.length() - 1);
 	}
 	
-	public void draw(Graphics g){
+	public void draw(Gui guiManager){
 		framecount++;
-		image.draw(hitbox.ulx, hitbox.uly, width, height);
-		g.drawString(text + (selected && framecount < 50 ? "|" : ""), hitbox.ulx + 8, hitbox.uly + 1);
+		image.draw(hitbox.ulx, hitbox.uly, width, height, Gui.defaultTextColor);
+		guiManager.drawString(text + (selected && framecount < 50 ? "|" : ""), hitbox.ulx + 8, hitbox.uly + 1);
 		if (framecount == 100)
 			framecount = 0;
 	}

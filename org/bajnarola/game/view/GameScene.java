@@ -291,7 +291,7 @@ public class GameScene extends IScene {
 		if(score != null && !score.isEmpty()){
 			int player = Integer.parseInt(score.split("-")[0]);
 			String scoreStr = score.split("-")[1];
-			g.getFont().drawString(x, y, scoreStr, playerColors[player]);
+			guiManager.drawString(scoreStr, x, y, playerColors[player]);
 		}
 	}
 	

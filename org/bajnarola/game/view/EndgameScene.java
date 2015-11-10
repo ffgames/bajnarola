@@ -134,7 +134,7 @@ public class EndgameScene extends IScene {
 			if(scores != null){
 				int nlines = scores.size()/2 + scores.size()%2;
 				for(int i = 0; i < scores.size(); i++){
-					guiManager.drawString(scores.get(i), g, (int)(i%2==0? scoresLPosX : scoresRPosX), (int)(i/2*(scoresHeight/nlines)+scoresPosY));
+					guiManager.drawString(scores.get(i), (int)(i%2==0? scoresLPosX : scoresRPosX), (int)(i/2*(scoresHeight/nlines)+scoresPosY));
 				}
 			}
 			

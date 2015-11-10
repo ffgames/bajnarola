@@ -1,5 +1,9 @@
 package org.bajnarola.game.view;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +14,15 @@ import org.bajnarola.game.controller.ViewUpdate;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
 import org.bajnarola.game.view.RelativeSizes.Resolutions;
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.command.BasicCommand;
 import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
@@ -66,6 +73,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public GameContainer container;
 	
+	public java.awt.Font trueTypeFont;
+	private TrueTypeFont mainFont;
+	public static Color defaultTextColor;
+	
 	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
 	private List<String> holes;
 	private Tile newTile;
@@ -79,59 +90,68 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	@Override
 	public void init(GameContainer gc) throws SlickException {
-		 provider = new InputProvider(gc.getInput());
-		 provider.addListener(this);
-		 
-		 provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
-		 provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
-		 provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
-		 provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
-		 
-		 //TODO: if fixed resolution is set through options avoid using fullscreen here
-		 RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
-		 
-		 rawInput = new Input(gc.getScreenHeight());
-		 
-		 animator = new Animator();
-		 
-		 windowHeight = gc.getHeight();
-		 windowWidth = gc.getWidth();
-		 
-		 menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED);
-		 
-		 Image boardBackground;
-		 if(gc.getHeight() > 800){
-			 boardBackground = new Image("res/backgrounds/Craggy_Rock_1024.jpg");
-		 } else if(gc.getHeight() > 500){
-			 boardBackground = new Image("res/backgrounds/Craggy_Rock_512.jpg");
-		 } else
-			 boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
-		 
-		 gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, controller.getScores(), controller.getCurrentPlayerScore());
+		provider = new InputProvider(gc.getInput());
+		provider.addListener(this);
 
-		 pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
+		provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
+		provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
+		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
+		provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
 
-		 optionsScene = new OptionsScene(this, null, null);
-		 
-		 endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
-		 
-		 //TODO: wooden table should be lobby screen background
-		 lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, gc.getGraphics().getFont());
-		 
-		 if (currentScene == null)
-			 currentScene = menuScene;
-		 else 
-			 switchScene(currentScene.sceneType);
-		 
-		 currentUpdate = null;
-		 
-		 container = gc;
-		 
-		 gc.setShowFPS(false);
-		 gc.setTargetFrameRate(60);
-		 gc.setUpdateOnlyWhenVisible(false);
-		 //gc.setMouseGrabbed(true);
-		 gc.setMouseCursor("res/misc/pointer.gif", 6, 5);
+		//TODO: if fixed resolution is set through options avoid using fullscreen here
+		RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
+
+		rawInput = new Input(gc.getScreenHeight());
+
+		animator = new Animator();
+
+		windowHeight = gc.getHeight();
+		windowWidth = gc.getWidth();
+
+		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED);
+
+		defaultTextColor = new Color(0xE1DCD1);
+		try {
+			trueTypeFont = java.awt.Font.createFont(Font.TRUETYPE_FONT, new File("res/font/font.ttf"));
+		} catch (FontFormatException | IOException e) {
+			throw new SlickException(e.getMessage());
+		}
+
+		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
+		
+		Image boardBackground;
+		if(gc.getHeight() > 800){
+			boardBackground = new Image("res/backgrounds/Craggy_Rock_1024.jpg");
+		} else if(gc.getHeight() > 500){
+			boardBackground = new Image("res/backgrounds/Craggy_Rock_512.jpg");
+		} else
+			boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
+
+		gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, controller.getScores(), controller.getCurrentPlayerScore());
+
+		pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
+
+		optionsScene = new OptionsScene(this, null, null);
+
+		endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
+
+		//TODO: wooden table should be lobby screen background
+		lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, mainFont);
+
+		if (currentScene == null)
+			currentScene = menuScene;
+		else 
+			switchScene(currentScene.sceneType);
+
+		currentUpdate = null;
+
+		container = gc;
+
+		gc.setShowFPS(false);
+		gc.setTargetFrameRate(60);
+		gc.setUpdateOnlyWhenVisible(false);
+		//gc.setMouseGrabbed(true);
+		gc.setMouseCursor("res/misc/pointer.gif", 6, 5);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){
@@ -165,6 +185,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 	
+	//TODO: crop instead
 	private void drawBgCentered(Image background, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
 		tx = (windowWidth > backgroundWidth ? (windowWidth - backgroundWidth) / 2 : 0);
@@ -402,8 +423,12 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return this.controller.getViewOptions();
 	}
 	
-	public void drawString(String str, Graphics g, int x, int y){
-		g.drawString(str, x, y);
+	public void drawString(String str, int x, int y, Color color){
+		mainFont.drawString(x, y, str, color);
+	}
+	
+	public void drawString(String str, int x, int y){
+		drawString(str, x, y, defaultTextColor);
 	}
 	
 	public void exit(){

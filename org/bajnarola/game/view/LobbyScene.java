@@ -23,8 +23,8 @@ public class LobbyScene extends IScene {
 	
 	Font font;
 
-	static final String labelUsername = "INSERT USERNAME";
-	static final String labelLobby = "INSERT LOBBY SERVER";
+	static final String labelUsername = "Insert Username";
+	static final String labelLobby = "Insert Lobby Server";
 	static final String errorGameStarted = "Too late, game has already started";
 	static final String errorUsernameExists = "Your username already exists";
 	static final String errorLobby = "Can't connect to the specified lobby";
@@ -61,14 +61,14 @@ public class LobbyScene extends IScene {
 		unameInputBox = new InputBox(textAreaWidth,
 		                             font.getLineHeight() + 2, 
 		                             guiManager.windowWidth/2,
-		                             guiManager.windowHeight/5, 
+		                             guiManager.windowHeight/6, 
 		                             "Username",
 		                             new Image("res/menu/inputbox.png"), font); 
 		
 		lobbyUriInputBox = new InputBox(textAreaWidth,
 				font.getLineHeight() + 2, 
                 guiManager.windowWidth/2,
-                guiManager.windowHeight/5 + 80, 
+                guiManager.windowHeight/6*2, 
                 "localhost",
                 new Image("res/menu/inputbox.png"), font);
 		
@@ -76,7 +76,7 @@ public class LobbyScene extends IScene {
 		joinButton = new Button(guiManager.windowWidth/3,
 		                        guiManager.windowHeight/9,
 		                        guiManager.windowWidth/2,
-		                        guiManager.windowHeight/4*2 + 50,
+		                        guiManager.windowHeight/6*4,
 		                        new Image("res/menu/joinInactive.png"),
 		                        new Image("res/menu/joinActive.png"),
 		                        new Image("res/menu/joinDisabled.png"));
@@ -84,7 +84,7 @@ public class LobbyScene extends IScene {
 		backButton = new Button(guiManager.windowWidth/3,
 		                         guiManager.windowHeight/9,
 		                         guiManager.windowWidth/2,
-		                         guiManager.windowHeight/4*3,
+		                         guiManager.windowHeight/6*5,
 		                         new Image("res/menu/backInactive.png"),
 		                         new Image("res/menu/backActive.png"));
 		
@@ -93,10 +93,10 @@ public class LobbyScene extends IScene {
 		
 		labelUsernamePosX = (guiManager.windowWidth/2) - (font.getWidth(labelUsername)/2);
 		labelLobbyPosX = (guiManager.windowWidth/2) - (font.getWidth(labelLobby)/2);
-		labelUsernamePosY = guiManager.windowHeight/5 - 40;
-		labelLobbyPosY = guiManager.windowHeight/5 + 40;
+		labelUsernamePosY = unameInputBox.hitbox.uly - font.getLineHeight() - 2;
+		labelLobbyPosY = lobbyUriInputBox.hitbox.uly - font.getLineHeight() - 2;
 		
-		labelJoinPosY = guiManager.windowHeight/4*2 - 50;
+		labelJoinPosY = guiManager.windowHeight/6*3;
 		
 		/* TODO: Add "create local lobby" button and correlated feature */
 	}
@@ -225,14 +225,13 @@ public class LobbyScene extends IScene {
 	@Override
 	public void render(GameContainer gc, Graphics g) {
 		guiManager.drawBackground(background, backgroundType);
-		unameInputBox.draw(g);
-		lobbyUriInputBox.draw(g);
+		unameInputBox.draw(guiManager);
+		lobbyUriInputBox.draw(guiManager);
 		joinButton.draw();
 		backButton.draw();
-		g.drawString(labelUsername, labelUsernamePosX, labelUsernamePosY);
-		g.drawString(labelLobby, labelLobbyPosX, labelLobbyPosY);
-		
-		g.drawString(joinMessage, labelJoinPosX, labelJoinPosY);
+		guiManager.drawString(labelUsername, labelUsernamePosX, labelUsernamePosY);
+		guiManager.drawString(labelLobby, labelLobbyPosX, labelLobbyPosY);
+		guiManager.drawString(joinMessage, labelJoinPosX, labelJoinPosY);
 	}
 
 	@Override
