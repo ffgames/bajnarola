@@ -62,15 +62,15 @@ public class LobbyScene extends IScene {
 		                             font.getLineHeight() + 2, 
 		                             guiManager.windowWidth/2,
 		                             guiManager.windowHeight/5, 
-		                             "Username",
+		                             guiManager.getLobbyOptions().getPlayerName(),
 		                             new Image("res/menu/inputbox.png"), font); 
 		
 		lobbyUriInputBox = new InputBox(textAreaWidth,
-				font.getLineHeight() + 2, 
-                guiManager.windowWidth/2,
-                guiManager.windowHeight/5 + 80, 
-                "localhost",
-                new Image("res/menu/inputbox.png"), font);
+		                                font.getLineHeight() + 2, 
+		                                guiManager.windowWidth/2,
+                                        guiManager.windowHeight/5 + 80, 
+                                        guiManager.getLobbyOptions().getLobbyUri(),
+                                        new Image("res/menu/inputbox.png"), font);
 		
 		
 		joinButton = new Button(guiManager.windowWidth/3,

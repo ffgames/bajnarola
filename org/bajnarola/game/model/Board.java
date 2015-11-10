@@ -30,7 +30,7 @@ import org.bajnarola.utils.Shuffler;
 
 public class Board {
 	
-	public static final int TOTAL_TILES_COUNT = 72;
+	public static final int TOTAL_TILES_COUNT = 10;
 	
 	int turn;
 	Hashtable<String, Tile> scenario;
@@ -40,12 +40,6 @@ public class Board {
 	Shuffler random;
 	Map<String, Boolean> points;
 	List<String> scores;
-	
-	/* TODO:
-	 * - negotiate random seed for deck shuffling
-	 * - check hasmaps with short keys mapped onto Integer (short must be cast to int before access)
-	 * - probeAll to check the current scenario boundary
-	 * */
 	
 	public Board() {
 		this.turn = 0;

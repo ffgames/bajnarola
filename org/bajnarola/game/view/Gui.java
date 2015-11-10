@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bajnarola.game.GameOptions.LobbyOptions;
 import org.bajnarola.game.GameOptions.ViewOptions;
 import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
@@ -400,6 +401,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public ViewOptions getResolutionOptions() {
 		return this.controller.getViewOptions();
+	}
+	
+	public LobbyOptions getLobbyOptions() {
+		return this.controller.getLobbyOptions();
 	}
 	
 	public void drawString(String str, Graphics g, int x, int y){
