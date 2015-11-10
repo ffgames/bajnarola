@@ -64,7 +64,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	private IScene currentScene = null;
 	private MenuScene menuScene;
-	private GameScene gameScene;
+	public GameScene gameScene;
 	private PauseScene pauseScene;
 	private OptionsScene optionsScene;
 	private EndgameScene endgameScene;

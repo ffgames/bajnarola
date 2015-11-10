@@ -21,7 +21,6 @@ public class OptionsScene extends IScene {
 	Image container, msgLabel;
 	float containerWidth, containerHeight;
 	float containerPosX, containerPosY;
-
 	
 	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
@@ -164,7 +163,7 @@ public class OptionsScene extends IScene {
 		if (backButton.isClicked(x, y))
 			guiManager.switchScene(prevScene);
 	}
-
+	
 	@Override
 	public void rightClick(int x, int y) {
 	}

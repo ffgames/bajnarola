@@ -275,19 +275,24 @@ public class GameScene extends IScene {
 				handMeeples[i].drawAbsolute();
 		}
 		
-		if(isScoreHovered){
-			for(int i = 0; i < scores.size(); i++){
-				drawScore(resizer.scoresXOffset(), resizer.scoresYOffset()+(i*guiManager.mainFont.getLineHeight()), scores.get(i), g);
-			}
+		/*if(isScoreHovered){
+			drawAllScores(scores);
 		} else {
-			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset(), currentPlScore, g);
-		}
+			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset(), currentPlScore);
+		}*/
+		drawAllScores(scores);
 		
 		if(turnTile != null)
 			confirmButton.draw();
 	}
 	
-	private void drawScore(int x, int y, String score, Graphics g){
+	public void drawAllScores(List<String> scores){
+		for(int i = 0; i < scores.size(); i++){
+			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset()+(i*guiManager.mainFont.getLineHeight()), scores.get(i));
+		}
+	}
+	
+	private void drawScore(int x, int y, String score){
 		if(score != null && !score.isEmpty()){
 			int player = Integer.parseInt(score.split("-")[0]);
 			String scoreStr = score.split("-")[1];
