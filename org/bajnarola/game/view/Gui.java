@@ -75,7 +75,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public GameContainer container;
 	
 	public java.awt.Font trueTypeFont;
-	private TrueTypeFont mainFont;
+	public TrueTypeFont mainFont;
 	public static Color defaultTextColor;
 	
 	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;

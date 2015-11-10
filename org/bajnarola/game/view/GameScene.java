@@ -277,7 +277,7 @@ public class GameScene extends IScene {
 		
 		if(isScoreHovered){
 			for(int i = 0; i < scores.size(); i++){
-				drawScore(resizer.scoresXOffset(), resizer.scoresYOffset()*(i+1), scores.get(i), g);
+				drawScore(resizer.scoresXOffset(), resizer.scoresYOffset()+(i*guiManager.mainFont.getLineHeight()), scores.get(i), g);
 			}
 		} else {
 			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset(), currentPlScore, g);

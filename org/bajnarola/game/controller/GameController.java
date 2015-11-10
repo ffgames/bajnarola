@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.bajnarola.game.BajnarolaServer;
 import org.bajnarola.game.GameOptions;
+import org.bajnarola.game.MainClass;
 import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
@@ -119,6 +120,8 @@ public class GameController extends UnicastRemoteObject implements
 	}
 
 	public boolean isDeckEmpty() {
+		if(MainClass.debugPlay && board.debugPlayTiles <= 0)
+			return true;
 		return board.getDeck().isEmpty();
 	}
 

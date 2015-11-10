@@ -42,7 +42,7 @@ public class Board {
 	Map<String, Boolean> points;
 	List<String> scores;
 	
-	int debugPlayTiles = 10;
+	public int debugPlayTiles = 10;
 	
 	public Board() {
 		this.turn = 0;
