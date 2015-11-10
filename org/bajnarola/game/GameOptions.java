@@ -50,13 +50,13 @@ public class GameOptions {
 		
 	}
 	
-	static final boolean defaultFullscreen = false; 
-	static final String optFileName = ".bajnarola.conf";
-	static String optFilePath;
-	static final int defaultResX = 1200;
-	static final int defaultResY = 700;
-	static final String defaultPlayerName = "Username";
-	static final String defaultLobbyHost = "localhost";
+	public static final boolean defaultFullscreen = false; 
+	public static final String optFileName = ".bajnarola.conf";
+	public static String optFilePath;
+	public static final int defaultResX = 1200;
+	public static final int defaultResY = 700;
+	public static final String defaultPlayerName = "Username";
+	public static final String defaultLobbyHost = "localhost";
 	
 	int resx = defaultResX, resy = defaultResY;
 	boolean fullscreen = defaultFullscreen;
