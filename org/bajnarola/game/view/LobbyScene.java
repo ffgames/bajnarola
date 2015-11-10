@@ -65,14 +65,14 @@ public class LobbyScene extends IScene {
 		                             font.getLineHeight() + 2, 
 		                             guiManager.windowWidth/2,
 		                             guiManager.windowHeight/6, 
-		                             "Username",
+		                             guiManager.getLobbyOptions().getPlayerName(),
 		                             new Image("res/menu/inputbox.png"), font); 
 		
 		lobbyUriInputBox = new InputBox(textAreaWidth,
 				font.getLineHeight() + 2, 
                 guiManager.windowWidth/2,
                 guiManager.windowHeight/6*2, 
-                "localhost",
+                guiManager.getLobbyOptions().getLobbyUri(),
                 new Image("res/menu/inputbox.png"), font);
 		
 		
