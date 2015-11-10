@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bajnarola.game.GameOptions;
+import org.bajnarola.game.GameOptions.LobbyOptions;
 import org.bajnarola.game.GuiThread;
 import org.bajnarola.game.GameOptions.ViewOptions;
 import org.bajnarola.game.controller.GameController.endGameCause;
@@ -213,6 +214,11 @@ public class ViewController {
 	public ViewOptions getViewOptions() {
 		return this.gameCtl.getGameOptions().getViewOptions();
 	}
+	
+	public LobbyOptions getLobbyOptions() {
+		return this.gameCtl.getGameOptions().getLobbyOptions();
+	}
+	
 	public void joinSignalView(JoinStatus cause) {
 		this.gui.joinSignalLobbyScene(cause);
 	}

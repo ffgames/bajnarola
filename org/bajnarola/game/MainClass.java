@@ -106,6 +106,8 @@ public class MainClass {
 				}
 			}
 			
+			goptions.storeConfig(false);
+			
 			iClient.getPlayers(players);
 			
 			System.out.println("OK!");

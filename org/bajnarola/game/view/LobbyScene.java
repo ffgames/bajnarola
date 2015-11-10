@@ -2,6 +2,7 @@ package org.bajnarola.game.view;
 
 import java.net.MalformedURLException;
 
+import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
 import org.newdawn.slick.Font;
@@ -40,6 +41,8 @@ public class LobbyScene extends IScene {
 	String joinMessage = "";
 	
 	int textAreaWidth;
+	int framecount = 35;
+	boolean backPressed = false;
 	
 	public static enum JoinStatus {
 		LOBBY_OK,
@@ -197,6 +200,7 @@ public class LobbyScene extends IScene {
 	public void keyPressed(int key, char c) {
 		if (selectedInputBox != null) {
 			if (key == Input.KEY_BACK) {
+				backPressed = true;
 				selectedInputBox.delChar();
 			} else if (key == Input.KEY_TAB ) {
 				if (selectedInputBox.equals(unameInputBox)) {
@@ -206,15 +210,15 @@ public class LobbyScene extends IScene {
 					selectedInputBox = unameInputBox;
 					lobbyUriInputBox.selected = false;
 				}
-				
-				selectedInputBox.initialize();
+				if (selectedInputBox.text.equals(GameOptions.defaultPlayerName))
+					selectedInputBox.initialize();
 				selectedInputBox.selected = true;
 			} else if (key == Input.KEY_ENTER || key == Input.KEY_NUMPADENTER) {
 				join();
 				leftRelease(guiManager.windowWidth/2 + 10,
 				            guiManager.windowHeight/4*2 + 60);
 			} else {
-				if (!selectedInputBox.initialized)
+				if (selectedInputBox.text.equals(GameOptions.defaultPlayerName))
 					selectedInputBox.initialize();
 				/* TODO: escape input for lobbyURI */
 				selectedInputBox.putChar(c); 
@@ -223,7 +227,19 @@ public class LobbyScene extends IScene {
 	}
 
 	@Override
+	public void keyReleased(int key, char c) {
+		backPressed = false;
+		framecount = 35;
+	}
+	
+	@Override
 	public void render(GameContainer gc, Graphics g) {
+		if (framecount <= 0 && backPressed) {
+			selectedInputBox.delChar();
+			framecount = 3;
+		}
+		framecount--;
+		
 		guiManager.drawBackground(background, backgroundType);
 		unameInputBox.draw(guiManager);
 		lobbyUriInputBox.draw(guiManager);
@@ -244,10 +260,6 @@ public class LobbyScene extends IScene {
 
 	@Override
 	public void rightRelease(int x, int y) {
-	}
-
-	@Override
-	public void keyReleased(int key, char c) {
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bajnarola.game.GameOptions.LobbyOptions;
 import org.bajnarola.game.GameOptions.ViewOptions;
 import org.bajnarola.game.controller.ViewController;
 import org.bajnarola.game.controller.ViewUpdate;
@@ -430,6 +431,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public void drawString(String str, int x, int y){
 		drawString(str, x, y, defaultTextColor);
 	}
+
+	public LobbyOptions getLobbyOptions() {
+		return this.controller.getLobbyOptions();
+	}
+	
 	
 	public void exit(){
 		System.out.println("Exit");

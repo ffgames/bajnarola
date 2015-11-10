@@ -33,21 +33,35 @@ public class GameOptions {
 		public boolean isFullscreen() {
 			return fullscreen;
 		}
-		
+	}
+	
+	public class LobbyOptions {
+		String lobbyUri, playerName;
+		public LobbyOptions(String lobbyUri, String playerName) {
+			this.lobbyUri = lobbyUri;
+			this.playerName = playerName;
+		}
+		public String getLobbyUri() {
+			return lobbyUri;
+		}
+		public String getPlayerName() {
+			return playerName;
+		}
 		
 	}
-	String lobbyHost, playerName;
 	
-	
-	static final boolean defaultFullscreen = false; 
-	static final String optFileName = ".bajnarola.conf";
-	static String optFilePath;
-	static final int defaultResX = 1200;
-	static final int defaultResY = 700;
+	public static final boolean defaultFullscreen = false; 
+	public static final String optFileName = ".bajnarola.conf";
+	public static String optFilePath;
+	public static final int defaultResX = 1200;
+	public static final int defaultResY = 700;
+	public static final String defaultPlayerName = "Username";
+	public static final String defaultLobbyHost = "localhost";
 	
 	int resx = defaultResX, resy = defaultResY;
 	boolean fullscreen = defaultFullscreen;
 	
+	String lobbyHost = defaultLobbyHost, playerName = defaultPlayerName;
 	int lobbyPort = BajnarolaRegistry.DEFAULT_LOBBY_PORT;
 	
 	public GameOptions()  {
@@ -69,9 +83,11 @@ public class GameOptions {
 		try {
 			prop.load(new FileInputStream(optFilePath));
 			if (prop.isEmpty()) {
-				storeConfig(prop);
+				storeViewConfig(prop);
+				storeLobbyConfig(prop);
 			} else {
-				loadConfig(prop);
+				loadViewConfig(prop);
+				loadLobbyConfig(prop);
 			}
 		} catch (IOException|NullPointerException e) {
 			e.printStackTrace();
@@ -105,21 +121,39 @@ public class GameOptions {
 		
 		if (splittedURI.length == 2) 
 			lobbyPort = Integer.parseInt(splittedURI[1]);	
+		else 
+			lobbyPort = BajnarolaRegistry.DEFAULT_LOBBY_PORT;
 	}
 	
-
 	public void setViewOptions(int resx, int resy, boolean fullscreen) {
 		this.resx = resx;
 		this.resy = resy;
 		this.fullscreen = fullscreen;
-		storeConfig();
+		storeConfig(true);
 	}
+
 	
 	public ViewOptions getViewOptions(){
 		return new ViewOptions(resx, resy, fullscreen);
 	}
 	
-	private void storeConfig(Properties prop) throws IOException {
+	public LobbyOptions getLobbyOptions(){
+		String lobbyUri = this.lobbyHost;
+		
+		if (lobbyPort != BajnarolaRegistry.DEFAULT_LOBBY_PORT)
+			lobbyUri += ":" + Integer.toString(lobbyPort);
+		
+		return new LobbyOptions(lobbyUri, this.playerName);
+	}
+	
+	public void storeLobbyConfig(Properties prop) throws IOException {
+		prop.setProperty("playerName", playerName);
+		prop.setProperty("lobbyHost", lobbyHost);
+		prop.setProperty("lobbyPort", Integer.toString(lobbyPort));
+		prop.store(new FileOutputStream(optFilePath), "game options");
+	}
+	
+	private void storeViewConfig(Properties prop) throws IOException {
 
 		prop.setProperty("resx", Integer.toString(resx));
 		prop.setProperty("resy", Integer.toString(resy));
@@ -128,18 +162,21 @@ public class GameOptions {
 
 	}
 	
-	public void storeConfig() {
+	public void storeConfig(boolean viewOptions) {
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream(optFilePath));
-			storeConfig(prop);
+			if (viewOptions)
+				storeViewConfig(prop);
+			else 
+				storeLobbyConfig(prop);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Can't access to the config file");
 		}
 	}
 	
-	private void loadConfig(Properties prop) {
+	private void loadViewConfig(Properties prop) {
 		String tmp;
 		if ((tmp = prop.getProperty("resx")) != null)
 				resx = Integer.parseInt(tmp);
@@ -149,17 +186,14 @@ public class GameOptions {
 			fullscreen = Boolean.parseBoolean(tmp);
 	}
 	
-	public void loadConfig() {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileInputStream(optFilePath));
-			if (!prop.isEmpty())
-				loadConfig(prop);
-			
-		} catch (IOException|NullPointerException e) {
-			e.printStackTrace();
-			System.err.println("Can't access to the config file");
-		}
+	private void loadLobbyConfig(Properties prop) {
+		String tmp;
+		if ((tmp = prop.getProperty("playerName")) != null)
+				this.playerName = tmp;
+		if ((tmp = prop.getProperty("lobbyHost")) != null)
+			this.lobbyHost = tmp;
+		if ((tmp = prop.getProperty("lobbyPort")) != null)
+			this.lobbyPort = Integer.parseInt(tmp);
 	}
 	
 	
