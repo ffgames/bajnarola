@@ -89,7 +89,8 @@ public class GameScene extends IScene {
 		
 		zoomButton = new Button(minWindowSize/10, minWindowSize/10, guiManager.windowWidth-(minWindowSize/10), minWindowSize/10, new Image("res/misc/zoomOut.png"), new Image("res/misc/zoomIn.png"));
 		confirmButton = new Button(minWindowSize/4, minWindowSize/10, guiManager.windowWidth/2, guiManager.windowHeight-(minWindowSize/20),
-				 new Image("res/menu/confirmInactive.png"), new Image("res/menu/confirmActive.png"), new Image("res/menu/confirmDisabled.png"));
+				 new Image("res/menu/placeInactive.png"), new Image("res/menu/placeActive.png"), new Image("res/menu/placeDisabled.png"));
+		confirmButton.setSecImages(new Image("res/menu/confirmInactive.png"), new Image("res/menu/confirmActive.png"), new Image("res/menu/confirmDisabled.png"));
 		confirmButton.deactivate();
 		
 		curtain = new Image("res/misc/gray.png");
@@ -377,6 +378,7 @@ public class GameScene extends IScene {
 		}
 		probedX = probedY = 0;
 		confirmButton.disable();
+		confirmButton.setPrimary(true);
 		turnMeepleSide = -1;
 	}
 	
@@ -406,7 +408,7 @@ public class GameScene extends IScene {
 	
 	@Override
 	public void leftClick(int x, int y) {
-		if(zoomable && zoomButton.isClicked(x, y)){
+		if(zoomable && zoomButton.hits(x, y)){
 			if(zoomOutView)
 				zoomButton.deactivate();
 			else
@@ -418,6 +420,7 @@ public class GameScene extends IScene {
 				if(!dimscreen){
 					possibleMeeples = guiManager.controller.place(probedX, probedY);
 					dimscreen = true;
+					confirmButton.setPrimary(false);
 				} else {
 					guiManager.controller.placeMeeple(turnMeepleSide);
 					endTurn();
@@ -443,8 +446,11 @@ public class GameScene extends IScene {
 						if(turnMeepleSide != i){
 							turnMeepleSide = (short) i;
 							currentPlayerMeeple.setCoordinates(tmpMeeples[i].hitbox);
-						} else 
+							confirmButton.setPrimary(true);
+						} else {
 							turnMeepleSide = -1;
+							confirmButton.setPrimary(false);
+						}
 					}
 				}
 			}
