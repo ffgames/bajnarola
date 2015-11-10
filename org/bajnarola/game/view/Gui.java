@@ -214,10 +214,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
-				if(currentUpdate.points == null && currentUpdate.placedTile == null){
+				if(currentUpdate.points == null && currentUpdate.placedTile == null && currentUpdate.scores == null){ //end game
 					currentUpdate = null;
 					updateEndgameScene();
-				} else {
+				} else if(currentUpdate.placedTile != null){	//regular turn
 					animator.enableTilePlacement();
 					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
 						animator.enableMeeplePlacement();
