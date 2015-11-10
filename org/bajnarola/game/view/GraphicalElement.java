@@ -9,7 +9,7 @@ public class GraphicalElement extends Image {
 	HitBox hitbox;
 	
 	int globalCenterX, globalCenterY, size, direction = 0;
-	int scaledX, scaledY, scaledSize;
+	protected int scaledX, scaledY, scaledSize;
 	
 	boolean isMultiDirection;
 	Image dirImages[] = null;
@@ -101,10 +101,10 @@ public class GraphicalElement extends Image {
 		return hitbox.hits(x, y, viewOffX, viewOffY);
 	}
 	
-	private void setScaledVals(float smallScaleFactor){
+	protected void setScaledVals(float smallScaleFactor){
 		scaledSize = (int)(size * smallScaleFactor);
 		int windowCenterX = (int)((float)scene.guiManager.windowWidth/2);
-		int windowCenterY = (int)((float)(scene.guiManager.windowHeight-scene.turnTile.size+scaledSize)/2);
+		int windowCenterY = (int)((float)(scene.guiManager.windowHeight-scene.turnTileSize+scaledSize)/2);
 		scaledX = windowCenterX + (int)((((float)(GameScene.getLogicalX(coords)+scene.logicalCenterX))-0.5)*scaledSize);
 		scaledY = windowCenterY - (int)((((float)(GameScene.getLogicalY(coords)-scene.logicalCenterY))+0.5)*scaledSize);
 	}
