@@ -16,7 +16,7 @@ public class MainClass {
 	
 	private static int seed = -1; 
 	
-	public static final boolean debugPlay = true;
+	public static final boolean debugPlay = false;
 	
 	public static void main(String[] argv) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		LobbyClient     iLobby  = null;
