@@ -36,7 +36,7 @@ public class City extends LandscapeElement {
 			openSides -= 2;
 		} else {
 			openSides += ((City)el).getOpenSides() - 2;
-			updateValue(el.getValue());
+			updateValue(el.value);
 			relink(el);
 		}
 		
@@ -60,6 +60,13 @@ public class City extends LandscapeElement {
 		
 		if (openSides <= 0)
 			complete();
+	}
+
+	@Override
+	public short getValue(boolean endGame) {
+		if(endGame)
+			return (short)(value/2);
+		return value;
 	}
 
 

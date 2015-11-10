@@ -44,9 +44,7 @@ public abstract class LandscapeElement {
 		return false;
 	}
 	
-	public short getValue() {
-		return this.value;
-	}
+	public abstract short getValue(boolean endGame);
 	
 	public List<Tile> getTiles(){
 		return this.tiles;

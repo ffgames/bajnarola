@@ -430,7 +430,7 @@ public class Board {
 	private static final Map<String, Boolean> checkScores(LandscapeElement ls, boolean endGame, List<String> scores) {
 		if (ls != null && (ls.isCompleted() || endGame)){	
 			List<Player> owners = ls.getScoreOwners();
-			short score = ls.getValue();
+			short score = ls.getValue(endGame);
 			
 			for(Player o : owners){
 				o.setScore((short)(o.getScore() + score));

@@ -23,5 +23,10 @@ public class Cloister extends LandscapeElement {
 		if (tiles.size() >= 9)
 			complete();
 	}
+
+	@Override
+	public short getValue(boolean endGame) {
+		return value;
+	}
 	
 }

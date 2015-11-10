@@ -71,7 +71,7 @@ public class Debugger {
 		if(element != null)
 			System.out.printf("\tcompleted: %s\n\townersCount: %d\n\ttilesCount: %d\n\troot: %s\n\tvalue: %d\n", 
 				stringBool(element.isCompleted()), element.getScoreOwners().size(), 
-				element.getTiles().size(), stringTile(element.getElementRoot()), element.getValue());
+				element.getTiles().size(), stringTile(element.getElementRoot()), element.getValue(false));
 		else
 			System.out.printf("\tNULL\n");
 		if(separe)

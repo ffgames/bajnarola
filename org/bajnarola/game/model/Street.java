@@ -32,7 +32,7 @@ public class Street extends LandscapeElement {
 		if (streetEnds >= 2)
 			this.complete();
 		
-		updateValue(st.getValue());
+		updateValue(st.value);
 	}
 
 	@Override
@@ -49,6 +49,12 @@ public class Street extends LandscapeElement {
 			this.complete();
 		
 		updateValue((short)1);
+	}
+
+
+	@Override
+	public short getValue(boolean endGame) {
+		return value;
 	}
 
 }
