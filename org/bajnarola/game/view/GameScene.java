@@ -25,7 +25,7 @@ public class GameScene extends IScene {
 	private List<GraphicalMeeple> meeplesToRemove;
 	public GraphicalMeeple meepleToPlace;
 	public GraphicalTile tileToPlace;
-	private int tileSize, meepleSize;
+	public int tileSize, meepleSize;
 	private int currentScoreGlobalX, currentScoreGlobalY, currentScoreVal;
 	
 	//HUD
@@ -43,7 +43,8 @@ public class GameScene extends IScene {
 	private List<HitBox> holes;
 	private boolean possibleMeeples[];
 	private boolean zoomOutView, zoomable;
-	private int turnTileCx, turnTileCy, turnTileSize;
+	private int turnTileCx, turnTileCy;
+	public int turnTileSize;
 	private int meeplesInHand;
 	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private int probedX, probedY;
@@ -134,7 +135,7 @@ public class GameScene extends IScene {
 		
 		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
 		for(short i = 0; i < Tile.SIDE_COUNT; i++)
-			tmpMeeples[i] = new GraphicalMeeple(this, 42, "", getMeepleCoordX(turnTileCx, turnTileSize, i), getMeepleCoordY(turnTileCy, turnTileSize, i), turnTileSize/4);
+			tmpMeeples[i] = new GraphicalMeeple(this, 42, "", i, getMeepleCoordX(turnTileCx, turnTileSize, i), getMeepleCoordY(turnTileCy, turnTileSize, i), turnTileSize/4);
 		
 		currentPlayerMeeple = null;
 		
@@ -143,7 +144,7 @@ public class GameScene extends IScene {
 	}
 
 	public void initPlayerMeeple(int playerId) throws SlickException{
-		currentPlayerMeeple = new GraphicalMeeple(this, playerId, "", 0, 0, turnTileSize/4);
+		currentPlayerMeeple = new GraphicalMeeple(this, playerId, "", (short)-1, 0, 0, turnTileSize/4);
 		
 		handMeeples = new GraphicalElement[7];
 		int handMeepleSize = confirmButton.hitbox.ulx/9;
@@ -358,7 +359,7 @@ public class GameScene extends IScene {
 		setViewScaleValues(lx, ly);
 		
 		if(tile.hasMeeple()){
-			meepleToPlace = new GraphicalMeeple(this, tile.getMeeple().getOwner().getId(), coords, 
+			meepleToPlace = new GraphicalMeeple(this, tile.getMeeple().getOwner().getId(), coords, tile.getMeeple().getTileSide(),
 					getMeepleCoordX(getGlobalCoordX(lx), tileSize, tile.getMeeple().getTileSide()),
 					getMeepleCoordY(getGlobalCoordY(ly), tileSize, tile.getMeeple().getTileSide()), meepleSize);
 			return true;
@@ -636,7 +637,7 @@ public class GameScene extends IScene {
 	
 	// ##  COORDINATES MANAGEMENT  ##
 	
-	private int getMeepleCoordX(int tileCenterX, int tileSize, short meeplePos){
+	public int getMeepleCoordX(int tileCenterX, int tileSize, short meeplePos){
 		switch(meeplePos){
 			case Tile.SIDE_LEFT:
 				return tileCenterX-(tileSize/3);
@@ -647,7 +648,7 @@ public class GameScene extends IScene {
 		}
 	}
 	
-	private int getMeepleCoordY(int tileCenterY, int tileSize, short meeplePos){
+	public int getMeepleCoordY(int tileCenterY, int tileSize, short meeplePos){
 		switch(meeplePos){
 			case Tile.SIDE_TOP:
 				return tileCenterY-(tileSize/3);
