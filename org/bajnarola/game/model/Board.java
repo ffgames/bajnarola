@@ -31,7 +31,7 @@ import org.bajnarola.utils.Shuffler;
 
 public class Board {
 	
-	public static final int TOTAL_TILES_COUNT = 10;
+	public static final int TOTAL_TILES_COUNT = 72;
 	
 	int turn;
 	Hashtable<String, Tile> scenario;
