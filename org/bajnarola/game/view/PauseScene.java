@@ -47,22 +47,16 @@ public class PauseScene extends IScene {
 
 	@Override
 	public void rightClick(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void wheelMoved(boolean up) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void enterPressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 
@@ -74,8 +68,6 @@ public class PauseScene extends IScene {
 
 	@Override
 	public void backspacePressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -87,26 +79,18 @@ public class PauseScene extends IScene {
 
 	@Override
 	public void leftRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void rightRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

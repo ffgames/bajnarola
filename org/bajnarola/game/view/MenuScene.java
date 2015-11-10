@@ -72,26 +72,18 @@ public class MenuScene extends IScene {
 
 	@Override
 	public void leftRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void rightRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

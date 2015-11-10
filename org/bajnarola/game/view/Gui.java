@@ -1,6 +1,8 @@
 package org.bajnarola.game.view;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bajnarola.game.GameOptions.ViewOptions;
 import org.bajnarola.game.controller.ViewController;
@@ -193,7 +195,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 				if(currentUpdate.points == null && currentUpdate.placedTile == null){
 					currentUpdate = null;
 					updateEndgameScene();
-					return; //XXX: right??
 				} else {
 					animator.enableTilePlacement();
 					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
@@ -248,7 +249,27 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 	
 	private void updateEndgameScene(){
-		//TODO: get endgame stats from controller and set engame scene
+		endgameScene.setWinner(controller.amIWinner());
+		switch(controller.getEndCause()){
+			case deckEmpty:
+				endgameScene.setCause("Game Ended");
+				break;
+			case lastPlayer:
+				endgameScene.setCause("Last Remainig Player");
+				break;
+			case notEnded:
+				//XXX: wtf?
+				break;
+		}
+		Map<String, Integer> finalScores = controller.getFinalScores();
+		List<String> scoreStrings = new ArrayList<String>();
+		
+		for(String s : finalScores.keySet()){
+			scoreStrings.add(s+": "+finalScores.get(s));
+		}
+		endgameScene.setScores(scoreStrings);
+		
+		switchScene(scene_type.SCENE_ENDGAME);
 	}
 	
 	@Override
@@ -379,6 +400,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public ViewOptions getResolutionOptions() {
 		return this.controller.getViewOptions();
+	}
+	
+	public void drawString(String str, Graphics g, int x, int y){
+		g.drawString(str, x, y);
 	}
 	
 	public void exit(){

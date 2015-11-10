@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -163,25 +162,19 @@ public class OptionsScene extends IScene {
 		}
 		
 		if (backButton.isClicked(x, y))
-			guiManager.switchScene(scene_type.SCENE_MENU);
+			guiManager.switchScene(prevScene);
 	}
 
 	@Override
 	public void rightClick(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void wheelMoved(boolean up) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void enterPressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -191,8 +184,6 @@ public class OptionsScene extends IScene {
 
 	@Override
 	public void backspacePressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -219,26 +210,18 @@ public class OptionsScene extends IScene {
 
 	@Override
 	public void leftRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void rightRelease(int x, int y) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

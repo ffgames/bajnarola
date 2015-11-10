@@ -18,8 +18,6 @@ public class GuiThread  extends AppGameContainer implements Runnable{
 		try {
 			this.start();
 		} catch (SlickException e) {
-			// TODO Auto-generated catch block
-
 			e.printStackTrace();
 		} finally {
 			System.out.println("Exit X");

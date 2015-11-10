@@ -101,6 +101,7 @@ public class BajnarolaClient {
 		tmpplayers.clear();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> Map<String,T> multicastInvoke(Method m) {
 		GameControllerRemote cGameBoard;
 		Map <String,T> retMap = new Hashtable<String,T>();

@@ -477,8 +477,6 @@ public class GameScene extends IScene {
 
 	@Override
 	public void enterPressed() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -488,8 +486,6 @@ public class GameScene extends IScene {
 
 	@Override
 	public void backspacePressed() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
