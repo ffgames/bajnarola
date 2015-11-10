@@ -200,6 +200,7 @@ public class LobbyScene extends IScene {
 	public void keyPressed(int key, char c) {
 		if (selectedInputBox != null) {
 			if (key == Input.KEY_BACK) {
+				framecount = 35;
 				backPressed = true;
 				selectedInputBox.delChar();
 			} else if (key == Input.KEY_TAB ) {
@@ -221,7 +222,8 @@ public class LobbyScene extends IScene {
 				if (selectedInputBox.text.equals(GameOptions.defaultPlayerName))
 					selectedInputBox.initialize();
 				/* TODO: escape input for lobbyURI */
-				selectedInputBox.putChar(c); 
+				if (c != 0)
+					selectedInputBox.putChar(c); 
 			}
 		}
 	}
@@ -229,16 +231,17 @@ public class LobbyScene extends IScene {
 	@Override
 	public void keyReleased(int key, char c) {
 		backPressed = false;
-		framecount = 35;
 	}
 	
 	@Override
 	public void render(GameContainer gc, Graphics g) {
-		if (framecount <= 0 && backPressed) {
-			selectedInputBox.delChar();
-			framecount = 3;
-		}
-		framecount--;
+		if (backPressed) {
+			framecount--;
+			if (framecount <= 0) {
+				selectedInputBox.delChar();
+				framecount = 3;
+			}
+		} 
 		
 		guiManager.drawBackground(background, backgroundType);
 		unameInputBox.draw(guiManager);
