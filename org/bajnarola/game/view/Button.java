@@ -37,15 +37,11 @@ public class Button {
 		}
 	}
 	
-	public Button(int width, int height, int centerX, int centerY,
-	              Image inactiveImage,Image activeImage){
-	
+	public Button(int width, int height, int centerX, int centerY, Image inactiveImage, Image activeImage){
 		this(width, height, centerX, centerY, null, null, inactiveImage, activeImage, null);
 	}
 	
-	public Button(int width, int height, int centerX, int centerY,
-            Image inactiveImage,Image activeImage, Image disabledImage){
-
+	public Button(int width, int height, int centerX, int centerY, Image inactiveImage, Image activeImage, Image disabledImage){
 		this(width, height, centerX, centerY, null, null, inactiveImage, activeImage, disabledImage);
 	}
 	
@@ -55,6 +51,14 @@ public class Button {
 	
 	public Button(int width, int height, int centerX, int centerY, String text){
 		this(width, height, centerX, centerY, text, Gui.buttonFont, Gui.buttonInactiveBg, Gui.buttonActiveBg, Gui.buttonDisabledBg);
+	}
+	
+	public Button(int width, int height, int centerX, int centerY, String text, Image inactiveImage, Image activeImage, Image disabledImage){
+		this(width, height, centerX, centerY, text, Gui.buttonFont, inactiveImage, activeImage, disabledImage);
+	}
+	
+	public Button(int width, int height, int centerX, int centerY, String text, Image inactiveImage, Image activeImage){
+		this(width, height, centerX, centerY, text, inactiveImage, activeImage, null);
 	}
 	
 	public void setSecText(String text){
@@ -121,14 +125,15 @@ public class Button {
 		if(active){
 			bg = activeImage;
 			color = activeColor;
-		} else if (disabled && disabledImage != null) {
+		} else if (disabled) {
 			bg = disabledImage;
 			color = disabledColor;
 		} else {
 			bg = inactiveImage;
 			color = inactiveColor;
 		}
-		bg.draw(hitbox.ulx, hitbox.uly, width, height);
+		if(bg != null)
+			bg.draw(hitbox.ulx, hitbox.uly, width, height);
 		if(str != null && !str.isEmpty() && font != null)
 			font.drawString(sx, sy, str, color);
 	}

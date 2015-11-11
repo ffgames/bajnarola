@@ -90,7 +90,7 @@ public class GameScene extends IScene {
 		
 		zoomButton = new Button(minWindowSize/10, minWindowSize/10, guiManager.windowWidth-(minWindowSize/10), minWindowSize/10, new Image("res/misc/zoomOut.png"), new Image("res/misc/zoomIn.png"));
 		confirmButton = new Button(minWindowSize/4, minWindowSize/10, guiManager.windowWidth/2, guiManager.windowHeight-(minWindowSize/20),
-				 "Place");
+				 "Place", new Image("res/menu/buttonInactiveAlpha.png"), new Image("res/menu/buttonActiveAlpha.png"), new Image("res/menu/buttonDisabledAlpha.png"));
 		confirmButton.setSecText("Confirm");
 		confirmButton.deactivate();
 		
