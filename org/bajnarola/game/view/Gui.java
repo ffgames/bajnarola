@@ -130,7 +130,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 			throw new SlickException(e.getMessage());
 		}
 		
-		toggleSound(true);//controller.getSoundOnOption());
+		toggleSound(controller.getSoundOnOption());
 			
 		//TODO: set font size based on window size
 		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
@@ -199,7 +199,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		container.setSoundOn(state);
 		if(state && currentSong != null)
 			currentSong.loop();
-		//controller.setSoundOnOpion(state);
+		controller.setSoundOnOpion(state);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){
