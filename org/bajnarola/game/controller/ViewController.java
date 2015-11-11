@@ -211,8 +211,16 @@ public class ViewController {
 		this.gameCtl.getGameOptions().setViewOptions(resx, resy, fullscreen);
 	}
 	
+	public void setSoundOnOption(boolean soundOn) {
+		this.gameCtl.getGameOptions().setSoundOnOption(soundOn);
+	}
+	
 	public ViewOptions getViewOptions() {
 		return this.gameCtl.getGameOptions().getViewOptions();
+	}
+	
+	public boolean getSoundOnOption() {
+		return this.gameCtl.getGameOptions().isSoundOn();
 	}
 	
 	public LobbyOptions getLobbyOptions() {

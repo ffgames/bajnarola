@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bajnarola.game.GameOptions.ConfigType;
 import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.game.controller.GameController;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
@@ -108,7 +109,7 @@ public class MainClass {
 				}
 			}
 			
-			goptions.storeConfig(false);
+			goptions.storeConfig(ConfigType.LOBBY);
 			
 			iClient.getPlayers(players);
 			

@@ -199,7 +199,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		container.setSoundOn(state);
 		if(state && currentSong != null)
 			currentSong.loop();
-		controller.setSoundOnOpion(state);
+		controller.setSoundOnOption(state);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){

@@ -50,6 +50,12 @@ public class GameOptions {
 		
 	}
 	
+	public static enum ConfigType {
+		VIDEO,
+		SOUND,
+		LOBBY
+	}
+	
 	public static final boolean defaultFullscreen = false; 
 	public static final String optFileName = ".bajnarola.conf";
 	public static String optFilePath;
@@ -57,9 +63,11 @@ public class GameOptions {
 	public static final int defaultResY = 700;
 	public static final String defaultPlayerName = "Username";
 	public static final String defaultLobbyHost = "localhost";
+	public static final boolean defaultSoundOn = true;
 	
 	int resx = defaultResX, resy = defaultResY;
 	boolean fullscreen = defaultFullscreen;
+	boolean soundOn = defaultSoundOn;
 	
 	String lobbyHost = defaultLobbyHost, playerName = defaultPlayerName;
 	int lobbyPort = BajnarolaRegistry.DEFAULT_LOBBY_PORT;
@@ -85,9 +93,12 @@ public class GameOptions {
 			if (prop.isEmpty()) {
 				storeViewConfig(prop);
 				storeLobbyConfig(prop);
+				storeSoundConfig(prop);
+				prop.store(new FileOutputStream(optFilePath), "game options");
 			} else {
 				loadViewConfig(prop);
 				loadLobbyConfig(prop);
+				loadSoundConfig(prop);
 			}
 		} catch (IOException|NullPointerException e) {
 			e.printStackTrace();
@@ -96,7 +107,6 @@ public class GameOptions {
 		
 		
 		if (fullscreen) {
-			//Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 			DisplayMode mode;
 			mode = Display.getDisplayMode();
 			resx = mode.getWidth();
@@ -129,9 +139,17 @@ public class GameOptions {
 		this.resx = resx;
 		this.resy = resy;
 		this.fullscreen = fullscreen;
-		storeConfig(true);
+		storeConfig(ConfigType.VIDEO);
 	}
 
+	public void setSoundOnOption(boolean soundOn) {
+		this.soundOn = soundOn;
+		storeConfig(ConfigType.SOUND);
+	}
+	
+	public boolean isSoundOn() {
+		return soundOn;
+	}
 	
 	public ViewOptions getViewOptions(){
 		return new ViewOptions(resx, resy, fullscreen);
@@ -146,11 +164,14 @@ public class GameOptions {
 		return new LobbyOptions(lobbyUri, this.playerName);
 	}
 	
-	public void storeLobbyConfig(Properties prop) throws IOException {
+	private void storeSoundConfig(Properties prop) throws IOException {
+		prop.setProperty("soundOn", Boolean.toString(soundOn));
+	}
+	
+	private void storeLobbyConfig(Properties prop) throws IOException {
 		prop.setProperty("playerName", playerName);
 		prop.setProperty("lobbyHost", lobbyHost);
 		prop.setProperty("lobbyPort", Integer.toString(lobbyPort));
-		prop.store(new FileOutputStream(optFilePath), "game options");
 	}
 	
 	private void storeViewConfig(Properties prop) throws IOException {
@@ -158,22 +179,36 @@ public class GameOptions {
 		prop.setProperty("resx", Integer.toString(resx));
 		prop.setProperty("resy", Integer.toString(resy));
 		prop.setProperty("fullscreen", Boolean.toString(fullscreen));
-		prop.store(new FileOutputStream(optFilePath), "game options");
-
 	}
 	
-	public void storeConfig(boolean viewOptions) {
+	public void storeConfig(ConfigType type) {
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream(optFilePath));
-			if (viewOptions)
+			
+			switch(type) {
+			case VIDEO:
 				storeViewConfig(prop);
-			else 
+				break;
+			case SOUND:
+				storeSoundConfig(prop);
+				break;
+			case LOBBY:
 				storeLobbyConfig(prop);
+				break;
+			}
+			
+			prop.store(new FileOutputStream(optFilePath), "game options");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Can't access to the config file");
 		}
+	}
+	
+	private void loadSoundConfig(Properties prop) {
+		String tmp;
+		if ((tmp = prop.getProperty("soundOn")) != null)
+			soundOn = Boolean.parseBoolean(tmp);
 	}
 	
 	private void loadViewConfig(Properties prop) {
@@ -195,7 +230,6 @@ public class GameOptions {
 		if ((tmp = prop.getProperty("lobbyPort")) != null)
 			this.lobbyPort = Integer.parseInt(tmp);
 	}
-	
 	
 	public String getLobbyHost() {
 		return this.lobbyHost;
