@@ -198,7 +198,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		container.setMusicOn(state);
 		container.setSoundOn(state);
 		if(state && currentSong != null)
-			currentSong.loop();
+			currentSong.play();
 		controller.setSoundOnOption(state);
 	}
 	
@@ -444,20 +444,22 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 	
 	public void playMusic(Music song){
-		currentSong = song;
-		song.addListener(new MusicListener() {
-			@Override
-			public void musicSwapped(Music music, Music newMusic) {}
-			
-			@Override
-			public void musicEnded(Music music) {
-				if(currentScene.soundtrack != null){
-					currentScene.currentSong = (currentScene.currentSong+1)%currentScene.soundtrack.size();
-					playMusic(currentScene.soundtrack.get(currentScene.currentSong));
+		if(currentSong != song){
+			currentSong = song;
+			song.addListener(new MusicListener() {
+				@Override
+				public void musicSwapped(Music music, Music newMusic) {}
+				
+				@Override
+				public void musicEnded(Music music) {
+					if(currentScene.soundtrack != null){
+						currentScene.currentSong = (currentScene.currentSong+1)%currentScene.soundtrack.size();
+						playMusic(currentScene.soundtrack.get(currentScene.currentSong));
+					}
 				}
-			}
-		});
-		song.loop();
+			});
+			song.play();
+		}
 	}
 	
 	public void setPlayerMeepleColor(int playerId){
