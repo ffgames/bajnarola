@@ -14,6 +14,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 
 public class GameScene extends IScene {
@@ -68,8 +69,8 @@ public class GameScene extends IScene {
 	
 	// ##  INIT  ##
 	
-	public GameScene(Gui guiManager, Image background, bg_type backgroundType, List<String> scores, String currentPlScore) throws SlickException {
-		super(guiManager, background, backgroundType);
+	public GameScene(Gui guiManager, Image background, bg_type backgroundType, List<Music> soundtrack, List<String> scores, String currentPlScore) throws SlickException {
+		super(guiManager, background, backgroundType, soundtrack);
 		resizer = RelativeSizes.getInstance();
 		sceneType = scene_type.SCENE_GAME;
 		int minWindowSize = (guiManager.windowHeight < guiManager.windowWidth ? guiManager.windowHeight : guiManager.windowWidth); 

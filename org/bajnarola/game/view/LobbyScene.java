@@ -1,6 +1,7 @@
 package org.bajnarola.game.view;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 import org.bajnarola.game.GameOptions;
 import org.bajnarola.game.view.Gui.bg_type;
@@ -10,6 +11,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 
 
@@ -53,8 +55,8 @@ public class LobbyScene extends IScene {
 	}
 	
 	public LobbyScene(Gui guiManager, Image background, 
-	                  bg_type backgroundType, Font font) throws SlickException {
-		super(guiManager, background, backgroundType);
+	                  bg_type backgroundType, List<Music> soundtrack, Font font) throws SlickException {
+		super(guiManager, background, backgroundType, soundtrack);
 		
 		this.font = font;
 		

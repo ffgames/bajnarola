@@ -1,18 +1,21 @@
 package org.bajnarola.game.view;
 
+import java.util.List;
+
 import org.bajnarola.game.view.Gui.bg_type;
 import org.bajnarola.game.view.Gui.scene_type;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 
 public class PauseScene extends IScene {
 	
 	Button continueButton, optionButton, exitButton;
 
-	public PauseScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
-		super(guiManager, background, backgroundType);
+	public PauseScene(Gui guiManager, Image background, bg_type backgroundType, List<Music> soundtrack) throws SlickException {
+		super(guiManager, background, backgroundType, soundtrack);
 		sceneType = scene_type.SCENE_PAUSE;
 		
 		continueButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4, 

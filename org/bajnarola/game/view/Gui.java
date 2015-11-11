@@ -21,6 +21,8 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Music;
+import org.newdawn.slick.MusicListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.command.BasicCommand;
@@ -32,6 +34,14 @@ import org.newdawn.slick.command.KeyControl;
 public class Gui extends BasicGame implements InputProviderListener {
 	
 	static final String GAMENAME = "Bajnarola";
+	static final String MUSIC_EXT = ".ogg";
+	
+	static final int MENU_SONG_COUNT = 1;
+	static final int GAME_SONG_COUNT = 2;
+	static final int PAUSE_SONG_COUNT = 0;
+	static final int OPTIONS_SONG_COUNT = 0;
+	static final int LOBBY_SONG_COUNT = 0;
+	static final int ENDGAME_SONG_COUNT = 0;
 	
 	private InputProvider provider;
 	private Input rawInput;
@@ -83,6 +93,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private List<String> holes;
 	private Tile newTile;
 	
+	private Music currentSong = null;
+	
+	private boolean soundOn; 
+	
 	public Gui(ViewController controller){
 		super(GAMENAME);
 		this.controller = controller;
@@ -92,6 +106,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	@Override
 	public void init(GameContainer gc) throws SlickException {
+		container = gc;
+		
 		provider = new InputProvider(gc.getInput());
 		provider.addListener(this);
 
@@ -113,7 +129,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		} catch (FontFormatException | IOException e) {
 			throw new SlickException(e.getMessage());
 		}
-
+		
+		toggleSound(true);//controller.getSoundOnOption());
+			
 		//TODO: set font size based on window size
 		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
 		buttonFont = new TrueTypeFont(trueTypeFont.deriveFont(50f), true);
@@ -125,7 +143,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		windowHeight = gc.getHeight();
 		windowWidth = gc.getWidth();
 
-		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED);
+		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED, genSountrack("menu", MENU_SONG_COUNT));
 		
 		Image boardBackground;
 		if(gc.getHeight() > 800){
@@ -135,31 +153,53 @@ public class Gui extends BasicGame implements InputProviderListener {
 		} else
 			boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
 
-		gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, controller.getScores(), controller.getCurrentPlayerScore());
+		gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, genSountrack("game", GAME_SONG_COUNT), controller.getScores(), controller.getCurrentPlayerScore());
 
-		pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
+		pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED, genSountrack("pause", PAUSE_SONG_COUNT));
 
-		optionsScene = new OptionsScene(this, null, null);
+		optionsScene = new OptionsScene(this, null, null, genSountrack("options", OPTIONS_SONG_COUNT));
 
-		endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED);
+		endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED, genSountrack("endgame", ENDGAME_SONG_COUNT));
 
 		//TODO: wooden table should be lobby screen background
-		lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, mainFont);
+		lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, genSountrack("lobby", LOBBY_SONG_COUNT), mainFont);
 
-		if (currentScene == null)
-			currentScene = menuScene;
+		if (currentScene == null){
+			switchScene(scene_type.SCENE_MENU);
+		}
 		else 
 			switchScene(currentScene.sceneType);
 
 		currentUpdate = null;
-
-		container = gc;
 
 		gc.setShowFPS(false);
 		gc.setTargetFrameRate(60);
 		gc.setUpdateOnlyWhenVisible(false);
 		//gc.setMouseGrabbed(true);
 		gc.setMouseCursor("res/misc/pointer.gif", 6, 5);
+	}
+	
+	private List<Music> genSountrack(String prefix, int count) throws SlickException{
+		if(count < 0)
+			return null;
+		List<Music> soundtrack = new ArrayList<Music>();
+		for(int i = 0; i < count; i++)
+			soundtrack.add(new Music("res/music/"+prefix+i+MUSIC_EXT));
+		
+		return soundtrack;
+	}
+	
+	public boolean getSoundOn(){
+		return soundOn;
+	}
+	
+	public void toggleSound(boolean state){
+		soundOn = state;
+		container.setMusicOn(state);
+		container.setSoundOn(state);
+		if(state && currentSong != null)
+			currentSong.loop();
+		//controller.setSoundOnOpion(state);
 	}
 	
 	public void drawBackground(Image background, bg_type backgroundType){
@@ -398,6 +438,26 @@ public class Gui extends BasicGame implements InputProviderListener {
 				currentScene = endgameScene;
 				break;
 		}
+		if(currentScene.soundtrack != null && !currentScene.soundtrack.isEmpty()){
+			playMusic(currentScene.soundtrack.get(currentScene.currentSong));
+		}
+	}
+	
+	public void playMusic(Music song){
+		currentSong = song;
+		song.addListener(new MusicListener() {
+			@Override
+			public void musicSwapped(Music music, Music newMusic) {}
+			
+			@Override
+			public void musicEnded(Music music) {
+				if(currentScene.soundtrack != null){
+					currentScene.currentSong = (currentScene.currentSong+1)%currentScene.soundtrack.size();
+					playMusic(currentScene.soundtrack.get(currentScene.currentSong));
+				}
+			}
+		});
+		song.loop();
 	}
 	
 	public void setPlayerMeepleColor(int playerId){

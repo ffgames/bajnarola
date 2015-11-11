@@ -9,6 +9,7 @@ import org.lwjgl.opengl.Display;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 
 public class OptionsScene extends IScene {
@@ -18,14 +19,14 @@ public class OptionsScene extends IScene {
 	List<Button> buttons;
 	Button buttonFullScreen, buttonRes1, buttonRes2, buttonRes3;
 	Button backButton;
-	Image container, msgLabel;
+	Image container;
 	float containerWidth, containerHeight;
 	float containerPosX, containerPosY;
 	
 	static final String restartLabel = "Restart game to make changes effective";
 	
-	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
-		super(guiManager, background, backgroundType);
+	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType, List<Music> soundtrack) throws SlickException {
+		super(guiManager, background, backgroundType, soundtrack);
 		prevScene = null;
 		sceneType = scene_type.SCENE_OPTIONS;
 		
@@ -71,7 +72,6 @@ public class OptionsScene extends IScene {
 		buttons.add(buttonFullScreen);
 
 		container = new Image("res/menu/optionsContainer.png");
-		msgLabel = new Image("res/menu/reslabel.png");
 			
 		int resx = guiManager.getResolutionOptions().getResx();
 		int resy = guiManager.getResolutionOptions().getResy();
@@ -176,7 +176,7 @@ public class OptionsScene extends IScene {
 		
 		guiManager.drawString(restartLabel, 
 		                      guiManager.windowWidth/2 -  Gui.mainFont.getWidth(restartLabel)/2,
-		                      (int) containerPosY + (int)((containerHeight - 50)/ 6 * 5), 
+		                      (int) containerPosY + (int)(containerHeight/ 6 * 5) - Gui.mainFont.getHeight(restartLabel), 
 		                      Button.inactiveColor);
 		
 		for (Button b : this.buttons)

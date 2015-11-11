@@ -8,6 +8,7 @@ import org.bajnarola.game.view.Gui.scene_type;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 
 public class EndgameScene extends IScene {
@@ -27,8 +28,8 @@ public class EndgameScene extends IScene {
 	
 	boolean redraw;
 	
-	public EndgameScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
-		super(guiManager, background, backgroundType);
+	public EndgameScene(Gui guiManager, Image background, bg_type backgroundType, List<Music> soundtrack) throws SlickException {
+		super(guiManager, background, backgroundType, soundtrack);
 		sceneType = scene_type.SCENE_ENDGAME;
 		
 		container = new Image("res/misc/bgbanner.png");
