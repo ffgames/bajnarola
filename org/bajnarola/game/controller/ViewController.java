@@ -62,6 +62,7 @@ public class ViewController {
 			gameOpt = gameCtl.getGameOptions();
 			ViewOptions viewOpt = gameOpt.getViewOptions();
 			GuiThread gt = new GuiThread(gui, viewOpt.getResx(), viewOpt.getResy(), viewOpt.isFullscreen());
+			gt.setIcon("res/misc/icon.png");
 			
 			Thread thread = new Thread(gt);
 						
