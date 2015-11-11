@@ -3,6 +3,8 @@
 JVERS=`java -version 2>&1 | head -n 1 | cut -d "\"" -f 2 | cut -d "_" -f 1`
 DEST_DIR="build/java_$JVERS"
 #Compile everything
+ant clean
+
 ant
 rmic org.bajnarola.game.controller.GameController \
      org.bajnarola.game.BajnarolaServer \
