@@ -525,8 +525,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 				
 				@Override
 				public void musicEnded(Music music) {
-					System.out.println("music end");
-
 					if(soundtrackScene.soundtrack != null){
 						soundtrackScene.currentSong = (soundtrackScene.currentSong + 1) % soundtrackScene.soundtrack.size();
 						playMusic(soundtrackScene.soundtrack.get(soundtrackScene.currentSong));
