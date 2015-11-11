@@ -6,8 +6,6 @@ import org.newdawn.slick.AppGameContainer;
 
 public class GuiThread  extends AppGameContainer implements Runnable{
 	
-	AppGameContainer gameContainer;
-	
 	public GuiThread(Gui bajnarolaGui, int resx, int resy, boolean fullscreen) throws SlickException {
 		super(bajnarolaGui, resx, resy, fullscreen);
 	}

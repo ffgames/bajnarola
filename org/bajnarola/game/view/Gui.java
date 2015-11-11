@@ -52,7 +52,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public enum bg_type {
 		BG_TILED,
-		BG_CENTERED
+		BG_CENTERED,
+		BG_STRETCHED
 	};
 	
 	public enum scene_type {
@@ -61,7 +62,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		SCENE_PAUSE,
 		SCENE_OPTIONS,
 		SCENE_LOBBY,
-		SCENE_ENDGAME
+		SCENE_ENDGAME,
+		SCENE_SPLASH
 	}
 	
 	public ViewController controller;
@@ -78,6 +80,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private OptionsScene optionsScene;
 	private EndgameScene endgameScene;
 	private LobbyScene lobbyScene;
+	private SplashScene splashScene;
 	
 	public ViewUpdate currentUpdate;
 	
@@ -95,11 +98,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	private Music currentSong = null;
 	
-	private boolean soundOn; 
+	private boolean soundOn;
+	private boolean initialized, resourcesSet;
 	
 	public Gui(ViewController controller){
 		super(GAMENAME);
 		this.controller = controller;
+		initialized = resourcesSet = false;
 	}
 	
 	private int playerId = -1;
@@ -108,17 +113,23 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public void init(GameContainer gc) throws SlickException {
 		container = gc;
 		
-		provider = new InputProvider(gc.getInput());
-		provider.addListener(this);
-
-		provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
-		provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
-		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
-		provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
-
 		//TODO: if fixed resolution is set through options avoid using fullscreen here
 		RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
-
+		
+		container.setShowFPS(false);
+		container.setTargetFrameRate(60);
+		container.setUpdateOnlyWhenVisible(false);
+		
+		windowHeight = container.getHeight();
+		windowWidth = container.getWidth();
+		
+		splashScene = new SplashScene(this, new Image("res/misc/splash.png"), bg_type.BG_CENTERED, null);
+		currentScene = splashScene;
+		initialized = true;
+	}
+	
+	
+	private void initResources() throws SlickException {
 		buttonActiveBg = new Image("res/menu/buttonActive.png");
 		buttonInactiveBg = new Image("res/menu/buttonInactive.png");
 		buttonDisabledBg = new Image("res/menu/buttonDisabled.png");
@@ -136,47 +147,52 @@ public class Gui extends BasicGame implements InputProviderListener {
 		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
 		buttonFont = new TrueTypeFont(trueTypeFont.deriveFont(50f), true);
 		
-		rawInput = new Input(gc.getScreenHeight());
+		rawInput = new Input(container.getScreenHeight());
+		
+		provider = new InputProvider(container.getInput());
+		provider.addListener(this);
+
+		provider.bindCommand(new KeyControl(Input.KEY_SPACE), rotateComm);
+		provider.bindCommand(new KeyControl(Input.KEY_BACK), backComm);
+		provider.bindCommand(new KeyControl(Input.KEY_ESCAPE), escComm);
+		provider.bindCommand(new KeyControl(Input.KEY_ENTER), enterComm);
+
 
 		animator = new Animator();
 
-		windowHeight = gc.getHeight();
-		windowWidth = gc.getWidth();
-
-		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED, genSountrack("menu", MENU_SONG_COUNT));
+		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_STRETCHED, genSountrack("menu", MENU_SONG_COUNT));
 		
 		Image boardBackground;
-		if(gc.getHeight() > 800){
+		if(container.getHeight() > 800){
 			boardBackground = new Image("res/backgrounds/Craggy_Rock_1024.jpg");
-		} else if(gc.getHeight() > 500){
+		} else if(container.getHeight() > 500){
 			boardBackground = new Image("res/backgrounds/Craggy_Rock_512.jpg");
 		} else
 			boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
 
 		gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, genSountrack("game", GAME_SONG_COUNT), controller.getScores(), controller.getCurrentPlayerScore());
 
-		pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED, genSountrack("pause", PAUSE_SONG_COUNT));
+		pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_STRETCHED, genSountrack("pause", PAUSE_SONG_COUNT));
 
 		optionsScene = new OptionsScene(this, null, null, genSountrack("options", OPTIONS_SONG_COUNT));
 
-		endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_CENTERED, genSountrack("endgame", ENDGAME_SONG_COUNT));
+		endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_STRETCHED, genSountrack("endgame", ENDGAME_SONG_COUNT));
 
 		//TODO: wooden table should be lobby screen background
 		lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, genSountrack("lobby", LOBBY_SONG_COUNT), mainFont);
 
-		if (currentScene == null){
+		currentUpdate = null;
+
+		//gc.setMouseGrabbed(true);
+		container.setMouseCursor("res/misc/pointer.gif", 6, 5);
+		
+		resourcesSet = true;
+		
+		if (currentScene == null || currentScene.sceneType == scene_type.SCENE_SPLASH){
 			switchScene(scene_type.SCENE_MENU);
 		}
 		else 
 			switchScene(currentScene.sceneType);
-
-		currentUpdate = null;
-
-		gc.setShowFPS(false);
-		gc.setTargetFrameRate(60);
-		gc.setUpdateOnlyWhenVisible(false);
-		//gc.setMouseGrabbed(true);
-		gc.setMouseCursor("res/misc/pointer.gif", 6, 5);
 	}
 	
 	private List<Music> genSountrack(String prefix, int count) throws SlickException{
@@ -210,9 +226,15 @@ public class Gui extends BasicGame implements InputProviderListener {
 			case BG_CENTERED:
 				drawBgCentered(background, background.getWidth(), background.getHeight());
 				break;
+			case BG_STRETCHED:
+				drawBgStretched(background, background.getWidth(), background.getHeight());
 			default:
 				break;
 		}
+	}
+	
+	private void drawBgStretched(Image background, int backgroundWidth, int backgroundHeight){
+		background.draw(0, 0, windowWidth, windowHeight);
 	}
 	
 	private void drawBgTiled(Image background, int backgroundWidth, int backgroundHeight){
@@ -251,6 +273,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 	@Override
 	public void update(GameContainer gc, int i) throws SlickException {
+		if(initialized && !resourcesSet){
+			initResources();
+		}
 		if(myTurn){
 			myTurn = false;
 			gameScene.beginTurn(holes, newTile);

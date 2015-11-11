@@ -16,7 +16,6 @@ import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.Gui;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import sun.misc.Lock;
@@ -31,8 +30,6 @@ public class ViewController {
 	 *     - information about the new placed tile. */
 	List<ViewUpdate> viewUpdatesQueue;
 	
-	
-	AppGameContainer appgc;
 	Gui gui;
 	Lock guiLock;
 	Board board;
@@ -67,11 +64,12 @@ public class ViewController {
 			GuiThread gt = new GuiThread(gui, viewOpt.getResx(), viewOpt.getResy(), viewOpt.isFullscreen());
 			
 			Thread thread = new Thread(gt);
-			
+						
 			thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 
 		        public void uncaughtException(Thread t, Throwable e) {
 		            System.out.println("exception " + e + " from thread " + t);
+		            e.printStackTrace();
 		            cleanRegistry();
 		            System.exit(1);
 		        }
