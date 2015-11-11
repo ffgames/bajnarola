@@ -16,13 +16,13 @@ public class PauseScene extends IScene {
 		sceneType = scene_type.SCENE_PAUSE;
 		
 		continueButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4, 
-				new Image("res/menu/continueInactive.png"), new Image("res/menu/continueActive.png"));
+				"Continue");
 		
 		optionButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4*2,
-				new Image("res/menu/optionsInactive.png"), new Image("res/menu/optionsActive.png"));
+				"Options");
 		
 		exitButton = new Button(guiManager.windowWidth/3, guiManager.windowHeight/9, guiManager.windowWidth/2, guiManager.windowHeight/4*3,
-				new Image("res/menu/exitInactive.png"), new Image("res/menu/exitActive.png"));
+				"Exit");
 	}
 	
 	@Override

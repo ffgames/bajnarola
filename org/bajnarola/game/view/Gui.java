@@ -77,6 +77,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public java.awt.Font trueTypeFont;
 	public TrueTypeFont mainFont;
 	public static Color defaultTextColor;
+
+	public static Image buttonActiveBg, buttonInactiveBg, buttonDisabledBg;
+	public static TrueTypeFont buttonFont;
 	
 	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
 	private List<String> holes;
@@ -102,6 +105,21 @@ public class Gui extends BasicGame implements InputProviderListener {
 		//TODO: if fixed resolution is set through options avoid using fullscreen here
 		RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
 
+		buttonActiveBg = new Image("res/menu/buttonActive.png");
+		buttonInactiveBg = new Image("res/menu/buttonInactive.png");
+		buttonDisabledBg = new Image("res/menu/buttonDisabled.png");
+		
+		defaultTextColor = new Color(0xE1DCD1);
+		try {
+			trueTypeFont = java.awt.Font.createFont(Font.TRUETYPE_FONT, new File("res/font/font.ttf"));
+		} catch (FontFormatException | IOException e) {
+			throw new SlickException(e.getMessage());
+		}
+
+		//TODO: set font size based on window size
+		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
+		buttonFont = new TrueTypeFont(trueTypeFont.deriveFont(50f), true);
+		
 		rawInput = new Input(gc.getScreenHeight());
 
 		animator = new Animator();
@@ -110,15 +128,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		windowWidth = gc.getWidth();
 
 		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CENTERED);
-
-		defaultTextColor = new Color(0xE1DCD1);
-		try {
-			trueTypeFont = java.awt.Font.createFont(Font.TRUETYPE_FONT, new File("res/font/font.ttf"));
-		} catch (FontFormatException | IOException e) {
-			throw new SlickException(e.getMessage());
-		}
-
-		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
 		
 		Image boardBackground;
 		if(gc.getHeight() > 800){

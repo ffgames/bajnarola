@@ -80,16 +80,13 @@ public class LobbyScene extends IScene {
 		                        guiManager.windowHeight/9,
 		                        guiManager.windowWidth/2,
 		                        guiManager.windowHeight/6*4,
-		                        new Image("res/menu/joinInactive.png"),
-		                        new Image("res/menu/joinActive.png"),
-		                        new Image("res/menu/joinDisabled.png"));
+		                        "Join");
 		
 		backButton = new Button(guiManager.windowWidth/3,
 		                         guiManager.windowHeight/9,
 		                         guiManager.windowWidth/2,
 		                         guiManager.windowHeight/6*5,
-		                         new Image("res/menu/backInactive.png"),
-		                         new Image("res/menu/backActive.png"));
+		                         "Back");
 		
 		selectedInputBox = unameInputBox;
 		selectedInputBox.selected = true;
@@ -222,7 +219,7 @@ public class LobbyScene extends IScene {
 				if (selectedInputBox.text.equals(GameOptions.defaultPlayerName))
 					selectedInputBox.initialize();
 				/* TODO: escape input for lobbyURI */
-				if (c != 0)
+				if (c != 127 && c > 31)
 					selectedInputBox.putChar(c); 
 			}
 		}

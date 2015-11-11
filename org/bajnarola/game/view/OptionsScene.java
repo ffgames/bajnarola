@@ -111,8 +111,7 @@ public class OptionsScene extends IScene {
                 guiManager.windowHeight/10,
                 guiManager.windowWidth/2,
                 guiManager.windowHeight - 75,
-                new Image("res/menu/backInactive.png"),
-                new Image("res/menu/backActive.png"));
+                "Back");
 	}
 
 	@Override

@@ -56,8 +56,7 @@ public class EndgameScene extends IScene {
                 guiManager.windowHeight/10,
                 guiManager.windowWidth/2,
                 guiManager.windowHeight - 75,
-                new Image("res/menu/exitInactive.png"),
-                new Image("res/menu/exitActive.png"));
+                "Exit");
 		scores = new ArrayList<String>();
 		
 		redraw = true;
