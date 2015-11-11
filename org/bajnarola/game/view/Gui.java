@@ -244,6 +244,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return soundOn;
 	}
 	
+	//TODO: pause music if toggoled out
 	public void toggleSound(boolean state){
 		soundOn = state;
 		container.setMusicOn(state);
