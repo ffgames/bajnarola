@@ -123,6 +123,7 @@ public class Board {
 		return players;
 	}
 	
+	@SuppressWarnings("unused")
 	public Tile beginTurn(){
 		Tile newTile = null;
 		boolean ok = false;

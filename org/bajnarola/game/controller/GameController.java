@@ -119,6 +119,7 @@ public class GameController extends UnicastRemoteObject implements
 		return this.diceValue;
 	}
 
+	@SuppressWarnings("unused")
 	public boolean isDeckEmpty() {
 		if(MainClass.debugPlay && board.debugPlayTiles <= 0)
 			return true;

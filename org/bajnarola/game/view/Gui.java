@@ -462,6 +462,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 				screencapBackground(endgameScene.background);
 				currentScene = endgameScene;
 				break;
+			default:
+				break;
 		}
 		if(currentScene.soundtrack != null && !currentScene.soundtrack.isEmpty()){
 			playMusic(currentScene.soundtrack.get(currentScene.currentSong));
