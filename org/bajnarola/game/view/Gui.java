@@ -15,7 +15,6 @@ import org.bajnarola.game.controller.ViewUpdate;
 import org.bajnarola.game.model.Tile;
 import org.bajnarola.game.view.LobbyScene.JoinStatus;
 import org.bajnarola.game.view.RelativeSizes.Resolutions;
-import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -75,11 +74,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public GameContainer container;
 	
 	public java.awt.Font trueTypeFont;
-	public TrueTypeFont mainFont;
 	public static Color defaultTextColor;
 
 	public static Image buttonActiveBg, buttonInactiveBg, buttonDisabledBg;
-	public static TrueTypeFont buttonFont;
+	public static TrueTypeFont buttonFont, mainFont;
 	
 	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
 	private List<String> holes;

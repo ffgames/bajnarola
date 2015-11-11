@@ -22,6 +22,8 @@ public class OptionsScene extends IScene {
 	float containerWidth, containerHeight;
 	float containerPosX, containerPosY;
 	
+	static final String restartLabel = "Restart game to make changes effective";
+	
 	public OptionsScene(Gui guiManager, Image background, bg_type backgroundType) throws SlickException {
 		super(guiManager, background, backgroundType);
 		prevScene = null;
@@ -38,57 +40,34 @@ public class OptionsScene extends IScene {
                 guiManager.windowHeight/11,
                 guiManager.windowWidth/2,
                 (int) containerPosY + (int)(containerHeight / 6),
-                new Image("res/menu/res1Inactive.png"),
-                new Image("res/menu/res1Active.png"));
+                "800x600", Gui.buttonFont, null, null, null);
 		buttons.add(buttonRes1);
 		
-		if (Display.getDesktopDisplayMode().getHeight() >= 720) {
-
-			buttonRes2 = new Button(guiManager.windowWidth/5,
-	                guiManager.windowHeight/11,
-	                guiManager.windowWidth/2,
-	                (int) containerPosY + (int)(containerHeight / 6 * 2),
-	                new Image("res/menu/res2Inactive.png"),
-	                new Image("res/menu/res2Active.png"));
-			buttons.add(buttonRes2);
-		} else {
-			buttonRes2 = new Button(guiManager.windowWidth/5,
-	                guiManager.windowHeight/11,
-	                guiManager.windowWidth/2,
-	                (int) containerPosY + (int)(containerHeight / 6 * 2),
-	                new Image("res/menu/res2Inactive.png"),
-	                new Image("res/menu/res2Active.png"));
-			buttons.add(buttonRes2);
+		buttonRes2 = new Button(guiManager.windowWidth/5,
+                guiManager.windowHeight/11,
+                guiManager.windowWidth/2,
+                (int) containerPosY + (int)(containerHeight / 6 * 2),
+                "1280x720", Gui.buttonFont, null, null, null);
+		buttons.add(buttonRes2);
+		
+		if (Display.getDesktopDisplayMode().getHeight() < 720)
 			buttonRes2.disable();
-		}
 
-		if (Display.getDesktopDisplayMode().getHeight() >= 1080) {
-			buttonRes3 = new Button(guiManager.windowWidth/5,
-	                guiManager.windowHeight/11,
-	                guiManager.windowWidth/2,
-	                (int) containerPosY + (int)(containerHeight / 6 * 3),
-	                new Image("res/menu/res3Inactive.png"),
-	                new Image("res/menu/res3Active.png"));
-			buttons.add(buttonRes3);
-		} else {
-			buttonRes3 = new Button(guiManager.windowWidth/5,
-	                guiManager.windowHeight/11,
-	                guiManager.windowWidth/2,
-	                (int) containerPosY + (int)(containerHeight / 6 * 3),
-	                new Image("res/menu/res3Inactive.png"),
-	                new Image("res/menu/res3Active.png"),
-	                new Image("res/menu/res3Disabled.png"));
-			buttons.add(buttonRes3);
+		buttonRes3 = new Button(guiManager.windowWidth/5,
+                guiManager.windowHeight/11,
+                guiManager.windowWidth/2,
+                (int) containerPosY + (int)(containerHeight / 6 * 3),
+                "1920x1080", Gui.buttonFont, null, null, null);
+		buttons.add(buttonRes3);
+		
+		if (Display.getDesktopDisplayMode().getHeight() < 1080)
 			buttonRes3.disable();
-		}
-
 		
 		buttonFullScreen = new Button(guiManager.windowWidth/5,
                 guiManager.windowHeight/11,
                 guiManager.windowWidth/2,
                 (int) containerPosY + (int)(containerHeight / 6 * 4),
-                new Image("res/menu/fullscreenInactive.png"),
-                new Image("res/menu/fullscreenActive.png"));
+                "Fullscreen", Gui.buttonFont, null, null, null);
 		buttons.add(buttonFullScreen);
 
 		container = new Image("res/menu/optionsContainer.png");
@@ -195,11 +174,10 @@ public class OptionsScene extends IScene {
 		container.draw(containerPosX, containerPosY,
 		               containerWidth, containerHeight);
 		
-		msgLabel.draw(
-                guiManager.windowWidth/2 - containerWidth / 4,
-                (int) containerPosY + (int)((containerHeight - 50)/ 6 * 5),
-                containerWidth / 2,
-                guiManager.windowHeight/9);
+		guiManager.drawString(restartLabel, 
+		                      guiManager.windowWidth/2 -  Gui.mainFont.getWidth(restartLabel)/2,
+		                      (int) containerPosY + (int)((containerHeight - 50)/ 6 * 5), 
+		                      Button.inactiveColor);
 		
 		for (Button b : this.buttons)
 			b.draw();
