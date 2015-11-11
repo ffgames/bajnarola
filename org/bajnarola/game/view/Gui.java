@@ -53,7 +53,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public enum bg_type {
 		BG_TILED,
 		BG_CENTERED,
-		BG_STRETCHED
+		BG_STRETCHED,
+		BG_CROPPED
 	};
 	
 	public enum scene_type {
@@ -160,7 +161,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 		animator = new Animator();
 
-		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_STRETCHED, genSountrack("menu", MENU_SONG_COUNT));
+		menuScene = new MenuScene(this, new Image("res/backgrounds/Medieval_village.jpg"), bg_type.BG_CROPPED, genSountrack("menu", MENU_SONG_COUNT));
 		
 		Image boardBackground;
 		if(container.getHeight() > 800){
@@ -243,6 +244,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return soundOn;
 	}
 	
+	//TODO: pause music if toggoled out
 	public void toggleSound(boolean state){
 		soundOn = state;
 		container.setMusicOn(state);
@@ -262,9 +264,17 @@ public class Gui extends BasicGame implements InputProviderListener {
 				break;
 			case BG_STRETCHED:
 				drawBgStretched(background, background.getWidth(), background.getHeight());
-			default:
-				break;
+			case BG_CROPPED:
+				drawBgCropped(background, background.getWidth(), background.getHeight());
 		}
+	}
+	
+	//TODO:crop
+	private void drawBgCropped(Image background, int backgroundWidth, int backgroundHeight){
+		float tx, ty;
+		tx = (windowWidth > backgroundWidth ? (windowWidth - backgroundWidth) / 2 : 0);
+		ty = (windowHeight > backgroundHeight ? (windowHeight - backgroundHeight) / 2 : 0);
+		background.draw(tx, ty, (windowWidth < backgroundWidth ? windowWidth : backgroundWidth), (windowHeight < backgroundHeight ? windowHeight : backgroundHeight));
 	}
 	
 	private void drawBgStretched(Image background, int backgroundWidth, int backgroundHeight){
@@ -289,7 +299,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 	
-	//TODO: crop instead
 	private void drawBgCentered(Image background, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
 		tx = (windowWidth > backgroundWidth ? (windowWidth - backgroundWidth) / 2 : 0);
@@ -477,6 +486,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 				currentScene = gameScene;
 				break;
 			case SCENE_MENU:
+				if(currentScene != null && (currentScene.sceneType == scene_type.SCENE_PAUSE || currentScene.sceneType == scene_type.SCENE_ENDGAME))
+					controller.requestReinit();
 				currentScene = menuScene;
 				break;
 			case SCENE_OPTIONS:
@@ -571,8 +582,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return this.controller.getLobbyOptions();
 	}
 	
-	public void reinit() {
-		//GameScene.reinit(controller.getScores(), controller.getCurrentPlayerScore());
+	public void reinit() throws SlickException {
+		gameScene = gameScene.reinit(controller.getScores(), controller.getCurrentPlayerScore());
+		lobbyScene = lobbyScene.reinit();
 	}
 	public void exit(){
 		System.out.println("Exit");

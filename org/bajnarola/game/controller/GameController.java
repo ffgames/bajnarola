@@ -17,6 +17,7 @@ import org.bajnarola.game.model.Board;
 import org.bajnarola.game.model.Meeple;
 import org.bajnarola.game.model.Player;
 import org.bajnarola.game.model.Tile;
+import org.newdawn.slick.SlickException;
 
 import sun.misc.Lock;
 
@@ -159,6 +160,14 @@ public class GameController extends UnicastRemoteObject implements
 		return this.myTurnDiff;
 	}
 
+	public void reinit() throws SlickException{
+		viewCtl.reinit();
+	}
+	
+	public void requestReinit(){
+		//TODO: force main loop to restart
+	}
+	
 	/*
 	 * Update the internal board status after a turn has been 
 	 * played by another player. */

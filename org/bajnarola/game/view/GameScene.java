@@ -143,6 +143,10 @@ public class GameScene extends IScene {
 		hudTotalHeight = 0;
 		hudTotalWidth = turnTileSize;
 	}
+	
+	public GameScene reinit(List<String> scores, String currentPlScore) throws SlickException{
+		return new GameScene(guiManager, background, backgroundType, soundtrack, scores, currentPlScore);
+	}
 
 	public void initPlayerMeeple(int playerId) throws SlickException{
 		currentPlayerMeeple = new GraphicalMeeple(this, playerId, "", (short)-1, 0, 0, turnTileSize/4);
