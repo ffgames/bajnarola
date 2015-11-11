@@ -7,10 +7,6 @@ public class City extends LandscapeElement {
 	public City(Tile elementRoot, short tileSide) {
 		super(elementRoot, tileSide);
 		
-		updateValue((short)2);
-		if (elementRoot.hasPennant())
-			updateValue((short)2);
-		
 		openSides = calcOpenSides(elementRoot);
 	}
 
@@ -24,10 +20,7 @@ public class City extends LandscapeElement {
 		if (citySides < 2)
 			return (short)1;
 		
-		
 		return (short)(citySides - 1);
-		
-		
 	}
 	
 	@Override
@@ -36,7 +29,6 @@ public class City extends LandscapeElement {
 			openSides -= 2;
 		} else {
 			openSides += ((City)el).getOpenSides() - 2;
-			updateValue(el.value);
 			relink(el);
 		}
 		
@@ -46,27 +38,32 @@ public class City extends LandscapeElement {
 
 	@Override
 	public void addTile(Tile t, short tileSide) {
-		tiles.add(t);
+		addTileInt(t);
 		
 		t.putLSElement(tileSide, this);
 		short tileOpenSides = calcOpenSides(t);
 		
 		openSides += tileOpenSides - 2;
 		
-		updateValue((short)2);
-		if (t.hasPennant())
-			updateValue((short)2);
-		
-		
 		if (openSides <= 0)
 			complete();
 	}
 
+	private int getCityScore(){
+		int score = 0;
+		for(Tile t : tiles){
+			score += 1;
+			if(t.hasPennant())
+				score +=1;
+		}
+		return score;
+	}
+	
 	@Override
-	public short getValue(boolean endGame) {
+	public int getValue(boolean endGame) {
 		if(endGame)
-			return (short)(value/2);
-		return value;
+			return getCityScore();
+		return getCityScore()*2;
 	}
 
 

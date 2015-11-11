@@ -11,13 +11,11 @@ public abstract class LandscapeElement {
 	Map<Player, Integer> owners;
 	List<Tile> tiles;
 	Tile elementRoot;
-	short value;
 	
 	public LandscapeElement(Tile elementRoot, short tileSide) {
 		completed = false;
 		this.owners = new Hashtable<Player, Integer>();
 		this.elementRoot = elementRoot;
-		this.value = 0;
 		this.tiles = new ArrayList<Tile>();
 		
 		/* Link this landscape to the elementRoot */
@@ -44,7 +42,7 @@ public abstract class LandscapeElement {
 		return false;
 	}
 	
-	public abstract short getValue(boolean endGame);
+	public abstract int getValue(boolean endGame);
 	
 	public List<Tile> getTiles(){
 		return this.tiles;
@@ -56,10 +54,6 @@ public abstract class LandscapeElement {
 
 	public boolean isCompleted() {
 		return completed;
-	}
-	
-	protected void updateValue(short delta) {
-		this.value += delta;
 	}
 	
 	/* Unlink the passed landscape from all its tiles which
@@ -83,8 +77,7 @@ public abstract class LandscapeElement {
 				
 			}
 			
-			tiles.add(tileTmp);
-		
+			addTileInt(tileTmp);
 			
 		}
 	}
@@ -113,5 +106,10 @@ public abstract class LandscapeElement {
 			value = owners.remove(meeple.getOwner()) + 1;
 		}
 		owners.put(meeple.getOwner(), value);
+	}
+	
+	protected void addTileInt(Tile t){
+		if(!tiles.contains(t))
+			tiles.add(t);
 	}
 }

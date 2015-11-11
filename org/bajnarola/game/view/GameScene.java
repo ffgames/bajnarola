@@ -424,6 +424,8 @@ public class GameScene extends IScene {
 		if(turnTile != null){
 			if(confirmButton.isEnabled() && confirmButton.isClicked(x, y)){
 				if(!dimscreen){
+					while(turnTile.getDirection() != probingTile.getDirection())
+						turnTile.rotate(true);
 					possibleMeeples = guiManager.controller.place(probedX, probedY);
 					dimscreen = true;
 					confirmButton.setPrimary(false);

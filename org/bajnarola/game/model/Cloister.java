@@ -5,8 +5,6 @@ public class Cloister extends LandscapeElement {
 	
 	public Cloister(Tile elementRoot, short tileSide) {
 		super(elementRoot, tileSide);
-		updateValue((short)1);
-		
 	}
 
 	@Override
@@ -16,17 +14,15 @@ public class Cloister extends LandscapeElement {
 
 	@Override
 	public void addTile(Tile t, short tileSide) {
-		tiles.add(t);
-		
-		updateValue((short)1);
+		addTileInt(t);
 		
 		if (tiles.size() >= 9)
 			complete();
 	}
 
 	@Override
-	public short getValue(boolean endGame) {
-		return value;
+	public int getValue(boolean endGame) {
+		return tiles.size();
 	}
 	
 }

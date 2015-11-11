@@ -38,6 +38,10 @@ public class GraphicalElement extends Image {
 		return coords;
 	}
 	
+	public short getDirection(){
+		return (short)direction;
+	}
+	
 	public void rotate(boolean clockwise){
 		direction = (direction + (clockwise ? 1 : 3)) % 4;
 	}

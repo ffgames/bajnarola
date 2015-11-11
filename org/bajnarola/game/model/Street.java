@@ -11,8 +11,6 @@ public class Street extends LandscapeElement {
 			streetEnds = 1;
 		else 
 			streetEnds = 0;
-		
-		updateValue((short)1);
 	}
 	
 	
@@ -31,13 +29,11 @@ public class Street extends LandscapeElement {
 		streetEnds += st.getStreetEnds();
 		if (streetEnds >= 2)
 			this.complete();
-		
-		updateValue(st.value);
 	}
 
 	@Override
 	public void addTile(Tile t, short tileSide) {
-		tiles.add(t);
+		addTileInt(t);
 		
 		/* The new tile points to the current landscape */
 		t.putLSElement(tileSide, this);
@@ -47,14 +43,12 @@ public class Street extends LandscapeElement {
 		
 		if (streetEnds >= 2)
 			this.complete();
-		
-		updateValue((short)1);
 	}
 
 
 	@Override
-	public short getValue(boolean endGame) {
-		return value;
+	public int getValue(boolean endGame) {
+		return tiles.size();
 	}
 
 }
