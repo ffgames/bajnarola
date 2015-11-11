@@ -103,6 +103,10 @@ public class LobbyScene extends IScene {
 		/* TODO: Add "create local lobby" button and correlated feature */
 	}
 
+	public LobbyScene reinit() throws SlickException{
+		return new LobbyScene(guiManager, background, backgroundType, soundtrack, font);
+	}
+	
 	private void setJoinMessage(String msg) {
 		joinMessage = msg;
 		labelJoinPosX = (guiManager.windowWidth/2) - (font.getWidth(joinMessage)/2);

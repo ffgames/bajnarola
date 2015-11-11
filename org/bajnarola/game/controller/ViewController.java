@@ -82,6 +82,14 @@ public class ViewController {
 			
 			e.printStackTrace();
 		}
+	} 
+	
+	public void requestReinit(){
+		gameCtl.requestReinit();
+	}
+	
+	public void reinit() throws SlickException{
+		gui.reinit();
 	}
 	
 	public int getMeeplesInHand(){
