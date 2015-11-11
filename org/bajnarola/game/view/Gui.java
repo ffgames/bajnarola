@@ -36,8 +36,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	static final String GAMENAME = "Bajnarola";
 	static final String MUSIC_EXT = ".ogg";
 	
-	static final int MENU_SONG_COUNT = 1;
-	static final int GAME_SONG_COUNT = 2;
+	static final int MENU_SONG_COUNT = 2;
+	static final int GAME_SONG_COUNT = 3;
 	static final int PAUSE_SONG_COUNT = 0;
 	static final int OPTIONS_SONG_COUNT = 0;
 	static final int LOBBY_SONG_COUNT = 0;
@@ -73,7 +73,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Command escComm = new BasicCommand("esc");
 	private Command enterComm = new BasicCommand("enter");
 	
-	private IScene currentScene = null;
+	public IScene currentScene = null;
 	private MenuScene menuScene;
 	public GameScene gameScene;
 	private PauseScene pauseScene;
@@ -97,6 +97,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private Tile newTile;
 	
 	private Music currentSong = null;
+	private IScene soundtrackScene;
 	
 	private boolean soundOn;
 	private boolean initialized, resourcesSet;
@@ -127,7 +128,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		currentScene = splashScene;
 		initialized = true;
 	}
-	
 	
 	private void initResources() throws SlickException {
 		buttonActiveBg = new Image("res/menu/buttonActive.png");
@@ -193,14 +193,48 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 		else 
 			switchScene(currentScene.sceneType);
+		
+		Thread musicThread = (new Thread() {
+			public void run() {
+				
+				try {
+					loadSountrack(menuScene.soundtrack, "menu", MENU_SONG_COUNT);
+					loadSountrack(gameScene.soundtrack, "game", GAME_SONG_COUNT);
+					loadSountrack(pauseScene.soundtrack, "pause", PAUSE_SONG_COUNT);
+					loadSountrack(optionsScene.soundtrack, "options", OPTIONS_SONG_COUNT);
+					loadSountrack(lobbyScene.soundtrack, "lobby", LOBBY_SONG_COUNT);
+					loadSountrack(endgameScene.soundtrack, "endgame", ENDGAME_SONG_COUNT);
+				} catch (SlickException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		musicThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+	        public void uncaughtException(Thread t, Throwable e) {
+	            e.printStackTrace();
+	        }
+	    });
+		
+		musicThread.start();
+		
+	}
+	
+	private void loadSountrack(List<Music> soundtrack, String prefix, int count) throws SlickException {
+		
+		if (count > 1) {
+			for(int i = 1; i < count; i++)
+				soundtrack.add(new Music("res/music/"+prefix+i+MUSIC_EXT));
+		}
 	}
 	
 	private List<Music> genSountrack(String prefix, int count) throws SlickException{
-		if(count < 0)
+		if(count <= 0)
 			return null;
 		List<Music> soundtrack = new ArrayList<Music>();
-		for(int i = 0; i < count; i++)
-			soundtrack.add(new Music("res/music/"+prefix+i+MUSIC_EXT));
+		
+		soundtrack.add(new Music("res/music/"+prefix+0+MUSIC_EXT));
 		
 		return soundtrack;
 	}
@@ -466,12 +500,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 				break;
 		}
 		if(currentScene.soundtrack != null && !currentScene.soundtrack.isEmpty()){
+			soundtrackScene = currentScene;
 			playMusic(currentScene.soundtrack.get(currentScene.currentSong));
 		}
 	}
 	
 	public void playMusic(Music song){
-		if(currentSong != song){
+		if(currentSong != song || !currentSong.playing()){
 			currentSong = song;
 			song.addListener(new MusicListener() {
 				@Override
@@ -479,9 +514,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 				
 				@Override
 				public void musicEnded(Music music) {
-					if(currentScene.soundtrack != null){
-						currentScene.currentSong = (currentScene.currentSong+1)%currentScene.soundtrack.size();
-						playMusic(currentScene.soundtrack.get(currentScene.currentSong));
+					System.out.println("music end");
+
+					if(soundtrackScene.soundtrack != null){
+						soundtrackScene.currentSong = (soundtrackScene.currentSong + 1) % soundtrackScene.soundtrack.size();
+						playMusic(soundtrackScene.soundtrack.get(soundtrackScene.currentSong));
+					} else {
+						playMusic(currentSong);
 					}
 				}
 			});
@@ -532,7 +571,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return this.controller.getLobbyOptions();
 	}
 	
-	
+	public void reinit() {
+		//GameScene.reinit(controller.getScores(), controller.getCurrentPlayerScore());
+	}
 	public void exit(){
 		System.out.println("Exit");
 		controller.cleanRegistry();

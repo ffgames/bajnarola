@@ -18,7 +18,7 @@ public class OptionsScene extends IScene {
 	
 	List<Button> buttons;
 	Button buttonFullScreen, buttonRes1, buttonRes2, buttonRes3;
-	Button backButton;
+	Button backButton, soundToggleButton;
 	Image container;
 	float containerWidth, containerHeight;
 	float containerPosX, containerPosY;
@@ -91,6 +91,12 @@ public class OptionsScene extends IScene {
                 guiManager.windowWidth/2,
                 guiManager.windowHeight - 75,
                 "Back");
+	
+		soundToggleButton = new Button(150, 150,
+				(int)containerWidth + (int)containerPosX - 75, 
+				(int)containerPosY + 75, 
+				new Image("res/menu/soundActive.png"),
+				new Image("res/menu/soundInactive.png"));
 	}
 
 	@Override
@@ -175,13 +181,15 @@ public class OptionsScene extends IScene {
 		               containerWidth, containerHeight);
 		
 		guiManager.drawString(restartLabel, 
-		                      guiManager.windowWidth/2 -  Gui.mainFont.getWidth(restartLabel)/2,
-		                      (int) containerPosY + (int)(containerHeight/ 6 * 5) - Gui.mainFont.getHeight(restartLabel), 
-		                      Button.inactiveColor);
+				guiManager.windowWidth/2 - Gui.mainFont.getWidth(restartLabel)/2,
+				(int) containerPosY + (int)(containerHeight/ 6 * 5) - Gui.mainFont.getHeight(restartLabel), 
+				Button.inactiveColor);
 		
 		for (Button b : this.buttons)
 			b.draw();
+		
 		backButton.draw();
+		soundToggleButton.draw();
 	}
 
 	@Override
