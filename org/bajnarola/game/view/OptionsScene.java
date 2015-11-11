@@ -92,11 +92,13 @@ public class OptionsScene extends IScene {
                 guiManager.windowHeight - 75,
                 "Back");
 	
-		soundToggleButton = new Button(150, 150,
-				(int)containerWidth + (int)containerPosX - 75, 
-				(int)containerPosY + 75, 
-				new Image("res/menu/soundActive.png"),
-				new Image("res/menu/soundInactive.png"));
+		soundToggleButton = new Button(guiManager.windowWidth/15, guiManager.windowWidth/15,
+				(int)containerWidth + (int)containerPosX - guiManager.windowWidth/7, 
+				(int) containerPosY + (int)(containerHeight / 6), 
+				new Image("res/menu/soundInactive.png"),
+				new Image("res/menu/soundActive.png"));
+		if (guiManager.getSoundOn())
+			soundToggleButton.activate();
 	}
 
 	@Override
@@ -146,6 +148,16 @@ public class OptionsScene extends IScene {
 		
 		if (backButton.isClicked(x, y))
 			guiManager.switchScene(prevScene);
+		
+		if (soundToggleButton.hits(x, y)) {
+			if (!soundToggleButton.isActive()) {
+				soundToggleButton.activate();
+				guiManager.toggleSound(true);
+			} else {
+				soundToggleButton.deactivate();
+				guiManager.toggleSound(false);
+			}
+		}
 	}
 	
 	@Override

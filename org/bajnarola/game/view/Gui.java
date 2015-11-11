@@ -113,6 +113,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		container = gc;
+		toggleSound(controller.getSoundOnOption());
+
 		
 		//TODO: if fixed resolution is set through options avoid using fullscreen here
 		RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
@@ -140,8 +142,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		} catch (FontFormatException | IOException e) {
 			throw new SlickException(e.getMessage());
 		}
-		
-		toggleSound(controller.getSoundOnOption());
 			
 		//TODO: set font size based on window size
 		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
