@@ -186,9 +186,11 @@ public class GameController extends UnicastRemoteObject implements
 	public void requestReinit(){
 		this.reinit = true;
 		reinitLock.unlock();
-		playLock.lock();
-		waitCondition.signalAll();
-		playLock.unlock();
+		try{
+			playLock.lock();
+			waitCondition.signalAll();
+			playLock.unlock();
+		} catch (Exception e){}
 	}
 	
 	public boolean isReinitRequested() {
