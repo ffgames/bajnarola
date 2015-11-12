@@ -419,7 +419,7 @@ public class GameScene extends IScene {
 			if(confirmButton.isEnabled() && confirmButton.isClicked(x, y)){
 				if(!dimscreen){
 					while(turnTile.getDirection() != probingTile.getDirection())
-						turnTile.rotate(true);
+						rotate(true);
 					possibleMeeples = guiManager.controller.place(probedX, probedY);
 					dimscreen = true;
 					confirmButton.setPrimary(false);
@@ -458,12 +458,11 @@ public class GameScene extends IScene {
 			}
 		}
 	}
-
+	
 	private void rotate(boolean clockwise){
 		if(turnTile != null){
 			turnTile.rotate(clockwise);
 			guiManager.controller.rotate(clockwise);
-			probedX = probedY = 0;
 		}
 	}
 	
