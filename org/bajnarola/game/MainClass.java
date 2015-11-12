@@ -16,7 +16,7 @@ import org.newdawn.slick.SlickException;
 
 public class MainClass {
 	
-	private static int seed = -1; 
+	private static int seed; 
 	
 	public static final boolean debugPlay = false;
 	
@@ -58,11 +58,10 @@ public class MainClass {
 		
 		while (true) {
 			try {
+				seed = -1;
 				okLobby = false;
 				
-				if (!gBoard.isReinitRequested()) {
-					gBoard.reinitLock.lock();
-				} 
+				gBoard.reinitLock.lock();
 				gBoard.reinit();
 				
 				while (!okLobby) {

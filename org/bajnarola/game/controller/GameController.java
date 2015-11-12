@@ -61,22 +61,22 @@ public class GameController extends UnicastRemoteObject implements
 	}
 
 	public GameController() throws RemoteException {
+		this.randomGenerator = new Random();
 		
 		this.finalScores = new Hashtable<String, Integer>();
 		
-		this.randomGenerator = new Random();
-
 		this.goptions = new GameOptions();
-		this.viewCtl = new ViewController(board, this);
-
-		this.reinitLock = new Lock();
-		this.playLock = new ReentrantLock();
+		
+		reinitLock = new Lock();
 		
 		init();
+		
+		this.viewCtl = new ViewController(board, this);
 	}
 
 	private void init() {
 		this.board = new Board();
+		this.playLock = new ReentrantLock();
 		this.diceLock = new Lock();
 		try {
 			this.diceLock.lock();
@@ -178,7 +178,10 @@ public class GameController extends UnicastRemoteObject implements
 	
 	public void requestReinit(){
 		this.reinit = true;
-		this.reinitLock.unlock();
+		reinitLock.unlock();
+		playLock.lock();
+		waitCondition.signalAll();
+		playLock.unlock();
 	}
 	
 	public boolean isReinitRequested() {

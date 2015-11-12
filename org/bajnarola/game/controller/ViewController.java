@@ -31,7 +31,7 @@ public class ViewController {
 	List<ViewUpdate> viewUpdatesQueue;
 	
 	Gui gui;
-	Lock guiLock;
+	static Lock guiLock, optionsLock;
 	Board board;
 	Player player;
 	GameController gameCtl;
@@ -44,13 +44,6 @@ public class ViewController {
 	public ViewController(Board board, GameController gameCtl) {
 		viewUpdatesQueue = new ArrayList<>();
 		this.gameCtl = gameCtl;
-		this.guiLock = new Lock();
-		
-		try {
-			this.guiLock.lock();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 		
 		init(board);
 		
@@ -86,16 +79,28 @@ public class ViewController {
 		this.drawnTile = null;
 		this.board = board;
 		this.player = null;
+		
+		guiLock = new Lock();
+		optionsLock = new Lock();
+		
+		try {
+			optionsLock.lock();
+			guiLock.lock();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	
 	public void reinit(Board board) throws SlickException {
 		init(board);
 		this.viewUpdatesQueue.clear();
+		
 		gui.reinit();
 	}
 	
 	public void requestReinit(){
+		guiLock.unlock();
 		gameCtl.requestReinit();
 	}
 	
@@ -200,7 +205,7 @@ public class ViewController {
 	
 	public void waitOptionsFromView() {
 		try {
-			guiLock.lock();
+			optionsLock.lock();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -218,7 +223,7 @@ public class ViewController {
 	public void setGameOptions(String playerName, String lobbyURI) throws MalformedURLException {
 		this.gameCtl.getGameOptions().setPlayerName(playerName);
 		this.gameCtl.getGameOptions().setLobbyHostPort(lobbyURI);
-		guiLock.unlock();
+		optionsLock.unlock();
 	}
 	
 	public void setViewOptions(int resx, int resy, boolean fullscreen) {

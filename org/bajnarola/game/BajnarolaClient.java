@@ -176,7 +176,7 @@ public class BajnarolaClient {
 				cause = endGameCause.lastPlayer;
 			}
 			
-			if (gameEnded) {
+			if (gameEnded && !myBc.isReinitRequested()) {
 				
 				Map<String, Integer> scores = myBc.finalCheckScore();
 				boolean winner = false;
