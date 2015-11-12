@@ -36,8 +36,7 @@ public class InputBox {
 	}
 	
 	public boolean isClicked(int x, int y){
-		if((selected = hitbox.hits(x, y)))
-			initialize();
+		selected = hitbox.hits(x, y);
 		
 		return selected;
 	}
