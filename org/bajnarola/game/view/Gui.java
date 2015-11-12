@@ -36,6 +36,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 	static final String GAMENAME = "Bajnarola";
 	static final String MUSIC_EXT = ".ogg";
 	
+	static final float MAX_AUDIO_VOLUME = 125;
+	
 	static final int MENU_SONG_COUNT = 2;
 	static final int GAME_SONG_COUNT = 3;
 	static final int PAUSE_SONG_COUNT = 0;
@@ -260,6 +262,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 		soundOn = state;
 		container.setMusicOn(state);
 		container.setSoundOn(state);
+		if(state){
+			container.setMusicVolume(MAX_AUDIO_VOLUME);
+			container.setSoundVolume(MAX_AUDIO_VOLUME);
+		} else {
+			container.setMusicVolume(0);
+			container.setSoundVolume(0);
+		}
 		if(state && currentSong != null)
 			currentSong.play();
 		controller.setSoundOnOption(state);
@@ -581,7 +590,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 					}
 				}
 			});
-			song.play();
+			if(soundOn)
+				song.play();
 		}
 	}
 	
