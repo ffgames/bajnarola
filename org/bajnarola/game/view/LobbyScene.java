@@ -131,15 +131,17 @@ public class LobbyScene extends IScene {
 	public void leftClick(int x, int y) {
 		selectedInputBox = null;
 
-		if (unameInputBox.isClicked(x, y))
+		if (unameInputBox.isClicked(x, y)) {
 			selectedInputBox = unameInputBox;
-		if (lobbyUriInputBox.isClicked(x, y))
-			selectedInputBox = lobbyUriInputBox;
-		if (backButton.isClicked(x, y))
-			guiManager.switchScene(scene_type.SCENE_MENU);
-		if (joinButton.isClicked(x, y)) {
-			join();
+			if (unameInputBox.getText().equals(GameOptions.defaultPlayerName))
+				selectedInputBox.initialize();
 		}
+		else if (lobbyUriInputBox.isClicked(x, y))
+			selectedInputBox = lobbyUriInputBox;
+		else if (joinButton.isClicked(x, y))
+			join();
+		else if (backButton.isClicked(x, y))
+			guiManager.switchScene(scene_type.SCENE_MENU);
 	}
 
 	
