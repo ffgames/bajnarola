@@ -176,6 +176,8 @@ public class GameController extends UnicastRemoteObject implements
 		} finally {
 			this.playLock.unlock();
 		}
+		if(isReinitRequested())
+			throw new RemoteException("Player left the game");
 		return this.myTurnDiff;
 	}
 

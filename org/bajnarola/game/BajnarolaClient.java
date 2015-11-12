@@ -165,17 +165,18 @@ public class BajnarolaClient {
 					}
 				}
 				
-				/* Garbage collecting the crashed players */
-				for (String dPlayer : deadPlayers)
-					this.players.remove(dPlayer);
-				
 				/* If this player is the only remaining one, end the game */
-				if (players.size() == 1) {
+				if((players.size() - deadPlayers.size()) <= 1){
 					gameEnded = true;
 					cause = endGameCause.lastPlayer;
 					break;
 				}
 			}
+			
+			/* Garbage collecting the crashed players */
+			for (String dPlayer : deadPlayers)
+				this.players.remove(dPlayer);			
+			deadPlayers.clear();
 			
 			if (gameEnded && !myBc.isReinitRequested()) {
 				
