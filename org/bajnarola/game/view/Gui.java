@@ -36,7 +36,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	static final String GAMENAME = "Bajnarola";
 	static final String MUSIC_EXT = ".ogg";
 	
-	static final float MAX_AUDIO_VOLUME = 125;
+	static final float MAX_AUDIO_VOLUME = 1.0f;
 	
 	static final int MENU_SONG_COUNT = 2;
 	static final int GAME_SONG_COUNT = 3;
