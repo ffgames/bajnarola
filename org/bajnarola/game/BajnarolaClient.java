@@ -164,16 +164,17 @@ public class BajnarolaClient {
 						/* XXX valuta se eliminare il giocatore */
 					}
 				}
-			}
-			
-			/* Garbage collecting the crashed players */
-			for (String cPlayer : deadPlayers)
-				this.players.remove(cPlayer);
-			
-			/* If this player is the only remaining one, end the game */
-			if (players.size() == 1) {
-				gameEnded = true;
-				cause = endGameCause.lastPlayer;
+				
+				/* Garbage collecting the crashed players */
+				for (String dPlayer : deadPlayers)
+					this.players.remove(dPlayer);
+				
+				/* If this player is the only remaining one, end the game */
+				if (players.size() == 1) {
+					gameEnded = true;
+					cause = endGameCause.lastPlayer;
+					break;
+				}
 			}
 			
 			if (gameEnded && !myBc.isReinitRequested()) {
