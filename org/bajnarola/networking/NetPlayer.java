@@ -15,7 +15,7 @@ public class NetPlayer implements Serializable {
 	public int bindPort; 
 	
 	public NetPlayer(String uname, int bindPort) {
-		this.username = uname;
+		this.username = uname.substring(uname.indexOf('/') + 1, uname.length());
 		this.bindPort = bindPort;
 		this.rmiUriBoard = uname + "/" + GameController.class.getName();
 	}

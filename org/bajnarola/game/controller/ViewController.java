@@ -100,6 +100,7 @@ public class ViewController {
 	}
 	
 	public void requestReinit(){
+		cleanRegistry();
 		guiLock.unlock();
 		gameCtl.requestReinit();
 	}

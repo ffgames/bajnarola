@@ -78,12 +78,15 @@ public class BajnarolaServer implements Remote {
 	}
 
 	public BajnarolaServer(String basepath, GameController myBoard) {
-		this.CommonConstruct(basepath, myBoard);
+		String s = Integer.toString(new Random().nextInt());
+;
+		this.CommonConstruct(s + "/" + basepath, myBoard);
 	}
 	public BajnarolaServer(GameController myBoard) {
-		String s = RandomString.generateAsciiString();
+		String s = Integer.toString(new Random().nextInt()) + "/" + RandomString.generateAsciiString();
 		this.CommonConstruct(s, myBoard);
 	}
+	
 	
 	public void cleanRegistry(){
 		try {

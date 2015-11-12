@@ -26,6 +26,6 @@ import java.rmi.RemoteException;
 
 public interface GameControllerRemote extends Remote {
 	public Integer getDiceValue() throws RemoteException;
-	public TurnDiff play(Integer turn) throws RemoteException;
+	public TurnDiff play(Integer turn, String gameId) throws RemoteException;
 }
 

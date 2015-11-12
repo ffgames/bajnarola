@@ -149,7 +149,7 @@ public class BajnarolaClient {
 					
 					try {
 						if (!(gameEnded = myBc.isDeckEmpty())) {
-							dState = othBc.play(myBc.myPlayedTurn + 1);
+							dState = othBc.play(myBc.myPlayedTurn + 1, myBc.gameId);
 							myBc.myPlayedTurn++;
 							myBc.updateBoard(dState);
 						}

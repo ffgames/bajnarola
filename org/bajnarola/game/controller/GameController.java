@@ -50,6 +50,8 @@ public class GameController extends UnicastRemoteObject implements
 	Condition waitCondition;
 	public ViewController viewCtl;
 	TurnDiff myTurnDiff = null;
+	
+	public String gameId = null;
 		
 	boolean reinit = false;
 	
@@ -87,7 +89,7 @@ public class GameController extends UnicastRemoteObject implements
 		this.waitCondition = this.playLock.newCondition();
 
 		this.winner = false;
-
+		this.gameId = null;
 		this.endCause = endGameCause.notEnded;
 		this.myPlayedTurn = -1;
 		this.diceValue = null;
@@ -155,7 +157,10 @@ public class GameController extends UnicastRemoteObject implements
 	
 
 	@Override
-	public TurnDiff play(Integer turn) throws RemoteException {
+	public TurnDiff play(Integer turn, String gameId) throws RemoteException {
+		if (this.gameId == null || !this.gameId.equals(gameId))
+			throw new RemoteException("unmatched GameID");
+			
 		this.playLock.lock();
 		try {
 			if (this.myPlayedTurn < turn) {

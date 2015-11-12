@@ -147,8 +147,11 @@ public class MainClass {
 				System.out.println("Got players:");
 				for (String k : iClient.players.keySet()) {
 					System.out.println("\t" + k + " with dice throw: " + dices.get(k));
-					if (seed == -1)
+					if (seed == -1) {
 						seed = dices.get(k);
+						gBoard.gameId = Integer.toString(seed) + k;
+						System.out.println(gBoard.gameId);
+					}
 				}
 				
 				System.out.print("Initializing the board...");
