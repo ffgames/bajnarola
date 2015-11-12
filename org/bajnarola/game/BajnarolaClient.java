@@ -153,16 +153,11 @@ public class BajnarolaClient {
 							myBc.myPlayedTurn++;
 							myBc.updateBoard(dState);
 						}
-					} catch(RemoteException e) {
+					} catch(Exception e) {
 						/* CRASH! */
 						System.err.println("Node Crash! (" + cPlayer + ")");
 						deadPlayers.add(cPlayer);
 						myBc.removePlayer(cPlayer);
-					} catch(Exception e) {
-						/* TODO specialized exception */
-						System.err.println("Illegal move, cheat by " + cPlayer);
-						e.printStackTrace();
-						/* XXX valuta se eliminare il giocatore */
 					}
 				}
 				
@@ -178,6 +173,11 @@ public class BajnarolaClient {
 			for (String dPlayer : deadPlayers)
 				this.players.remove(dPlayer);
 			deadPlayers.clear();
+			
+			if(players.size() <= 1){
+				gameEnded = true;
+				cause = endGameCause.lastPlayer;
+			}
 			
 			if (gameEnded && !myBc.isReinitRequested()) {
 				
