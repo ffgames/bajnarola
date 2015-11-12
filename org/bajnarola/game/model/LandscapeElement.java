@@ -108,6 +108,10 @@ public abstract class LandscapeElement {
 		owners.put(meeple.getOwner(), value);
 	}
 	
+	public void removeOwner(Player owner){
+		owners.remove(owner);
+	}
+	
 	protected void addTileInt(Tile t){
 		if(!tiles.contains(t))
 			tiles.add(t);

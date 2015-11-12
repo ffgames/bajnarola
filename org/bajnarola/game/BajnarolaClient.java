@@ -157,6 +157,7 @@ public class BajnarolaClient {
 						/* CRASH! */
 						System.err.println("Node Crash! (" + cPlayer + ")");
 						deadPlayers.add(cPlayer);
+						myBc.removePlayer(cPlayer);
 					} catch(Exception e) {
 						/* TODO specialized exception */
 						System.err.println("Illegal move, cheat by " + cPlayer);
@@ -174,10 +175,8 @@ public class BajnarolaClient {
 			}
 			
 			/* Garbage collecting the crashed players */
-			for (String dPlayer : deadPlayers){
+			for (String dPlayer : deadPlayers)
 				this.players.remove(dPlayer);
-				myBc.removePlayer(dPlayer);
-			}
 			deadPlayers.clear();
 			
 			if (gameEnded && !myBc.isReinitRequested()) {

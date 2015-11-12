@@ -81,6 +81,7 @@ public class Player {
 		for (int i = 0; i < meepleList.length ; i++) {
 			if ((t = meepleList[i].getTile()) != null) {
 				coords.add(Board.getKey(t.getX(), t.getY()));
+				t.getLSElement(meepleList[i].getTileSide()).removeOwner(this);
 				t.removeMeeple();
 			}
 		}

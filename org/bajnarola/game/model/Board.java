@@ -91,8 +91,10 @@ public class Board {
 	
 	public void removePlayer(String name){
 		Player p = getPlayerByName(name);
-		crashedMeeples.addAll(p.removeAllMeeple());
-		players.remove(p);
+		if(p != null){
+			crashedMeeples.addAll(p.removeAllMeeple());
+			players.remove(p);
+		}
 	}
 	
 	public Player getPlayerByName(String name) {

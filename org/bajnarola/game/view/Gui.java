@@ -174,7 +174,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		} else
 			boardBackground = new Image("res/backgrounds/Craggy_Rock_256.jpg");
 
-		gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, genSountrack("game", GAME_SONG_COUNT), controller.getScores(), controller.getCurrentPlayerScore());
+		gameScene = new GameScene(this, boardBackground, bg_type.BG_TILED, genSountrack("game", GAME_SONG_COUNT), controller.getScores());
 
 		pauseScene = new PauseScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_STRETCHED, genSountrack("pause", PAUSE_SONG_COUNT));
 
@@ -426,7 +426,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 			
 
 			if(!showScoreOn && currentUpdate.scores != null && !currentUpdate.scores.isEmpty()){
-				gameScene.drawScoreUpdate(currentUpdate.scores.remove(0), controller.getScores(), controller.getCurrentPlayerScore());
+				gameScene.drawScoreUpdate(currentUpdate.scores.remove(0), controller.getScores());
 				animator.enableShowScore();
 				showScoreOn = true;
 			}
@@ -599,8 +599,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		this.playerId = playerId;
 	}
 	
-	public void initScores(String currentPlayerScore, List<String> scores){
-		gameScene.setScores(currentPlayerScore, scores);
+	public void initScores(List<String> scores){
+		gameScene.setScores(scores);
 	}
 	
 	@Override
@@ -640,7 +640,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public void reinit() throws SlickException {
 		initInternal();
-		gameScene = gameScene.reinit(controller.getScores(), controller.getCurrentPlayerScore());
+		gameScene = gameScene.reinit(controller.getScores());
 		lobbyScene = lobbyScene.reinit();
 	}
 	public void exit(){

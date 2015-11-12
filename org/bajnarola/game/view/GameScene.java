@@ -38,7 +38,6 @@ public class GameScene extends IScene {
 	private Button zoomButton, confirmButton;
 	private Image curtain;
 	private List<String> scores;
-	private String currentPlScore;
 	private Color[] playerColors;
 		//logical elements
 	private List<HitBox> holes;
@@ -50,8 +49,6 @@ public class GameScene extends IScene {
 	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private int probedX, probedY;
 	private short turnMeepleSide;
-	private boolean isScoreHovered;
-	private HitBox scoreHitbox;
 	
 	//view area controll
 	private int globalCenterOffset;
@@ -69,7 +66,7 @@ public class GameScene extends IScene {
 	
 	// ##  INIT  ##
 	
-	public GameScene(Gui guiManager, Image background, bg_type backgroundType, List<Music> soundtrack, List<String> scores, String currentPlScore) throws SlickException {
+	public GameScene(Gui guiManager, Image background, bg_type backgroundType, List<Music> soundtrack, List<String> scores) throws SlickException {
 		super(guiManager, background, backgroundType, soundtrack);
 		resizer = RelativeSizes.getInstance();
 		sceneType = scene_type.SCENE_GAME;
@@ -120,9 +117,7 @@ public class GameScene extends IScene {
 		turnTileCy = guiManager.windowHeight - tileSize;
 		turnTileSize = tileSize * 2;
 		
-		isScoreHovered = false;
-		scoreHitbox = new HitBox(resizer.scoresXOffset(), resizer.scoresYOffset(), 0, 0);
-		setScores(currentPlScore, scores);
+		setScores(scores);
 		playerColors = new Color[8];
 		playerColors[0] = new Color(0xEA, 0x3F, 0x1B);
 		playerColors[1] = new Color(0x3E, 0x3F, 0xD8);
@@ -144,8 +139,8 @@ public class GameScene extends IScene {
 		hudTotalWidth = turnTileSize;
 	}
 	
-	public GameScene reinit(List<String> scores, String currentPlScore) throws SlickException{
-		return new GameScene(guiManager, background, backgroundType, soundtrack, scores, currentPlScore);
+	public GameScene reinit(List<String> scores) throws SlickException{
+		return new GameScene(guiManager, background, backgroundType, soundtrack, scores);
 	}
 
 	public void initPlayerMeeple(int playerId) throws SlickException{
@@ -325,12 +320,12 @@ public class GameScene extends IScene {
 		return ret;
 	}
 	
-	public void drawScoreUpdate(String score, List<String> plScores, String curPlScore){
+	public void drawScoreUpdate(String score, List<String> plScores){
 		//score is in the format "[x];[y]:[score]"
 		currentScoreGlobalX = getGlobalCoordX(Integer.parseInt(score.split(";")[0]));
 		currentScoreGlobalY = getGlobalCoordY(Integer.parseInt(score.split(";")[1].split(":")[0]));
 		currentScoreVal = Integer.parseInt(score.split(":")[1]);
-		setScores(curPlScore, plScores);
+		setScores(plScores);
 	}
 
 	public void scoreDrawed(){
@@ -405,14 +400,8 @@ public class GameScene extends IScene {
 		dimscreen = false;
 	}
 
-	public void setScores(String currentPlayerScore, List<String> scores){
-		this.currentPlScore = currentPlayerScore;
+	public void setScores(List<String> scores){
 		this.scores = scores;
-		if(currentPlayerScore != null && !currentPlayerScore.isEmpty()){
-			scoreHitbox.reset(resizer.scoresXOffset(), resizer.scoresYOffset(), 
-					resizer.scoresXOffset()+guiManager.container.getGraphics().getFont().getWidth(currentPlayerScore), 
-					resizer.scoresYOffset()+guiManager.container.getGraphics().getFont().getHeight(currentPlayerScore)+resizer.scoreOverHeight());
-		}
 	}
 	
 	// ##  INPUT HANDLERS  ##
@@ -505,7 +494,6 @@ public class GameScene extends IScene {
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
 		//view should not shift if someone is trying to interuct with the hud
 		hudHovered = false;
-		hudHovered |= isScoreHovered = scoreHitbox.hits(newx, newy);
 		
 		hudHovered |= confirmButton.hits(newx, newy);
 		if(turnTile != null){

@@ -218,7 +218,7 @@ public class ViewController {
 	}
 	
 	public void setScores(){
-		gui.initScores(getCurrentPlayerScore(), getScores());
+		gui.initScores(getScores());
 	}
 	
 	public void setGameOptions(String playerName, String lobbyURI) throws MalformedURLException {
