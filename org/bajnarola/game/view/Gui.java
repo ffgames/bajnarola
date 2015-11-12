@@ -93,7 +93,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public static Image buttonActiveBg, buttonInactiveBg, buttonDisabledBg;
 	public static TrueTypeFont buttonFont, mainFont;
 	
-	private boolean myTurn = false, landscapeGlowOn = false, meepleRemovalOn = false, showScoreOn = false;
+	private boolean myTurn, landscapeGlowOn, meepleRemovalOn, showScoreOn;
 	private List<String> holes;
 	private Tile newTile;
 	
@@ -107,6 +107,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		super(GAMENAME);
 		this.controller = controller;
 		initialized = resourcesSet = false;
+		initInternal();
 	}
 	
 	private int playerId = -1;
@@ -222,6 +223,16 @@ public class Gui extends BasicGame implements InputProviderListener {
 		
 	}
 	
+	private void initInternal(){
+		myTurn = false;
+		landscapeGlowOn = false;
+		meepleRemovalOn = false;
+		showScoreOn = false;
+		currentUpdate = null;
+		holes = null;
+		newTile = null;
+	}
+	
 	private void loadSountrack(List<Music> soundtrack, String prefix, int count) throws SlickException {
 		
 		if (count > 1) {
@@ -269,12 +280,49 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 	}
 	
-	//TODO:crop
 	private void drawBgCropped(Image background, int backgroundWidth, int backgroundHeight){
 		float tx, ty;
-		tx = (windowWidth > backgroundWidth ? (windowWidth - backgroundWidth) / 2 : 0);
-		ty = (windowHeight > backgroundHeight ? (windowHeight - backgroundHeight) / 2 : 0);
-		background.draw(tx, ty, (windowWidth < backgroundWidth ? windowWidth : backgroundWidth), (windowHeight < backgroundHeight ? windowHeight : backgroundHeight));
+		float twid, thei;
+		if(backgroundWidth < windowWidth){
+			if(backgroundHeight < windowHeight){
+				if((windowHeight - backgroundHeight) > (windowWidth - backgroundWidth)){
+					thei = windowHeight;
+					twid = (float)backgroundWidth * ((float)windowHeight/ (float)backgroundHeight);
+					ty = 0;
+					tx = (windowWidth - twid) / 2;
+				} else {
+					thei = (float)backgroundHeight * ((float)windowWidth / (float)backgroundWidth);
+					twid = windowWidth;
+					ty = (windowHeight - thei) / 2;
+					tx = 0;
+				}
+			} else { //backgroundHeight >= windowHeight
+				thei = (float)backgroundHeight * ((float)windowWidth / (float)backgroundWidth);
+				twid = windowWidth;
+				ty = (windowHeight - thei) / 2;
+				tx = 0;
+			} 
+		} else { //backgroundWidth >= windowWidth
+			if(backgroundHeight < windowHeight){
+				thei = windowHeight;
+				twid = (float)backgroundWidth * ((float)windowHeight / (float)backgroundHeight);
+				ty = 0;
+				tx = (windowWidth - twid) / 2;
+			} else { //backgroundHeight >= windowHeight
+				if((backgroundHeight - windowHeight) < (backgroundWidth - windowWidth)){
+					thei = windowHeight;
+					twid = (float)backgroundWidth * ((float)windowHeight / (float)backgroundHeight);
+					ty = 0;
+					tx = (windowWidth - twid) / 2;
+				} else {
+					thei = (float)backgroundHeight * ((float)windowWidth / (float)backgroundWidth);
+					twid = windowWidth;
+					ty = (windowHeight - thei) / 2;
+					tx = 0;
+				}
+			}
+		}
+		background.draw(tx, ty, twid, thei);
 	}
 	
 	private void drawBgStretched(Image background, int backgroundWidth, int backgroundHeight){
@@ -581,6 +629,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	}
 	
 	public void reinit() throws SlickException {
+		initInternal();
 		gameScene = gameScene.reinit(controller.getScores(), controller.getCurrentPlayerScore());
 		lobbyScene = lobbyScene.reinit();
 	}
