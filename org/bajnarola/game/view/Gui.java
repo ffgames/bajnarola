@@ -390,6 +390,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 					currentUpdate = null;
 					updateEndgameScene();
 				} else if(currentUpdate.placedTile != null){	//regular turn
+					gameScene.setScores(controller.getScores());
 					animator.enableTilePlacement();
 					if(gameScene.placeGraphicalTile(currentUpdate.placedTile, currentUpdate.placedTile.getX()+";"+currentUpdate.placedTile.getY()))
 						animator.enableMeeplePlacement();
@@ -599,7 +600,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		this.playerId = playerId;
 	}
 	
-	public void initScores(List<String> scores){
+	public void setScores(List<String> scores){
 		gameScene.setScores(scores);
 	}
 	
