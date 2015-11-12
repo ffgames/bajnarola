@@ -75,10 +75,12 @@ public class Player {
 		meeple.setTile(null);
 	}
 	
-	public void removeAllMeeple() {
+	public List<String> removeAllMeeple() {
 		Tile t;
+		List<String> coords = new ArrayList<String>();
 		for (int i = 0; i < meepleList.length ; i++) {
 			if ((t = meepleList[i].getTile()) != null) {
+				coords.add(Board.getKey(t.getX(), t.getY()));
 				t.removeMeeple();
 			}
 		}
@@ -90,5 +92,6 @@ public class Player {
 		}
 		
 		meepleList = null;
+		return coords;
 	}
 }

@@ -181,7 +181,9 @@ public class GameController extends UnicastRemoteObject implements
 		return this.myTurnDiff;
 	}
 
-	
+	public void removePlayer(String playerName){
+		board.removePlayer(playerName);
+	}
 	
 	public void requestReinit(){
 		this.reinit = true;
