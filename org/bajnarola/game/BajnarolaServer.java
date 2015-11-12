@@ -93,7 +93,7 @@ public class BajnarolaServer implements Remote {
 			this.registry.unbind(this.player.rmiUriBoard);
 			UnicastRemoteObject.unexportObject(this.registry, true);
 		} catch (RemoteException | NotBoundException e) {
-			e.printStackTrace();
+			System.err.printf("object %s already unbound", this.player.rmiUriBoard);
 		}
 	}
 }
