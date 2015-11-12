@@ -43,12 +43,15 @@ public class GameController extends UnicastRemoteObject implements
 	
 	Board board;
 	Lock diceLock;
+	public Lock reinitLock;
 	ReentrantLock playLock;
 	Integer diceValue;
 	Random randomGenerator;
 	Condition waitCondition;
 	public ViewController viewCtl;
 	TurnDiff myTurnDiff = null;
+		
+	boolean reinit = false;
 	
 	public int myPlayedTurn = 0;
 
@@ -59,36 +62,47 @@ public class GameController extends UnicastRemoteObject implements
 
 	public GameController() throws RemoteException {
 		
-		this.endCause = endGameCause.notEnded;
 		this.finalScores = new Hashtable<String, Integer>();
-		this.winner = false;
 		
 		this.randomGenerator = new Random();
-
-		this.board = new Board();
-		
 
 		this.goptions = new GameOptions();
 		this.viewCtl = new ViewController(board, this);
 
-		this.diceLock = new Lock();
+		this.reinitLock = new Lock();
 		this.playLock = new ReentrantLock();
+		
+		init();
+	}
+
+	private void init() {
+		this.board = new Board();
+		this.diceLock = new Lock();
 		try {
 			this.diceLock.lock();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
+		
 		this.waitCondition = this.playLock.newCondition();
+
+		this.winner = false;
+
+		this.endCause = endGameCause.notEnded;
 		this.myPlayedTurn = -1;
 		this.diceValue = null;
-		
 		this.throwDice();
-		
-		
-		/* XXX spareggi */
 	}
-
+	
+	public void reinit() throws SlickException {
+		if (reinit) {
+			init();
+			finalScores.clear();
+			viewCtl.reinit(board);
+			this.reinit = false;
+		}
+	}
+	
 	public void setMyServer(BajnarolaServer s) {
 		this.myServer = s;
 	}
@@ -160,12 +174,15 @@ public class GameController extends UnicastRemoteObject implements
 		return this.myTurnDiff;
 	}
 
-	public void reinit() throws SlickException{
-		viewCtl.reinit();
-	}
+	
 	
 	public void requestReinit(){
-		//TODO: force main loop to restart
+		this.reinit = true;
+		this.reinitLock.unlock();
+	}
+	
+	public boolean isReinitRequested() {
+		return this.reinit;
 	}
 	
 	/*

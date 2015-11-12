@@ -130,7 +130,7 @@ public class BajnarolaClient {
 		List<String> deadPlayers = new ArrayList<String>();
 
 		/* While the game is running and there are 2 or more players. */
-		while (!gameEnded) {
+		while (!gameEnded && !myBc.isReinitRequested()) {
 			/* For Every player */
 			for (String cPlayer : this.players.keySet()) {
 				

@@ -42,19 +42,17 @@ public class ViewController {
 	
 	
 	public ViewController(Board board, GameController gameCtl) {
-		super();
 		viewUpdatesQueue = new ArrayList<>();
 		this.gameCtl = gameCtl;
-		this.drawnTile = null;
 		this.guiLock = new Lock();
-		this.board = board;
-		this.player = null;
 		
 		try {
 			this.guiLock.lock();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
+		
+		init(board);
 		
 		try {
 			gui = new Gui(this);
@@ -84,12 +82,21 @@ public class ViewController {
 		}
 	} 
 	
-	public void requestReinit(){
-		gameCtl.requestReinit();
+	private void init(Board board) {
+		this.drawnTile = null;
+		this.board = board;
+		this.player = null;
 	}
 	
-	public void reinit() throws SlickException{
+	
+	public void reinit(Board board) throws SlickException {
+		init(board);
+		this.viewUpdatesQueue.clear();
 		gui.reinit();
+	}
+	
+	public void requestReinit(){
+		gameCtl.requestReinit();
 	}
 	
 	public int getMeeplesInHand(){
