@@ -14,6 +14,8 @@ import org.bajnarola.lobby.LobbyClient;
 import org.bajnarola.networking.NetPlayer;
 import org.newdawn.slick.SlickException;
 
+//TODO: if run from jar, game client's registry is unreachable from the lobby
+
 public class MainClass {
 	
 	private static int seed; 

@@ -17,7 +17,7 @@ jar cfe lobby.jar org.bajnarola.lobby.LobbyServer org/bajnarola/lobby/LobbyServe
 		org/bajnarola/networking/NetPlayer.class org/bajnarola/utils/BajnarolaRegistry.class
 
 #Pack game
-jar cfm game.jar gameManifest.txt org/bajnarola/game/*.class org/bajnarola/game/*/*.class org/bajnarola/networking/*.class org/bajnarola/utils/*.class org/bajnarola/lobby/*.class lib/* -J-Djava.library.path=lib/native:lib/native -J-Dfile.encoding=UTF-8 
+jar cfm game.jar gameManifest.txt org/bajnarola/game/*.class org/bajnarola/game/*/*.class org/bajnarola/networking/*.class org/bajnarola/utils/*.class org/bajnarola/lobby/*.class com/jcraft/*/*.class lib/* -J-Djava.library.path=lib/native:lib/native -J-Dfile.encoding=UTF-8 
 mkdir -p "$DEST_DIR"
 
 mv lobby.jar "$DEST_DIR"
