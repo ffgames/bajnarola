@@ -136,11 +136,11 @@ public class LobbyScene extends IScene {
 			if (unameInputBox.getText().equals(GameOptions.defaultPlayerName))
 				selectedInputBox.initialize();
 		}
-		else if (lobbyUriInputBox.isClicked(x, y))
+		if (lobbyUriInputBox.isClicked(x, y))
 			selectedInputBox = lobbyUriInputBox;
-		else if (joinButton.isClicked(x, y))
+		if (joinButton.isClicked(x, y))
 			join();
-		else if (backButton.isClicked(x, y))
+		if (backButton.isClicked(x, y))
 			guiManager.switchScene(scene_type.SCENE_MENU);
 	}
 

@@ -4,13 +4,15 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
+import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.BajnarolaRegistry;
-
-import sun.misc.Lock;
 
 public class LobbyServer extends UnicastRemoteObject implements LobbyController {
 	/**
@@ -23,23 +25,18 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	Integer maxPlayers = 0;
 	String lpath;
 	int port;
-	Lock plock;
+	ReentrantLock plock;
+	Condition lobbyWaitForPlayers, playerWaitForGameStart; 
 
 	private Boolean done;
 	
 	public LobbyServer(int lobbyPort, int playersNo, int timeout) throws Exception {
 		this.done = new Boolean(false);
 		this.maxPlayers = playersNo;
-		this.plock = new Lock();
+		this.plock = new ReentrantLock();
 		this.port = lobbyPort;
-		
-		try {
-			this.plock.lock();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		int i;
-
+		this.lobbyWaitForPlayers = plock.newCondition();
+		this.playerWaitForGameStart = plock.newCondition();
 		
 		this.lpath = this.getClass().getName();
 		//Naming.rebind(lpath, this);
@@ -62,15 +59,30 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 
 		System.out.println("OK!");
 		
-		i = 0;
-		while (!this.done && i < timeout) {
-			Thread.sleep(1000);
-			i++;
-		}
-
-		if (!this.done)
-			this.fireTimeout();
+		ArrayList<String> playersToRemove = new ArrayList<String>();
+		NetPlayer p;
 		
+		plock.lock();
+		while(players.size() < maxPlayers){
+			lobbyWaitForPlayers.await();
+			for(String u : players.keySet()){
+				try {
+					p = players.get(u);
+					BajnarolaRegistry.getRegistry(p.host, p.bindPort).lookup(p.rmiUriBoard);
+				} catch (RemoteException | NotBoundException | NullPointerException e) {
+					playersToRemove.add(u);
+				}
+			}
+			for(String u : playersToRemove){
+				players.remove(u);
+				System.out.println("Player " + u + " left the lobby...");
+			}
+			playersToRemove.clear();
+		}
+		playerWaitForGameStart.signalAll();
+		plock.unlock();
+
+		startGame();
 	}
 
 	public Map<String,NetPlayer> join(NetPlayer p) throws RemoteException {
@@ -96,24 +108,17 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 			e1.printStackTrace();
 		}
 		
-		if (this.players.size() < this.maxPlayers) {
-			try {
-				this.plock.lock();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		plock.lock();
+		lobbyWaitForPlayers.signal();
+		try {
+			playerWaitForGameStart.await();
+		} catch (InterruptedException e) {
+			throw new RemoteException(e.getMessage());
+		} finally {
+			plock.unlock();
 		}
-		this.startGame();
-		this.plock.unlock();
 		
 		return players;
-	}
-	
-	private void fireTimeout() {
-		if (!this.done && this.players.size() >= 2) {
-			this.plock.unlock();
-			this.startGame();
-		}
 	}
 	
 	private void startGame() {
