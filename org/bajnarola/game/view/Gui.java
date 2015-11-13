@@ -679,6 +679,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 	
 	public void reinit() throws SlickException {
 		initInternal();
+		leavingPlayers.clear();
+		meeplesToRemove.clear();
+		animator.reinit();
 		gameScene = gameScene.reinit(controller.getScores());
 		lobbyScene = lobbyScene.reinit();
 	}

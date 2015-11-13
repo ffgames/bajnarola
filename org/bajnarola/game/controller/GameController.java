@@ -287,7 +287,8 @@ public class GameController extends UnicastRemoteObject implements
 		
 		List<String> lsScores = new ArrayList<String>();
 		lsScores.addAll(board.getScoreUpdates());
-		viewCtl.enqueueViewUpdate(new ViewUpdate(null, null, lsScores));
+		if(!lsScores.isEmpty())
+			viewCtl.enqueueViewUpdate(new ViewUpdate(null, null, lsScores));
 		
 		for (Player p : board.getPlayers())
 			scores.put(p.getName(), (int)p.getScore());

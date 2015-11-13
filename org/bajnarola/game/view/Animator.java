@@ -65,11 +65,15 @@ public class Animator {
 	Image blue, gray;
 	
 	public Animator() throws SlickException{
-		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = notificationOn = false;
-		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = notificationFrame = 0;
+		reinit();
 		viewShiftOffset = RelativeSizes.getInstance().viewShiftOffset();
 		blue = new Image("res/misc/blue.png");
 		gray = new Image("res/misc/gray.png");
+	}
+	
+	public void reinit(){
+		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = notificationOn = false;
+		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = notificationFrame = 0;
 	}
 	
 	private float getTilePlacementScale(){

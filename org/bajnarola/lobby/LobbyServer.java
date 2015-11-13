@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.bajnarola.game.controller.GameControllerRemote;
 import org.bajnarola.networking.NetPlayer;
 import org.bajnarola.utils.BajnarolaRegistry;
 
@@ -26,7 +25,8 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	String lpath;
 	int port;
 	ReentrantLock plock;
-	Condition lobbyWaitForPlayers, playerWaitForGameStart; 
+	Condition lobbyWaitForPlayers, playerWaitForGameStart;
+	boolean force = false;
 
 	private Boolean done;
 	
@@ -63,7 +63,7 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		NetPlayer p;
 		
 		plock.lock();
-		while(players.size() < maxPlayers){
+		while(players.size() < maxPlayers && !force){
 			lobbyWaitForPlayers.await();
 			for(String u : players.keySet()){
 				try {
@@ -83,6 +83,13 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 		plock.unlock();
 
 		startGame();
+	}
+	
+	public void forceStart(){
+		force = true;
+		plock.lock();
+		lobbyWaitForPlayers.signalAll();
+		plock.unlock();
 	}
 
 	public Map<String,NetPlayer> join(NetPlayer p) throws RemoteException {
