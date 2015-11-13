@@ -118,9 +118,7 @@ public class RelativeSizes {
 				return 15;
 		}
 	}
-	
-	//TODO: fix these sizes
-	
+		
 	public int scoresXOffset(){
 		switch(activeResolution){
 			case R_800x600:
@@ -157,6 +155,7 @@ public class RelativeSizes {
 		}
 	}
 	
+	//TODO: fix these sizes
 	
 	public float scrollAreaRateo(){
 		switch(activeResolution){

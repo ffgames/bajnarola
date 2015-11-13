@@ -146,8 +146,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		} catch (FontFormatException | IOException e) {
 			throw new SlickException(e.getMessage());
 		}
-			
-		//TODO: set font size based on window size
+
 		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(RelativeSizes.getInstance().mainFontSize()), true);
 		buttonFont = new TrueTypeFont(trueTypeFont.deriveFont(RelativeSizes.getInstance().buttonsFontSize()), true);
 		
