@@ -59,7 +59,67 @@ public class RelativeSizes {
 			activeResolution = resolution;
 	}
 	
-	//TODO: implement and fix relative offsets
+	public float mainFontSize(){
+		switch(activeResolution){
+			case R_800x600:
+				return 22f;
+			case R_1920x1080:
+				return 35f;
+			case R_1280x720:
+			default:
+				return 25f;
+		}
+	}
+	
+	public float buttonsFontSize(){
+		switch(activeResolution){
+			case R_800x600:
+				return 40f;
+			case R_1920x1080:
+				return 65f;
+			case R_1280x720:
+			default:
+				return 50f;
+		}
+	}
+	
+	public float bannerYHeightDisplacement(){
+		switch(activeResolution){
+			case R_800x600:
+				return 3f/5f;
+			case R_1920x1080:
+				return 3f/5f;
+			case R_1280x720:
+			default:
+				return 3f/5f;
+		}
+	}
+	
+	public int handMeepleXOffset(){
+		switch(activeResolution){
+			case R_800x600:
+				return 8;
+			case R_1920x1080:
+				return 20;
+			case R_1280x720:
+			default:
+				return 15;
+		}
+	}
+	
+	public int handMeepleYOffset(){
+		switch(activeResolution){
+			case R_800x600:
+				return 10;
+			case R_1920x1080:
+				return 20;
+			case R_1280x720:
+			default:
+				return 15;
+		}
+	}
+	
+	//TODO: fix these sizes
 	
 	public int scoresXOffset(){
 		switch(activeResolution){
@@ -97,29 +157,6 @@ public class RelativeSizes {
 		}
 	}
 	
-	public int handMeepleXOffset(){
-		switch(activeResolution){
-			case R_800x600:
-				return 10;
-			case R_1920x1080:
-				return 20;
-			case R_1280x720:
-			default:
-				return 15;
-		}
-	}
-	
-	public int handMeepleYOffset(){
-		switch(activeResolution){
-			case R_800x600:
-				return 10;
-			case R_1920x1080:
-				return 20;
-			case R_1280x720:
-			default:
-				return 15;
-		}
-	}
 	
 	public float scrollAreaRateo(){
 		switch(activeResolution){

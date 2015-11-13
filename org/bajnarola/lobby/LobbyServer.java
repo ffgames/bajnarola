@@ -117,7 +117,6 @@ public class LobbyServer extends UnicastRemoteObject implements LobbyController 
 	}
 	
 	private void startGame() {
-		/* TODO: Implementation */
 		if (this.done)
 			return;
 		

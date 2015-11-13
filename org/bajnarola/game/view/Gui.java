@@ -119,8 +119,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		container = gc;
 		toggleSound(controller.getSoundOnOption());
 
-		
-		//TODO: if fixed resolution is set through options avoid using fullscreen here
 		RelativeSizes.getInstance().setResolution(Resolutions.R_FULLSCREEN, gc.getWidth(), gc.getHeight());
 		
 		container.setShowFPS(false);
@@ -148,8 +146,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 			
 		//TODO: set font size based on window size
-		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(25f), true);
-		buttonFont = new TrueTypeFont(trueTypeFont.deriveFont(50f), true);
+		mainFont = new TrueTypeFont(trueTypeFont.deriveFont(RelativeSizes.getInstance().mainFontSize()), true);
+		buttonFont = new TrueTypeFont(trueTypeFont.deriveFont(RelativeSizes.getInstance().buttonsFontSize()), true);
 		
 		rawInput = new Input(container.getScreenHeight());
 		
@@ -182,7 +180,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 		endgameScene = new EndgameScene(this, new Image(windowWidth, windowHeight, Image.FILTER_LINEAR), bg_type.BG_STRETCHED, genSountrack("endgame", ENDGAME_SONG_COUNT));
 
-		//TODO: wooden table should be lobby screen background
 		lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, genSountrack("lobby", LOBBY_SONG_COUNT), mainFont);
 
 		currentUpdate = null;
@@ -209,7 +206,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 					loadSountrack(lobbyScene.soundtrack, "lobby", LOBBY_SONG_COUNT);
 					loadSountrack(endgameScene.soundtrack, "endgame", ENDGAME_SONG_COUNT);
 				} catch (SlickException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -257,7 +253,6 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return soundOn;
 	}
 	
-	//TODO: pause music if toggoled out
 	public void toggleSound(boolean state){
 		soundOn = state;
 		container.setMusicOn(state);
@@ -447,13 +442,13 @@ public class Gui extends BasicGame implements InputProviderListener {
 		endgameScene.setWinner(controller.amIWinner());
 		switch(controller.getEndCause()){
 			case deckEmpty:
-				endgameScene.setCause("Game Ended");
+				endgameScene.setCause("Last Tile has been placed");
 				break;
 			case lastPlayer:
-				endgameScene.setCause("Last Remainig Player");
+				endgameScene.setCause("All other players left the game");
 				break;
 			case notEnded:
-				//XXX: wtf?
+				//XXX: we should never get here
 				break;
 		}
 		Map<String, Integer> finalScores = controller.getFinalScores();

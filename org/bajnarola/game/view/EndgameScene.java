@@ -45,11 +45,11 @@ public class EndgameScene extends IScene {
 		bannerWidth = containerWidth;
 		bannerHeight = ((float)winBanner.getHeight()/(float)winBanner.getWidth())*bannerWidth;
 		bannerPosX = (guiManager.windowWidth/2) - bannerWidth/2;
-		bannerPosY = containerPosY + containerHeight - bannerHeight*2/3;
+		bannerPosY = containerPosY + containerHeight - bannerHeight*RelativeSizes.getInstance().bannerYHeightDisplacement();
 		
-		scoresHeight = (bannerPosY - containerPosY) * 0.7f;
+		scoresHeight = (bannerPosY - containerPosY - Gui.mainFont.getLineHeight()) * 0.7f;
 		scoresWidth = containerWidth / 3;
-		scoresPosY = containerPosY + (containerHeight - scoresHeight)/2;
+		scoresPosY = containerPosY + (containerHeight - scoresHeight)/2 + Gui.mainFont.getLineHeight();
 		scoresLPosX = containerPosX + scoresWidth*2/3;
 		scoresRPosX = scoresLPosX + scoresWidth;
 		
@@ -138,7 +138,7 @@ public class EndgameScene extends IScene {
 				}
 			}
 			
-			//TODO: draw cause string
+			guiManager.drawString(cause, (int)((containerPosX +(containerWidth/2))-(Gui.mainFont.getWidth(cause)/2)), (int)(containerPosY + ((scoresPosY-containerPosY)/2)-(Gui.mainFont.getHeight(cause)/2)));
 			
 			guiManager.container.getGraphics().copyArea(sceneDump, 0, 0);
 		} else

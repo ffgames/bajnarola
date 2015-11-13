@@ -271,7 +271,7 @@ public class GameController extends UnicastRemoteObject implements
 			meepleTileSide = tile.getMeeple().getTileSide();
 
 		myTurnDiff = new TurnDiff(tile.getX(), tile.getY(),
-				(short) tile.getDirection(), meepleTileSide, me);
+				(short) tile.getDirection(), meepleTileSide, me, (short)myPlayedTurn);
 
 		System.out.println("OK");
 

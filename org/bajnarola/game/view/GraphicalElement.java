@@ -109,7 +109,7 @@ public class GraphicalElement extends Image {
 		scaledSize = (int)(size * smallScaleFactor);
 		int windowCenterX = (int)((float)scene.guiManager.windowWidth/2);
 		int windowCenterY = (int)((float)(scene.guiManager.windowHeight-scene.turnTileSize+scaledSize)/2);
-		scaledX = windowCenterX + (int)((((float)(GameScene.getLogicalX(coords)+scene.logicalCenterX))-0.5)*scaledSize);
+		scaledX = windowCenterX + (int)((((float)(GameScene.getLogicalX(coords)-scene.logicalCenterX))-0.5)*scaledSize);
 		scaledY = windowCenterY - (int)((((float)(GameScene.getLogicalY(coords)-scene.logicalCenterY))+0.5)*scaledSize);
 	}
 		

@@ -150,12 +150,14 @@ public class BajnarolaClient {
 					try {
 						if (!(gameEnded = myBc.isDeckEmpty())) {
 							dState = othBc.play(myBc.myPlayedTurn + 1, myBc.gameId);
+							if(!dState.playerName.equals(cPlayer) || dState.turn != myBc.myPlayedTurn)
+								throw new Exception("invalid state diff");
 							myBc.myPlayedTurn++;
 							myBc.updateBoard(dState);
 						}
 					} catch(Exception e) {
 						/* CRASH! */
-						System.err.println("Node Crash! (" + cPlayer + ")");
+						System.err.println("Node Crash! (" + cPlayer + "): "+e.getMessage());
 						deadPlayers.add(cPlayer);
 						myBc.removePlayer(cPlayer);
 					}
