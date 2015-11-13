@@ -1,7 +1,6 @@
 package org.bajnarola.game.view;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
@@ -12,11 +11,17 @@ public class Animator {
 	final static int MEEPLE_PLACEMENT_DURATION = 50;
 	final static int MEEPLE_REMOVAL_DURATION = 50;
 	final static int SHOW_SCORE_DURATION = 50;
+	final static int NOTIFICATION_DURATION = 120;
 	
 	final static int LG_GRADIENT_BEGIN_START = 0;
 	final static int LG_GRADIENT_BEGIN_END = 30;
 	final static int LG_GRADIENT_FINISH_START = 50;
 	final static int LG_GRADIENT_FINISH_END = 80;
+	
+	final static int NOTIFICATION_BEGIN_START = 0;
+	final static int NOTIFICATION_BEGIN_END = 40;
+	final static int NOTIFICATION_FINISH_START = 80;
+	final static int NOTIFICATION_FINISH_END = 120;
 	
 	final static float TILE_PLACEMENT_INITIAL_SCALE = (float)1.7;
 	final static float TILE_PLACEMENT_FINAL_SCALE = (float)1;
@@ -36,6 +41,8 @@ public class Animator {
 	final static float SHOW_SCORE_FINAL_OFFSET = -100; //pixel
 	final static float SHOW_SCORE_INITIAL_OPACITY = 2;
 	final static float SHOW_SCORE_FINAL_OPACITY = 0;
+	final static float NOTIFICATION_INITIAL_OPACITY = (float)0;
+	final static float NOTIFICATION_FINAL_OPACITY = (float)1;
 	
 	int tilePlacementFrame;
 	int landscapeGlowFrame;
@@ -43,6 +50,7 @@ public class Animator {
 	int meeplePlacementFrame;
 	int meepleRemovalFrame;
 	int showScoreFrame;
+	int notificationFrame;
 	
 	int viewShiftOffset;
 	
@@ -52,14 +60,16 @@ public class Animator {
 	boolean meeplePlacementOn;
 	boolean meepleRemovalOn;
 	boolean showScoreOn;
+	boolean notificationOn;
 	
-	Image blue;
+	Image blue, gray;
 	
 	public Animator() throws SlickException{
-		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = false;
-		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = 0;
+		tilePlacementOn = landscapeGlowOn = tileProbeGlowOn = showScoreOn = meeplePlacementOn = meepleRemovalOn = notificationOn = false;
+		tilePlacementFrame = landscapeGlowFrame = tileProbeGlowFrame = showScoreFrame = meeplePlacementFrame = meepleRemovalFrame = notificationFrame = 0;
 		viewShiftOffset = RelativeSizes.getInstance().viewShiftOffset();
 		blue = new Image("res/misc/blue.png");
+		gray = new Image("res/misc/gray.png");
 	}
 	
 	private float getTilePlacementScale(){
@@ -133,9 +143,20 @@ public class Animator {
 		return 0;
 	}
 	
-	public void drawShowScore(Graphics g, int value, int x, int y){
-		Color textCol = new Color(1, 1, 1, getShowScoreAlpha());
-		g.getFont().drawString(x, y+getShowScoreYOffset(), "+"+value, textCol);
+	private float getNotificationAlpha(){
+		if(notificationOn){
+			if(notificationFrame < NOTIFICATION_BEGIN_END){
+				return ((NOTIFICATION_FINAL_OPACITY - NOTIFICATION_INITIAL_OPACITY) / (NOTIFICATION_BEGIN_END - NOTIFICATION_BEGIN_START) * notificationFrame) + NOTIFICATION_INITIAL_OPACITY;
+			} else if(notificationFrame >= NOTIFICATION_FINISH_START){
+				return ((NOTIFICATION_FINAL_OPACITY - NOTIFICATION_INITIAL_OPACITY) / (NOTIFICATION_BEGIN_END - NOTIFICATION_BEGIN_START) * (NOTIFICATION_FINISH_END - notificationFrame)) + NOTIFICATION_INITIAL_OPACITY;
+			} else
+				return NOTIFICATION_FINAL_OPACITY;
+		}
+		return -1;
+	}
+	
+	public void drawShowScore(Gui g, int value, int x, int y){
+		g.drawString("+"+value, x, y+getShowScoreYOffset(), getShowScoreAlpha());
 	}
 	
 	public void drawLandscapeGlowingTile(GraphicalTile tile, boolean zoomOutView, float scale){
@@ -165,6 +186,16 @@ public class Animator {
 		meeple.displace(0, getMeepleRemovalYOffset());
 		meeple.setAlpha(getMeepleRemovalAlpha());
 		meeple.draw(zoomOutView, scale);
+	}
+	
+	public void drawNotification(Gui g, String text, int cx, int cy, int width, int height){
+		int x, y;
+		float alpha = getNotificationAlpha();
+		x = cx - width/2;
+		y = cy - height/2;
+		gray.setAlpha(alpha);
+		gray.draw(x, y, width, height);
+		g.drawString(text, x+((width-Gui.mainFont.getWidth(text))/2), y+((height-Gui.mainFont.getHeight(text))/2), alpha);
 	}
 	
 	public int getViewShiftOffset(){
@@ -209,6 +240,11 @@ public class Animator {
 			if(showScoreFrame > SHOW_SCORE_DURATION)
 				showScoreOn = false;
 		}
+		if(notificationOn){
+			notificationFrame++;
+			if(notificationFrame > NOTIFICATION_DURATION)
+				notificationOn = false;
+		}
 		viewShiftOffset = RelativeSizes.getInstance().viewShiftOffset();
 	}
 	
@@ -236,8 +272,16 @@ public class Animator {
 		return showScoreOn;
 	}
 	
+	public boolean isNotificationOn(){
+		return notificationOn;
+	}
+	
 	public boolean automaticAnimationsEnded(){
 		return !meeplePlacementOn && !meepleRemovalOn && !tilePlacementOn && !landscapeGlowOn && !showScoreOn;
+	}
+	
+	public boolean allAnimationsEnded(){
+		return automaticAnimationsEnded() && !notificationOn && !tileProbeGlowOn;
 	}
 	
 	public void enableTilePlacement(){
@@ -268,5 +312,10 @@ public class Animator {
 	public void enableShowScore(){
 		showScoreFrame = 0;
 		showScoreOn = true;
+	}
+	
+	public void enableNotification(){
+		notificationFrame = 0;
+		notificationOn = true;
 	}
 }

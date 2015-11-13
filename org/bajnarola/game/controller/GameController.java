@@ -182,7 +182,7 @@ public class GameController extends UnicastRemoteObject implements
 	}
 
 	public void removePlayer(String playerName){
-		board.removePlayer(playerName);
+		viewCtl.removeDeadMeeples(board.removePlayer(playerName), playerName);
 	}
 	
 	public void requestReinit(){

@@ -31,6 +31,7 @@ public class PauseScene extends IScene {
 	@Override
 	public void render(GameContainer gc, Graphics g) {
 		guiManager.drawBackground(background, backgroundType);
+		guiManager.gameScene.drawAllScores(false);
 		continueButton.draw();
 		optionButton.draw();
 		exitButton.draw();

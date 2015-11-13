@@ -36,9 +36,10 @@ public class GameScene extends IScene {
 	private GraphicalElement probingTile, handMeeples[];
 	private GraphicalMeeple tmpMeeples[], currentPlayerMeeple;
 	private Button zoomButton, confirmButton;
-	private Image curtain;
+	private Image curtain, scoresBg;
 	private List<String> scores;
 	private Color[] playerColors;
+	private String notificationString;
 		//logical elements
 	private List<HitBox> holes;
 	private boolean possibleMeeples[];
@@ -49,6 +50,8 @@ public class GameScene extends IScene {
 	public boolean probing, probeResult, mouseOverOn, dimscreen;
 	private int probedX, probedY;
 	private short turnMeepleSide;
+	private int notificationCX, notificationCY, notificationWidth, notificationHeight;
+	private int scoresCX, scoresCY, scoresWidth, scoresHeight, scoresTextWidth, scoresTextHeight;
 	
 	//view area controll
 	private int globalCenterOffset;
@@ -95,6 +98,9 @@ public class GameScene extends IScene {
 		curtain = new Image("res/misc/gray.png");
 		curtain.setAlpha(0.8f);
 		
+		scoresBg = curtain.copy();
+		scoresBg.setAlpha(0.6f);
+		
 		logicalCenterX = logicalCenterY = logicalMaxX = logicalMaxY = logicalMinX = logicalMinY = 0;
 		minXOff = maxXOff = xOff;
 		minYOff = maxYOff = yOff;
@@ -128,6 +134,11 @@ public class GameScene extends IScene {
 		playerColors[6] = new Color(0x93, 0x41, 0xD2);
 		playerColors[7] = new Color(0x73, 0xCB, 0x49);
 		
+		notificationString = null;
+		notificationCX = guiManager.windowWidth/2;
+		notificationCY = notificationWidth = notificationHeight = 0;
+		
+		scoresCX = scoresCY = scoresWidth = scoresHeight = scoresTextWidth = scoresTextHeight = 0;
 		
 		tmpMeeples = new GraphicalMeeple[Tile.SIDE_COUNT];
 		for(short i = 0; i < Tile.SIDE_COUNT; i++)
@@ -246,7 +257,7 @@ public class GameScene extends IScene {
 		
 		if(currentScoreGlobalX > -1 && currentScoreGlobalY > -1 && currentScoreVal > -1 && 
 		   isStringInView(xOff, yOff, guiManager.windowWidth, guiManager.windowHeight, currentScoreGlobalX, currentScoreGlobalY)){
-			guiManager.animator.drawShowScore(g, currentScoreVal, currentScoreGlobalX-xOff, currentScoreGlobalY-yOff);
+			guiManager.animator.drawShowScore(guiManager, currentScoreVal, currentScoreGlobalX-xOff, currentScoreGlobalY-yOff);
 		}
 	}
 	
@@ -285,15 +296,25 @@ public class GameScene extends IScene {
 		} else {
 			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset(), currentPlScore);
 		}*/
-		drawAllScores(scores);
+		drawAllScores(!dimscreen);
+		
+		if(notificationString != null && !notificationString.isEmpty())
+			guiManager.animator.drawNotification(guiManager, notificationString, notificationCX, notificationCY, notificationWidth, notificationHeight);
 		
 		if(turnTile != null)
 			confirmButton.draw();
 	}
 	
-	public void drawAllScores(List<String> scores){
+	public void drawAllScores(boolean drawBg){
+		int xoff, yoff;
+		
+		if(drawBg)
+			scoresBg.draw(scoresCX-(scoresWidth/2), scoresCY-(scoresHeight/2), scoresWidth, scoresHeight);
+		xoff = scoresCX - scoresTextWidth/2 + 5;
+		yoff = scoresCY - scoresTextHeight/2;
+		
 		for(int i = 0; i < scores.size(); i++){
-			drawScore(resizer.scoresXOffset(), resizer.scoresYOffset()+(i*guiManager.mainFont.getLineHeight()), scores.get(i));
+			drawScore(xoff, yoff+(i*Gui.mainFont.getLineHeight()), scores.get(i));
 		}
 	}
 	
@@ -365,6 +386,17 @@ public class GameScene extends IScene {
 		currentLanscape = null;
 	}
 	
+	public void notify(String text){
+		notificationString = text;
+		notificationHeight = Gui.mainFont.getHeight(text)*6/5;
+		notificationCY = resizer.scoresYOffset() + notificationHeight/2;
+		notificationWidth = Gui.mainFont.getWidth(text)+Gui.mainFont.getHeight(text)/4;
+	}
+	
+	public void notified(){
+		notificationString = null;
+	}
+	
 	// ##  TURN MANAGEMENT  ##
 	
 	public boolean placeGraphicalTile(Tile tile, String coords) throws SlickException{
@@ -413,6 +445,16 @@ public class GameScene extends IScene {
 
 	public void setScores(List<String> scores){
 		this.scores = scores;
+		
+		scoresTextWidth = 0;
+		for(String s : scores)
+			scoresTextWidth = Math.max(scoresTextWidth, Gui.mainFont.getWidth(s));
+		
+		scoresWidth = (Gui.mainFont.getLineHeight()/5) + scoresTextWidth;
+		scoresCX = resizer.scoresXOffset() + (scoresWidth/2);
+		scoresTextHeight = Gui.mainFont.getLineHeight()*scores.size();
+		scoresHeight = scoresTextHeight + (Gui.mainFont.getLineHeight()/5);
+		scoresCY = resizer.scoresYOffset() + (scoresHeight/2);
 	}
 	
 	// ##  INPUT HANDLERS  ##

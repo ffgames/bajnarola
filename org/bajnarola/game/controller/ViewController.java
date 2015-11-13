@@ -109,6 +109,10 @@ public class ViewController {
 		return player.getMeepleCount();
 	}
 	
+	public void removeDeadMeeples(List<String> coords, String playername){
+		gui.removeDeadMeeples(coords, playername);
+	}
+	
 	public ViewUpdate dequeueViewUpdate() {
 		if (this.viewUpdatesQueue.size() > 0)
 			return this.viewUpdatesQueue.remove(0);

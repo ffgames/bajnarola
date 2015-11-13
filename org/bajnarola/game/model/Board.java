@@ -40,7 +40,6 @@ public class Board {
 	List<String> holes;
 	Shuffler random;
 	Map<String, Boolean> points;
-	List<String> crashedMeeples;
 	List<String> scores;
 	
 	public int debugPlayTiles = 10;
@@ -53,7 +52,6 @@ public class Board {
 		this.holes = new ArrayList<String>();
 		this.points = new Hashtable<String, Boolean>();
 		this.scores = new ArrayList<String>();
-		this.crashedMeeples = new ArrayList<String>();
 	}
 	
 	public Tile initBoard(List<String> playerNames, boolean shuffle, int seed) {
@@ -89,12 +87,14 @@ public class Board {
 		return initBoard(playerNames, true, seed);
 	}
 	
-	public void removePlayer(String name){
+	public List<String> removePlayer(String name){
+		List<String> crashedMeeples = new ArrayList<String>();
 		Player p = getPlayerByName(name);
 		if(p != null){
 			crashedMeeples.addAll(p.removeAllMeeple());
 			players.remove(p);
 		}
+		return crashedMeeples;
 	}
 	
 	public Player getPlayerByName(String name) {
@@ -173,9 +173,7 @@ public class Board {
 		for (short i = 0; i < Tile.SIDE_COUNT; i++) {
 			points.putAll(checkScores(tile.getLSElement(i), false, scores));
 		}
-		for(String s : crashedMeeples)
-			points.put(s, false);
-		crashedMeeples.clear();
+		
 		return points;
 	}
 	

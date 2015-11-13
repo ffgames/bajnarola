@@ -95,10 +95,11 @@ public class Gui extends BasicGame implements InputProviderListener {
 	public static Image buttonActiveBg, buttonInactiveBg, buttonDisabledBg;
 	public static TrueTypeFont buttonFont, mainFont;
 	
-	private boolean myTurn, landscapeGlowOn, meepleRemovalOn, showScoreOn;
+	private boolean myTurn, landscapeGlowOn, meepleRemovalOn, showScoreOn, notificationOn;
 	private List<String> holes;
 	private Tile newTile;
 	private List<String> meeplesToRemove;
+	private List<String> leavingPlayers;
 	
 	private Music currentSong = null;
 	private IScene soundtrackScene;
@@ -185,7 +186,8 @@ public class Gui extends BasicGame implements InputProviderListener {
 
 		currentUpdate = null;
 		meeplesToRemove = new ArrayList<String>();
-
+		leavingPlayers = new ArrayList<String>();
+		
 		//gc.setMouseGrabbed(true);
 		container.setMouseCursor("res/misc/pointer.gif", 6, 5);
 		
@@ -228,13 +230,15 @@ public class Gui extends BasicGame implements InputProviderListener {
 		landscapeGlowOn = false;
 		meepleRemovalOn = false;
 		showScoreOn = false;
+		notificationOn = false;
 		currentUpdate = null;
 		holes = null;
 		newTile = null;
 	}
 	
-	public void removeDeadMeeples(List<String> coords){
+	public void removeDeadMeeples(List<String> coords, String playername){
 		meeplesToRemove.addAll(coords);
+		leavingPlayers.add(playername);
 	}
 	
 	private void loadSountrack(List<Music> soundtrack, String prefix, int count) throws SlickException {
@@ -387,7 +391,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
-				if(currentUpdate.points == null && currentUpdate.placedTile == null && currentUpdate.scores == null){ //end game
+				if(currentUpdate.points == null && currentUpdate.placedTile == null && currentUpdate.scores == null && animator.allAnimationsEnded()){ //end game
 					currentUpdate = null;
 					updateEndgameScene();
 				} else if(currentUpdate.placedTile != null){	//regular turn
@@ -436,11 +440,29 @@ public class Gui extends BasicGame implements InputProviderListener {
 			if(animator.automaticAnimationsEnded())
 				currentUpdate = null;
 		}
-		if(currentScene.sceneType == scene_type.SCENE_GAME && !animator.isMeepleRemovalOn() && !meeplesToRemove.isEmpty()){
+		if(currentScene.sceneType == scene_type.SCENE_GAME && !animator.isMeepleRemovalOn() && (!meeplesToRemove.isEmpty() || !leavingPlayers.isEmpty())){
 			gameScene.removeMeeples(meeplesToRemove);
 			animator.enableMeepleRemoval();
 			meeplesToRemove.clear();
 			meepleRemovalOn = true;
+			
+			String text = leavingPlayers.remove(0);
+			if(leavingPlayers.size() == 1){
+				text += " and "+leavingPlayers.remove(0);
+			} else for(String pl : leavingPlayers){
+					text += ", "+pl;
+			}
+			text += " left the game";
+			leavingPlayers.clear();
+			gameScene.notify(text);
+			animator.enableNotification();
+			notificationOn = true;
+			
+			gameScene.setScores(controller.getScores());
+		}
+		if(notificationOn && !animator.isNotificationOn()){
+			gameScene.notified();
+			notificationOn = false;
 		}
 	}
 
@@ -634,12 +656,22 @@ public class Gui extends BasicGame implements InputProviderListener {
 		return this.controller.getViewOptions();
 	}
 	
-	public void drawString(String str, int x, int y, Color color){
-		mainFont.drawString(x, y, str, color);
+	public void drawString(String str, int x, int y, Color color, float alpha){
+		Color nc = new Color(color);
+		nc.a = alpha;
+		mainFont.drawString(x, y, str, nc);
 	}
 	
 	public void drawString(String str, int x, int y){
-		drawString(str, x, y, defaultTextColor);
+		drawString(str, x, y, defaultTextColor, 1f);
+	}
+	
+	public void drawString(String str, int x, int y, Color color){
+		drawString(str, x, y, color, 1f);
+	}
+	
+	public void drawString(String str, int x, int y, float alpha){
+		drawString(str, x, y, defaultTextColor, alpha);
 	}
 
 	public LobbyOptions getLobbyOptions() {
