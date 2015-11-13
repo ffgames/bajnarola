@@ -18,7 +18,7 @@ public class GraphicalMeeple extends GraphicalElement {
 		int tileSize = (int)(scene.tileSize * smallScaleFactor);
 		int windowCenterX = (int)((float)scene.guiManager.windowWidth/2);
 		int windowCenterY = (int)((float)(scene.guiManager.windowHeight-scene.turnTileSize+tileSize)/2);
-		int tileCenterX = windowCenterX + (int)(((float)(GameScene.getLogicalX(coords)+scene.logicalCenterX))*tileSize);
+		int tileCenterX = windowCenterX + (int)(((float)(GameScene.getLogicalX(coords)-scene.logicalCenterX))*tileSize);
 		int tileCenterY = windowCenterY - (int)(((float)(GameScene.getLogicalY(coords)-scene.logicalCenterY))*tileSize);
 		scaledSize = (int)(size * smallScaleFactor);
 		scaledX = scene.getMeepleCoordX(tileCenterX, tileSize, tilePos)-scaledSize/2;

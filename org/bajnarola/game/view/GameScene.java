@@ -175,10 +175,15 @@ public class GameScene extends IScene {
 		
 		hudRender(gc, g);
 		
-		//g.drawString(String.format("lmx: %d, lMx: %d, lmy: %d, lMy: %d", logicalMinX, logicalMaxX, logicalMinY, logicalMaxY), 400, 10);
-		//g.drawString(String.format("mxo: %d, Mxo: %d, myo: %d, Myo: %d", minXOff, maxXOff, minYOff, maxYOff), 400, 30);
-		//g.drawString(String.format("xOff: %d, yOff: %d, hh: %s, zm: %s", xOff, yOff, (hudHovered ? "true" : "false"), (zoomable ? "true" : "false")), 400, 50);
-		/*for(GraphicalTile t : currentScenario.values()){
+		//debugRender(gc, g);
+	}
+	
+	@SuppressWarnings("unused")
+	private void debugRender(GameContainer gc, Graphics g){
+		g.drawString(String.format("lmx: %d, lMx: %d, lmy: %d, lMy: %d", logicalMinX, logicalMaxX, logicalMinY, logicalMaxY), 400, 10);
+		g.drawString(String.format("mxo: %d, Mxo: %d, myo: %d, Myo: %d", minXOff, maxXOff, minYOff, maxYOff), 400, 30);
+		g.drawString(String.format("xOff: %d, yOff: %d, hh: %s, zm: %s", xOff, yOff, (hudHovered ? "true" : "false"), (zoomable ? "true" : "false")), 400, 50);
+		for(GraphicalTile t : currentScenario.values()){
 			char arrow = '^';
 			switch (t.direction) {
 			case 0:
@@ -195,7 +200,7 @@ public class GameScene extends IScene {
 				break;
 			}
 			g.drawString(t.getCoordinates()+arrow, t.globalCenterX-xOff, t.globalCenterY-yOff);	
-		}*/
+		}
 	}
 
 	private void boardRender(GameContainer gc, Graphics g){
@@ -318,6 +323,12 @@ public class GameScene extends IScene {
 			placedMeeples.remove(m.coords);
 		}
 		return ret;
+	}
+	
+	public void removeMeeples(List<String> coords){
+		for(String c : coords){
+			meeplesToRemove.add(placedMeeples.remove(c));
+		}
 	}
 	
 	public void drawScoreUpdate(String score, List<String> plScores){

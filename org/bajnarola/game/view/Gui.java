@@ -98,6 +98,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private boolean myTurn, landscapeGlowOn, meepleRemovalOn, showScoreOn;
 	private List<String> holes;
 	private Tile newTile;
+	private List<String> meeplesToRemove;
 	
 	private Music currentSong = null;
 	private IScene soundtrackScene;
@@ -183,6 +184,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		lobbyScene = new LobbyScene(this, menuScene.background, menuScene.backgroundType, genSountrack("lobby", LOBBY_SONG_COUNT), mainFont);
 
 		currentUpdate = null;
+		meeplesToRemove = new ArrayList<String>();
 
 		//gc.setMouseGrabbed(true);
 		container.setMouseCursor("res/misc/pointer.gif", 6, 5);
@@ -229,6 +231,10 @@ public class Gui extends BasicGame implements InputProviderListener {
 		currentUpdate = null;
 		holes = null;
 		newTile = null;
+	}
+	
+	public void removeDeadMeeples(List<String> coords){
+		meeplesToRemove.addAll(coords);
 	}
 	
 	private void loadSountrack(List<Music> soundtrack, String prefix, int count) throws SlickException {
@@ -429,6 +435,12 @@ public class Gui extends BasicGame implements InputProviderListener {
 			
 			if(animator.automaticAnimationsEnded())
 				currentUpdate = null;
+		}
+		if(currentScene.sceneType == scene_type.SCENE_GAME && !animator.isMeepleRemovalOn() && !meeplesToRemove.isEmpty()){
+			gameScene.removeMeeples(meeplesToRemove);
+			animator.enableMeepleRemoval();
+			meeplesToRemove.clear();
+			meepleRemovalOn = true;
 		}
 	}
 
