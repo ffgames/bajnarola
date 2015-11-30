@@ -1,0 +1,16 @@
+\BOOKMARK [1][-]{section.1}{Introduzione}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Carcassone}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Aspetti progettuali}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{Il gioco}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{La comunicazione}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Aspetti implementativi}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Il desing pattern MVC}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Implementazione dello schema di gioco}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{L'interfaccia grafica}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.4}{La gestione e la distribuzione della rete}{section.3}% 10
+\BOOKMARK [3][-]{subsubsection.3.4.1}{Registrazione presso la lobby}{subsection.3.4}% 11
+\BOOKMARK [3][-]{subsubsection.3.4.2}{Lo schema con leader dinamico.}{subsection.3.4}% 12
+\BOOKMARK [3][-]{subsubsection.3.4.3}{Aggiornamenti allo stato}{subsection.3.4}% 13
+\BOOKMARK [3][-]{subsubsection.3.4.4}{Tolleranza ai guasti}{subsection.3.4}% 14
+\BOOKMARK [1][-]{section.4}{Valutazione}{}% 15
+\BOOKMARK [1][-]{section.5}{Conclusioni}{}% 16
