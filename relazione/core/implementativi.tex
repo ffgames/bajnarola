@@ -32,7 +32,9 @@ In parallelo viene anche lanciata (con cadenza meno regolare) una funzione di ag
 Alla stessa maniera, la gestion degli input viene passata alla scena corrente dalla classe principale in modo da interpretare le pressioni dei tasti e i movimenti del mouse nella maniera corretta.
 
 \subsubsection{Interazione}
-%TODO screenshot
+\begin{figure}
+	\includegraphics[width=\textwidth]{img/effects.jpg}
+\end{figure}
 
 In figura \ref{figuraSopra} e` mostrata una schermata di gioco, la parte centrale e` occupata dal tabellone su cui vengono piazzate le tessere ed i meeple. 
 Sui contorni della visuale di gioco vengono mostrati gli elementi dell'HUD (\emph{Heads-Up Display}): 
@@ -181,12 +183,19 @@ testimone (token ring) per la decisione del leader corrente.
 	Uno degli aspetti piu' importanti del sistema di comunicazione del gioco
 	e' la presenza di classi di differenza (classe \textbf{TurnDiff}), le
 	suddette classi rendono la comunicazione il piu' leggero possibile
-	essendo composte di:
+	essendo composte da:\\
+
+\begin{minipage}{.60\textwidth}
 	\begin{itemize}
-		\item La rotazione della tessera posizionata;
-		\item le coordinate della tessera;
-		\item le posizioni relative del meeple se presente.
+		\item Le coordinate della tessera;
+		\item la rotazione della tessera posizionata;
+		\item le posizioni relative del meeple se presente;
+		\item il turno e il giocatore correnti.
 	\end{itemize}
+\end{minipage}
+\begin{minipage}{.20\textwidth}
+	\includegraphics{img/turndiff.png}
+\end{minipage}
 
 \subsubsection{Tolleranza ai guasti}
 	Il sistema risulta tollerante ai guasti di tipo crash.
@@ -270,4 +279,11 @@ testimone (token ring) per la decisione del leader corrente.
 	\draw[->] (5) to[bend left=20] (2);
 \end{tikzpicture}
 	\end{minipage}
+	\caption{Riconfigurazione dei client dovuta ad un crash}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/seq_diagram_play.png}
+	\caption{Comunicazione in una partita d'esempio a 4 giocatori}
 \end{figure}
