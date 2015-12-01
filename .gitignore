@@ -14,3 +14,9 @@ hs_err_pid*
 options.conf
 
 build/*
+
+# latex
+relazione/main.out
+relazione/main.log
+relazione/main.aux
+relazione/x.log
