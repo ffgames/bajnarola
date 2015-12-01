@@ -17,6 +17,45 @@ dotata della logica di gestione distribuita dello stato dei vari mondi di gioco.
 \end{figure}
 
 \subsection{L'interfaccia grafica}
+L'interfaccia grafica e` basata sul motore Slick2D\ref{}, %TODO [citation needed]  
+questo mette a disposizione una libreria abbastanza semplice per realizzare interfacce grafice
+anche complesse prive di rendering 3D.
+
+L'intera esecuzione dell'inferfaccia grafica e` affidata ad un thread dedicato, una
+classe principale gestisce il dispatching degli aggiornamenti grafici e la lettura
+dell'input.
+
+Il motore di gioco lancia la funzione di rendering alla frequenza impostata, la classe principale
+delega dunque la composizione della schermata alla scena attualmente caricata.
+In parallelo viene anche lanciata (con cadenza meno regolare) una funzione di aggiornamento (\texttt{void update()}) che interroga il controller e recupera nel thread della grafica gli aggiornamenti logici pendenti, se ce ne sono.
+
+Alla stessa maniera, la gestion degli input viene passata alla scena corrente dalla classe principale in modo da interpretare le pressioni dei tasti e i movimenti del mouse nella maniera corretta.
+
+\subsubsection{Interazione}
+%TODO screenshot
+
+In figura \ref{figuraSopra} e` mostrata una schermata di gioco, la parte centrale e` occupata dal tabellone su cui vengono piazzate le tessere ed i meeple. 
+Sui contorni della visuale di gioco vengono mostrati gli elementi dell'HUD (\emph{Heads-Up Display}): 
+\begin{itemize}
+\item in alto a sinistra i punteggi attuali dei partecipanti ancora in gioco;
+\item in alto a destra compare un pulsante per attivare e disattivare lo zoom quando lo scenario eccede i limiti dell'HUD stesso, in questo caso si puo` spostare la visuale muovendo il puntatore verso i bordi della schermata oppure utilizando le frecce direzionali sulla tastiera;
+\item in basso a sinistra i meeple ancora in mano al giocatore.
+\end{itemize}
+Inoltre se un giocatore e` di turno l'HUD conterra` anche:
+\begin{itemize}
+\item in basso al centro il pulsante di confema del piazzamento;
+\item in basso a destra la tessera da piazzare;
+\item \emph{una volta confermato il piazzamento} sulla tessera da piazzare vengono evidenziate le posizioni su cui e` possibile mettere un meeple (ammesso che il giocatore ancora ne abbia in mano).
+\end{itemize}
+
+Il giocatore di turno, spostando il mouse sui confini dello scenario creato, puo vedere un contorno nero che indica la possibilita` di tentare un piazzamento. Un click sinistro del mouse effettuera` il tentativo, mostrando la tessera in trasparenza se il piazzamento e` possibile o un effetto rosso in caso contrario. 
+
+Utilizzando la rotellina del mouse o il click destro e` possibile ruotare la tessera.
+
+Una volta confermato il piazzamento si puo` decidere di mettere un meeple su un elemento del territorio della tessera appena piazzata cliccando sul contorno del meeple e lo si puo` rimuovere cliccando sul meeple stesso.
+
+Al termine di un turno ogni giocatore vedra` i risultati del piazzamento effettuato, gli elementi del territorio completati vengono evidenziati e se qualche giocatore ha segnato dei punti da questi completamenti il punteggio dei singoli elementi viene mostrato sopra agli elementi stessi, come anche il piazzamento o la restituzione dei meeple.
+
 \subsection{La gestione e la distribuzione della rete}
 	\subsubsection{Registrazione presso la lobby}
 		Il primo passo svolto da ogni nodo di rete e' la registrazione
