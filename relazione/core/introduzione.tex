@@ -32,6 +32,14 @@ Ciascuna di tali tessere rappresenta un frammento di paesaggio, e può contenere
     \item un monastero
 \end{itemize}
 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{img/tiles.png}
+\caption{Elenco delle tessere presenti nel gioco}
+\label{img:tiles}
+\end{figure}
+
 A turno, i giocatori estraggono una tessera dal mazzo e la posizionano scoperta sul tavolo
 in contatto con le tessere già piazzate attraverso uno o più lati in modo coerente con le altre, 
 in modo da proseguire eventuali strade, campi, o mura già presenti.
@@ -56,6 +64,15 @@ dettagli.
 
 La semplice struttura del gioco e la sua organizzazione a turni rende
 interessante l'approccio distribuito in quanto si evita di incorrere in problemi 
-di prestazioni tipici dei giochi reattivi. Quest'ultimi infatti %TODO
-%vogliono bassa latenza etc. etc. ma non nel nostro caso.
-
+di prestazioni tipici dei giochi reattivi. Quest'ultimi infatti hanno requisiti prestazionali molto stringenti. In
+particolare spesso richiedono che le comunicazioni di rete siano a bassa
+latenza al fine di impedire il più possibile agli utenti di giocare con
+artefatti grafici fastidiosi dovuti ai ritardi di rete o all'overhead di
+comunicazione.\\
+Come già accennato, il gioco da noi considerato necessita invece di
+requisiti prestazionali più laschi soprattuto per i lunghi tempi
+decisionali degli utenti (comparati ai tempi di rete e computazionali).
+\\
+Vedremo nelle prossime sezioni i dettagli progettuali ed implementativi.
+In ultimo forniremo una analisi valutativa dei risultati ottenuti dai test
+con le dovute considerazioni finali.
