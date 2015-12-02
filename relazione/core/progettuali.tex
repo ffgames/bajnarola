@@ -9,6 +9,21 @@ client di gioco, nonostante quest'ultimo non utilizzi uno schema
 realtime.
 
 \subsection{Il gioco}
+Le regole del gioco originale sono state vagamente semplificate per evitare eccessive complicazioni in fase di sviluppo, nello specifico abbiamo eliminato la meccanica dei poderi che avrebbe richiesto di strutturare dei meccanismi di valutazione complessi.
+
+La logica del gioco e` divisa in due strati paralleli, quello ``fisico'' rappresentato dal tabellone che viene man mano creato e descrive la condizione esatta del tabellone di gioco e quello ``logico'' composto dagli elementi del paesaggio, che ne valuta lo stato ed informa lo strato fisico del completamento degli elementi.
+
+I due strati agiscono quindi nelle due fasi del turno di un giocatore: il primo controlla che sia possibile piazzare la tessera pescata dove desidera il giocatore garantendo che non venga violata la continuita` del paesaggio, il secondo controlla la proprieta` dei vari elementi del paesaggio della tessera appena piazzata e permette o meno il piazzamento dei meeple, dopo di che` aggiorna i punteggi dei giocatori se rileva il completamento di un elemento di paesaggio.
+
+Per valutare il completamento dei tre diversi elementi di paesaggio considerati vengono utilizzate tre tecniche specifiche:
+\begin{description}
+	\item[Monasteri] \hfill \\
+		sono completi quando tutte le otto tessere adiacenti sono state piazzate, e` quindi sufficiente contare il numero dei vicini.
+	\item[Strade] \hfill \\
+		sono complete quando hanno incroci o citta` che le racchiudono, vengono contate quindi le tessere appartenenti alla strada che contengono un incrocio o una strada che finisce in una citta`, quando queste sono 2 l'elemento e` completo.
+\item[Citta`] \hfill \\
+		sono complete quando tutto il muro di cinta e` chiuso, viene tenuto quindi il conto di quanti lati aperti sono rimasti su tutto il confine della citta`, quando questo numero scende a zero l'elemento e` completo.
+\end{description}
 
 \subsection{La comunicazione}
 L'aspetto principale dell'intero sistema risulta l'architettura paritaria
