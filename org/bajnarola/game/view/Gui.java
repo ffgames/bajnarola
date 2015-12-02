@@ -105,7 +105,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 	private IScene soundtrackScene;
 	
 	private boolean soundOn;
-	private boolean initialized, resourcesSet;
+	private boolean initialized, resourcesSet, endgameTriggered;
 	
 	public Gui(ViewController controller){
 		super(GAMENAME);
@@ -233,6 +233,7 @@ public class Gui extends BasicGame implements InputProviderListener {
 		currentUpdate = null;
 		holes = null;
 		newTile = null;
+		endgameTriggered = false;
 	}
 	
 	public void removeDeadMeeples(List<String> coords, String playername){
@@ -390,7 +391,9 @@ public class Gui extends BasicGame implements InputProviderListener {
 		}
 		if(currentUpdate == null && controller != null && currentScene.sceneType == scene_type.SCENE_GAME){
 			if((currentUpdate = controller.dequeueViewUpdate()) != null){
-				if(currentUpdate.points == null && currentUpdate.placedTile == null && currentUpdate.scores == null && animator.allAnimationsEnded()){ //end game
+				if(currentUpdate.points == null && currentUpdate.placedTile == null && currentUpdate.scores == null)
+					endgameTriggered = true;
+				if(endgameTriggered	&& animator.allAnimationsEnded()){ //end game
 					currentUpdate = null;
 					updateEndgameScene();
 				} else if(currentUpdate.placedTile != null){	//regular turn
