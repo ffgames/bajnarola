@@ -1,4 +1,5 @@
 \documentclass[a4paper, notitlepage, abstracton]{scrartcl}
+\usepackage{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[italian]{babel}
 \usepackage{fancyhdr}
@@ -18,6 +19,7 @@
 \usepackage{todonotes}
 \usepackage{tikz}
 
+\newgeometry{top=3.5cm, left=2.5cm, right=2.5cm}
 \usetikzlibrary{arrows,shapes}
 
 \newcommand{\authorswe}{Davide Berardi, Matteo Martelli, Marco Melletti}
@@ -30,7 +32,6 @@
 \lfoot{\thepage}
 \cfoot{}
 \renewcommand{\footrulewidth}{0.4pt}
-
 \begin{document}
 
 \title{Bajnarola}
@@ -54,11 +55,9 @@
 \end{abstract}
 
 \pagenumbering{arabic}
-
 \input{core/introduzione.tex}
 \input{core/progettuali.tex}
 \input{core/implementativi.tex}
-\input{core/valutazione.tex}
 \input{core/conclusioni.tex}
 
 \end{document}

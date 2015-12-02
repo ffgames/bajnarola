@@ -17,5 +17,5 @@ build/*
 
 # latex
 relazione/main.out
-relazione/main.log
 relazione/main.aux
+*.log

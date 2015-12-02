@@ -21,7 +21,7 @@ Per valutare il completamento dei tre diversi elementi di paesaggio considerati 
 		sono completi quando tutte le otto tessere adiacenti sono state piazzate, e` quindi sufficiente contare il numero dei vicini.
 	\item[Strade] \hfill \\
 		sono complete quando hanno incroci o citta` che le racchiudono, vengono contate quindi le tessere appartenenti alla strada che contengono un incrocio o una strada che finisce in una citta`, quando queste sono 2 l'elemento e` completo.
-\item[Citta`] \hfill \\
+	\item[Città] \hfill \\
 		sono complete quando tutto il muro di cinta e` chiuso, viene tenuto quindi il conto di quanti lati aperti sono rimasti su tutto il confine della citta`, quando questo numero scende a zero l'elemento e` completo.
 \end{description}
 
@@ -52,7 +52,7 @@ stato locale.\\
 ]
 
 	\def \n {5};
-	\def \r {2.5cm};
+	\def \r {1.8cm};
 	\def \m {8};
 
 	\draw[->] (\m:\r) arc ({\m}:{360/\n -\m}:\r);
@@ -72,7 +72,7 @@ stato locale.\\
 ]
 
 	\def \n {5};
-	\def \r {2.5cm};
+	\def \r {1.8cm};
 	\def \m {8};
 
 	\draw[->,gray] (\m:\r) arc ({\m}:{360/\n -\m}:\r);
@@ -89,67 +89,70 @@ stato locale.\\
 	\draw[->] (5) to[bend left=20] (L);
 \end{tikzpicture}
 \end{minipage}
+\caption{\small{Tipologia token ring (sinistra) e tipologia completamente
+connessa (destra).}}
 \end{figure}
-
 La tolleranza ai guasti di tipo crash e' quindi stata progettata in
 quest'ottica, ogni nodo potra' accorgersi del crash di un altro giocatore
 all'istante (o al momento dell'interrogazione), e riconfigurera' l'ordine
 dell'anello di sorta.
 
+
 \begin{figure}[H]
 	\begin{minipage}{0.45\textwidth}
 		\centering
-\begin{tikzpicture}[->,
-	main node/.style={circle,draw,thick,fill=blue!20,minimum size=4mm},
-	crashed node/.style={forbidden sign,draw,thick,fill=red!50,minimum size=4mm}
-]
+		\begin{tikzpicture}[->,
+			main node/.style={circle,draw,thick,fill=blue!20,minimum size=4mm},
+			crashed node/.style={forbidden sign,draw,thick,fill=red!50,minimum size=4mm}
+			]
 
-	\def \n {5};
-	\def \r {2.5cm};
-	\def \m {8};
+			\def \n {5};
+			\def \r {1.8cm};
+			\def \m {8};
 
-	\draw[->,gray] (\m:\r) arc ({\m}:{360/\n -\m}:\r);
+			\draw[->,gray] (\m:\r) arc ({\m}:{360/\n -\m}:\r);
 
-	\foreach \s in {2,...,\n} {
-		\draw[->,gray] ({360/\n * (\s-1) + \m}:\r) arc ({360/\n * (\s-1) + \m}:{360/\n * (\s) -\m}:\r);
-		\node[main node] at ({360/\n * (\s-1)}:\r) (\s) {$\s$};
-	}
-	\node[crashed node] at (0:\r) (L) {1};
+			\foreach \s in {2,...,\n} {
+				\draw[->,gray] ({360/\n * (\s-1) + \m}:\r) arc ({360/\n * (\s-1) + \m}:{360/\n * (\s) -\m}:\r);
+				\node[main node] at ({360/\n * (\s-1)}:\r) (\s) {$\s$};
+			}
+			\node[crashed node] at (0:\r) (L) {1};
 
-	\draw[->] (2) to[bend right=20] (L);
-	\draw[->] (3) to[bend right=10] (L);
-	\draw[->] (4) to[bend left=10] (L);
-	\draw[->] (5) to[bend left=20] (L);
-\end{tikzpicture}
+			\draw[->] (2) to[bend right=20] (L);
+			\draw[->] (3) to[bend right=10] (L);
+			\draw[->] (4) to[bend left=10] (L);
+			\draw[->] (5) to[bend left=20] (L);
+		\end{tikzpicture}
 	\end{minipage}
 	\begin{minipage}{0.45\textwidth}
 		\centering
-\begin{tikzpicture}[->,
-	main node/.style={circle,draw,thick,fill=blue!20,minimum size=4mm},
-	crashed node/.style={circle,draw,thick,fill=gray,minimum size=4mm},
-	leader node/.style={circle,draw,thick,fill=green!20,minimum size=4mm}
-]
+		\begin{tikzpicture}[->,
+			main node/.style={circle,draw,thick,fill=blue!20,minimum size=4mm},
+			crashed node/.style={circle,draw,thick,fill=gray,minimum size=4mm},
+			leader node/.style={circle,draw,thick,fill=green!20,minimum size=4mm}
+			]
 
-	\def \n {5};
-	\def \r {2.5cm};
-	\def \m {8};
+			\def \n {5};
+			\def \r {1.8cm};
+			\def \m {8};
 
 
-	\draw[->,gray] ({360/\n * (2-1) + \m}:\r) arc ({360/\n * (2-1) + \m}:{360/\n * (2) -\m}:\r);
-	\node[leader node] at ({360/\n * (2-1)}:\r) (2) {$2$};
-	\draw[->,gray] ({360/\n * (3-1) + \m}:\r) arc ({360/\n * (3-1) + \m}:{360/\n * (3) -\m}:\r);
-	\node[main node] at ({360/\n * (3-1)}:\r) (3) {$3$};
-	\draw[->,gray] ({360/\n * (4-1) + \m}:\r) arc ({360/\n * (4-1) + \m}:{360/\n * (4) -\m}:\r);
-	\node[main node] at ({360/\n * (4-1)}:\r) (4) {$4$};
-	\node[main node] at ({360/\n * (5-1)}:\r) (5) {$5$};
+			\draw[->,gray] ({360/\n * (2-1) + \m}:\r) arc ({360/\n * (2-1) + \m}:{360/\n * (2) -\m}:\r);
+			\node[leader node] at ({360/\n * (2-1)}:\r) (2) {$2$};
+			\draw[->,gray] ({360/\n * (3-1) + \m}:\r) arc ({360/\n * (3-1) + \m}:{360/\n * (3) -\m}:\r);
+			\node[main node] at ({360/\n * (3-1)}:\r) (3) {$3$};
+			\draw[->,gray] ({360/\n * (4-1) + \m}:\r) arc ({360/\n * (4-1) + \m}:{360/\n * (4) -\m}:\r);
+			\node[main node] at ({360/\n * (4-1)}:\r) (4) {$4$};
+			\node[main node] at ({360/\n * (5-1)}:\r) (5) {$5$};
 
-	\draw[->,gray] (5) to [bend right=50] (2);
+			\draw[->,gray] (5) to [bend right=50] (2);
 
-	\node[crashed node] at (0:\r) (L) {1};
-	\draw[->] (3) to[bend right=10] (2);
-	\draw[->] (4) to[bend left=10] (2);
-	\draw[->] (5) to[bend left=20] (2);
-\end{tikzpicture}
+			\node[crashed node] at (0:\r) (L) {1};
+			\draw[->] (3) to[bend right=10] (2);
+			\draw[->] (4) to[bend left=10] (2);
+			\draw[->] (5) to[bend left=20] (2);
+		\end{tikzpicture}
 	\end{minipage}
-	\caption{Riconfigurazione dei client dovuta ad un crash}
+	\caption{\small{Riconfigurazione dei client dovuta ad un crash}}
 \end{figure}
+
