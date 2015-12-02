@@ -23,8 +23,11 @@ public class Street extends LandscapeElement {
 	 * references to the current one. */
 	@Override
 	public void merge(LandscapeElement el) {
-		Street st = (Street)el;		
-		relink(el);
+		Street st = (Street)el;
+		if(el.equals(this))
+			this.complete();
+		else
+			relink(el);
 		
 		streetEnds += st.getStreetEnds();
 		if (streetEnds >= 2)
