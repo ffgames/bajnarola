@@ -6,9 +6,8 @@ design pattern e dell'accurata strutturazione gerarchica del modello delle
 classi. In particolare il pattern MVC ci ha permesso di correggere
 facilmente gli errori di implementazione.
 
-Nello specifico ci siamo concentrati
-principalmente nel comprendere se il comportamento delle comunicazioni
-tra i nodi della rete fosse corretto.
+Ci siamo concentrati sulla comprensione della correttezza del comportamento delle comunicazioni
+tra i nodi della rete.
 
 Dopo gli ultimi bugfix, non abbiamo più riscontrato problemi implementativi
 nella fase finale di test e le interazioni fra i giocatori funzionano
@@ -19,8 +18,7 @@ nell'interfaccia utente.
 Per quanto riguarda l'affidabilità, la nostra implementazione è
 tollerante ai guasti di tipo crash. La rete logica in Bajnarola infatti si
 riorganizza automaticamente nel caso in cui uno o più nodi subiscano un
-crash, permettendo agli utenti ancora in gioco di terminare la partita o
-di concluderla nel caso rimanga un solo giocatore.\\
+crash, permettendo agli utenti ancora in gioco di concludere la partita ed essere notificati dei guasti.\\
 
 In conclusione tramite questo lavoro abbiamo avuto l'occasione di
 approfondire il mondo dei sistemi distribuiti e allo stesso tempo
